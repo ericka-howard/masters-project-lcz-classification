@@ -1,1 +1,1 @@
-# masters_project_lcz-classification
+# masters-project-lcz-classification

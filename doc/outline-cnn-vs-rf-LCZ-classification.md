@@ -1,0 +1,187 @@
+Outline
+================
+
+## *Comparison between convolutional neural networks and random forest for local climate zone classification in mega urban areas using Landsat images*
+
+<https://doi.org/10.1016/j.isprsjprs.2019.09.009>
+
+## Study Area and Data
+
+### Study Area
+
+Rome, Hong Kong, Madrid, and Chicago
+
+### Satellite input data
+
+1.  Chose two Landsat 8 images of different seasons (winter and summer)
+    for each city were downloaded from [USGS Earth Explorer
+    website](https://earthexplorer.usgs.gov/)
+
+2.  Clipped covering each city
+
+3.  “atmospheric-corrected” into scaled relectance data using ENVI Fast
+    Line-of-sight Atmospheric Analysis of Hypercubes (FLAASH)
+
+4.  Nine of the 11 bands in each Landsat 8 scene were used as input
+    data.
+    
+      - 1-7 were the 30m resolution Operational Land Imager (OLI)
+        spectral bands
+      - 10 and 11 were 30 m resolution thermal bands interpolated from
+        100m resolution data collected from Thermal Infrared Sensor
+        (TIRS)
+
+### Reference Data
+
+LCZ reference data are available from the Image Analysis and Data Fusion
+Technical Committee [2017 IEEE GRSS data fusion
+contest](http://www.grss-ieee.org/2017-ieee-grss-data-fusion-contest/)
+(in collaboration with WUDAPT and GeoWiki)
+
+The data were extracted from WUDAPT and then further refined using
+(either from these papers or following their methods?)
+
+  - [Tuia et
+    al. 2017](https://ieeexplore.ieee.org/abstract/document/7882740)
+  - [Yokoya et
+    al. 2018](https://ieeexplore.ieee.org/abstract/document/8338367)
+
+Then, the polygons for each LCZ class were randomly divided into
+training and testing groups.
+
+There were a few classes that only had a small number of polygons for
+the city (i.e. \<3) so they did not split those ones up even though it
+might inflate the accuracy. Instead they created “red-star class”. For
+these the pixels in each polygon were divided into two groups through a
+random sampling approach.
+
+The [Global Man-made Impervious Surface (GMIS)
+data](http://img.data.ac.cn/geores/M00/03/8D/n-JvD1pVvD6AGx1vAAjQnFzHcL8490.pdf)
+were used to analysis the LCZ maps generated for each city. This data is
+30m resolution global fractional impervious cover for year 2010. To
+identify medium to high density developed areas they extracted the GMIS
+pixels which have \>70% impervious fraction within the study data for
+each city.
+
+## Methods:
+
+**Use R Random Forest Package**
+
+  - All defaults except for number of trees (which was “selected at the
+    modeling process”)
+
+*NOTE: RF is classifier used by the existing LCZ classification
+community*
+
+**Implement CNN using Keras open source library**
+
+  - “Unfortunately, there is no way to directly find an optimal model in
+    deep learning. A multitude of tests is typically conducted to find
+    the optimal CNN parameters considering performance and efficiency”
+  - Tested 32, 64, 128, and 256 filters at convolutional layers to
+    determine an optimal structure
+  - Used four convolutional layers with 32 3x3 sized filters, ReLU
+    activation function was adopted at each layer..
+  - Used a soft-max function to classify the LCZ type
+  - Used the adaptive moment estimation (ADAM) optimizer to minimize the
+    error function.
+  - Used a GPU with 11 GB memory to speed up the model training
+
+### Classification Scheme Design
+
+Wanted to produce a 100 m resolution pixel-based LCZ map from Landsat
+images Three RF (S1-S3) and two CNN classification schemes with
+different input features and classifiers
+
+#### Benchmark RF-based schemes
+
+1.  S1 is existing WUDAPT method
+    
+      - 30 m resolution Landsat images bilinearly resamples to 10m
+        resolution
+      - then resampled to 10m resolution
+      - then resampled to 100m resolution by a zonal mean function based
+        on the LCz grid area
+      - 18 input variables
+
+2.  S2 is from [Danylo et. al
+    (2016)](https://www.sciencedirect.com/science/article/pii/S0924271619302205#b0085).
+    
+      - Adds more spectral information as input variables
+      - The 10m bilinear resampled Landsat images were resampled to 100m
+        by zonal mean AND by maximum and minimum within LCZ grid area.
+      - “The three features were constructed for each Landsat band in
+        S2” (not sure what this means exactly)
+      - 54 input variables
+
+3.  S3 is from [Verdonck et.
+    al. (2017)](https://www.sciencedirect.com/science/article/pii/S0924271619302205#b0360)
+    
+      - Considers the context of a feature: mean min, max, median, .25,
+        .75 values of the nine pixels in a 3x3 window were calculated
+        from 100m zonal-mean Landsat images.
+      - 108 input variables
+
+In each scheme they used the features constructed from 18 bands (“i.e. 9
+bands for one scene”) of two Landsat images in the winter and summer as
+input variables. “We extracted the pixel values of the input variables
+at the location corresponding to LCZ reference pixels in each scheme”
+-?? when? For what?
+
+#### CNN-based schemes
+
+For each:
+
+30 m resolution Landsat images were bilinearly resampled to 10m,
+allowing 100 (10x10) pixels to be placed in a single 100m LCZ grid Each
+10m resolution image was normalized using the min-max approach (to
+reduce training time)
+
+4.  S4
+    
+      - the 10x10 features of 10m resolution Landsat images in each LCZ
+        reference pixel area were extracted and fed into CNN
+      - i.e. has a 10×10–sized 10m resolution feature for each band as
+        input variables
+
+5.  S5 takes into consideration the surrounding area of a focus pixel
+    (similar to S3)
+    
+      - Extracted the 30x30 size features of 10m resolution Landsat
+        images and fed them into CNN classifier.
+      - i.e. has a 30×30–sized 10m resolution feature for each band as
+        input variables
+
+Then after the 10m resolution images were fed into the CNN model, The
+fully connected layers could make a final decision of one LCZ class for
+each image in order to produce a 100m resolution LCZ map
+
+### Modelling and accuracy assesment
+
+They randomly selected 90% for training model, remaining 10% were used
+to identify the optimum parameter values for the models
+
+Ran the models 10 times for each scheme to examine robustness
+
+Assessed accuracy using separate test datasets? GMIS? Actual assessment
+calcs using:
+
+  - OA
+  - OA<sub>urb</sub> which is accuracy among urban LCZ types (LCZs 1-10)
+  - OA<sub>nat</sub> which is accuracy among natural LCZ types (LCZs
+    A-G)
+  - F1-score, which is harmonic mean of UA (user’s accuracy) and PA
+    (producer’s accuracy) of each LCZ class to examine classification
+    accuracy by class. F1 also explains how similar the two values are.
+
+Finally, selected one model among the 10 simulated models to map LCZ for
+each city, based on the highest value of the sum of OA and
+OA<sub>urb</sub> for each scheme. Also conducted McNemar’s test to
+evaluate the significance of differences in the classification results
+by scheme.
+
+### Transferability Experiments
+
+Applied the LCZ models developed for their three cities to the remaining
+city based on the best performing RF and CNN models from the experiment
+of individual cities.

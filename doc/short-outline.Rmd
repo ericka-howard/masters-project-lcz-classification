@@ -43,6 +43,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Modelling and Accuracy Assessment
 
+* Formula for OA is found [here](https://ieeexplore.ieee.org/abstract/document/8338367)
 * Ran model ten times for robustness check
 * Assessed accuracy with 4 metrics: OA, OA<sub>urb</sub>, OA<sub>nat</sub>, F1-score
 * Selected one model to map LCZ for each city based on OA and OA<sub>urb</sub>

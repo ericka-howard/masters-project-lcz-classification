@@ -94,3 +94,9 @@ Chicago: February 03, 2017 & September 12, 2016
 * Finally, in each scheme, they used the features constructed from 18 bands (i.e., 9 bands for one scene) of two Landsat images in the winter and summer seasons as input variables.
 
 ![Schemes](data-schemes-graphic.jpg)
+
+
+### Resources
+
+* [Resampling arcgis link](https://desktop.arcgis.com/en/arcmap/latest/extensions/spatial-analyst/performing-analysis/cell-size-and-resampling-in-analysis.htm)
+* [USGS Earth Explorer](https://earthexplorer.usgs.gov/)

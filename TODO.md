@@ -2,8 +2,8 @@
 
 ### Prior to Winter Quarter (Dec. 9 - Jan. 1)
 
-* [ ] Find resources on random forests
-* [ ] Dive into data
+* [x] Find resources on random forests
+* [x] Dive into data
 
 
 ### Week 1 (Jan. 4-8)
@@ -16,6 +16,7 @@
 
 * [ ] Schedule Oral Exam 
 * [ ] Start writing background info/introduction
+* [ ] Go through 2+ random forest resources
 
 ### Week 3 (Jan. 18-22)
 

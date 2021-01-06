@@ -11,11 +11,11 @@
 * [ ] Set up weekly meetings
 * [ ] Create weekly work schedule (i.e. timing of work sessions)
 * [ ] Address expected data preprocessing challenges
-      * [ ] Pick a city to start with
-      * [ ] Get Landsat images from USGS Earth Explorer for  that city on it's two dates
-      * [ ] Clip image to cover city
-      * [ ] Figure out what ENVI FLAASH is
-      * [ ] Read about bilinear reampling with spatial data
+    * [ ] Pick a city to start with
+    * [ ] Get Landsat images from USGS Earth Explorer for  that city on it's two dates
+    * [ ] Clip image to cover city
+    * [ ] Figure out what ENVI FLAASH is
+    * [ ] Read about bilinear reampling with spatial data
 * [ ] Solidify plan of attack for data preprocessing
 
 ### Week 2 (Jan. 11-15)
@@ -24,11 +24,11 @@
 * [ ] Start writing background info/introduction
 * [ ] Go through 2+ random forest resources
 * [ ] Data preprocessing steps
-      * [ ] Use ENVI FLAASH on the chosen city images.
-      * [ ] Play around with the resampling methods. Can you match it up to their steps? 
-      * [ ] Determine how you get raster data into R.
-      * [ ] Determine how you choose to only use certain bands as input data? Can you just filter it? 
-      * [ ] Strategize how to randomly and evenly divide the polygons. Test if time allows
+     * [ ] Use ENVI FLAASH on the chosen city images.
+     * [ ] Play around with the resampling methods. Can you match it up to their steps? 
+     * [ ] Determine how you get raster data into R.
+     * [ ] Determine how you choose to only use certain bands as input data? Can you just filter it? 
+     * [ ] Strategize how to randomly and evenly divide the polygons. Test if time allows
       
 ### Week 3 (Jan. 18-22)
 

@@ -17,7 +17,7 @@ Random Forest Resources
     Cutler](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm)
   - [ggRandomForests Package
     vignette](https://rdrr.io/github/ehrlinger/ggRFVignette/f/vignettes/randomForest.Rmd)
-  - [**Classification Vignette - Christ
+  - [**Classification Vignette - Chris
     Holden**](http://ceholden.github.io/open-geo-tutorial/R/chapter_5_classification.html)
   - [Using the Random Forest Classification for Land Cover
     Interpretation of Landsat Images in the Prykarpattya Region of

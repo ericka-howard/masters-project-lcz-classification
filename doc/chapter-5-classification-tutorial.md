@@ -10,6 +10,8 @@ Holden](https://github.com/ceholden/open-geo-tutorial)
 library(randomForest)
 ```
 
+    ## Warning: package 'randomForest' was built under R version 4.0.3
+
     ## randomForest 4.6-14
 
     ## Type rfNews() to see new features/changes/bug fixes.
@@ -24,13 +26,15 @@ library(raster)
 library(rgdal)
 ```
 
-    ## rgdal: version: 1.5-12, (SVN revision 1018)
+    ## Warning: package 'rgdal' was built under R version 4.0.3
+
+    ## rgdal: version: 1.5-19, (SVN revision 1092)
     ## Geospatial Data Abstraction Library extensions to R successfully loaded
     ## Loaded GDAL runtime: GDAL 3.0.4, released 2020/01/28
-    ## Path to GDAL shared files: /usr/share/gdal
+    ## Path to GDAL shared files: C:/Users/erick/Documents/R/win-library/4.0/rgdal/gdal
     ## GDAL binary built with GEOS: TRUE 
-    ## Loaded PROJ runtime: Rel. 6.2.0, September 1st, 2019, [PJ_VERSION: 620]
-    ## Path to PROJ shared files: /usr/share/proj
+    ## Loaded PROJ runtime: Rel. 6.3.1, February 10th, 2020, [PJ_VERSION: 631]
+    ## Path to PROJ shared files: C:/Users/erick/Documents/R/win-library/4.0/rgdal/proj
     ## Linking to sp version:1.4-4
     ## To mute warnings of possible GDAL/OSR exportToProj4() degradation,
     ## use options("rgdal_show_exportToProj4_warnings"="none") before loading rgdal.
@@ -45,7 +49,7 @@ training <- readOGR('training_data.shp', layer='training_data')
 ```
 
     ## OGR data source with driver: ESRI Shapefile 
-    ## Source: "/home/smither8/masters-project-lcz-classification/doc/training_data.shp", layer: "training_data"
+    ## Source: "C:\Users\erick\Documents\MS_Project\masters-project-lcz-classification\doc\training_data.shp", layer: "training_data"
     ## with 30 features
     ## It has 2 fields
     ## Integer64 fields read as strings:  id
@@ -136,8 +140,7 @@ metric. This metric can be computed in two ways – the mean decrease in
 accuracy as each variable is removed or the [Gini
 impurity](http://en.wikipedia.org/wiki/Decision_tree_learning#Gini_impurity)
 metric. Either way it gives an idea of what features (Landsat bands)
-were important in assigning the classification
-    labels.
+were important in assigning the classification labels.
 
 ``` r
 importance(rf)
@@ -174,8 +177,7 @@ See `?importance` for more information:
 > measure is the total decrease in node impurities from splitting on the
 > variable, averaged over all trees. For classification, the node
 > impurity is measured by the Gini index. For regression, it is measured
-> by residual sum of
-squares.
+> by residual sum of squares.
 
 ``` r
 varImpPlot(rf)

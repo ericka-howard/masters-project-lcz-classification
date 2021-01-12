@@ -15,14 +15,11 @@ library(raster)
 library(rgdal)
 library(here)
 #training <- readOGR('training_data.shp', layer='training_data')
-#training <- readOGR("../train/hong_kong/osm_vector/gis.osm_buildings_a_free_1 [clipped].shp", layer= "gis.osm_buildings_a_free_1 [clipped]")
+train <- brick(here("../train/hong_kong/lcz/", "hong_kong_lcz_col.tif"))
 #le7 <- brick('LE70220491999322EDC01_stack.gtif')
-#le7 <- brick(here("../train/hong_kong/landsat_8", "LC81220442015291LGN00/LC81220442015291LGN00_B1.tif"))
+le8 <- brick(here("../train/hong_kong/landsat_8", "LC81220442015291LGN00/LC81220442015291LGN00_B1.tif"))
 ```
 
-```{r}
-#roi_data <- extract(le7, training, df=TRUE)
-```
 
 Definitely didn't work and was just for testing (to see if I could go through the tutorial code with my data) anyway, so scrap it.
 
@@ -30,3 +27,18 @@ Tomorrow:
 1. Why did they give us the data as a tif instead of a shp file? Is that advantageous?
 2. If it's not, how do I convert it to a point shapefile?
 3. Watch WUDAPT video
+
+what is saga? - alternative to arc or qgis
+
+*Updated filepaths, watched WUDAPT, trying stacking them into a RasterStack*
+
+```{r}
+all_data <- stack(le8, train)
+all_data_added <- addLayer(train, le8)
+```
+
+Now what exactly is a RasterStack? 
+
+```{r}
+summary(all_data)
+```

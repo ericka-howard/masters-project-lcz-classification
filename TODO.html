@@ -370,21 +370,34 @@ summary {
 <div id="prior-to-winter-quarter-dec.-9---jan.-1" class="section level3">
 <h3>Prior to Winter Quarter (Dec. 9 - Jan. 1)</h3>
 <ul>
-<li><input type="checkbox" disabled></input>
+<li><input type="checkbox" disabled checked></input>
 Find resources on random forests</li>
-<li><input type="checkbox" disabled></input>
+<li><input type="checkbox" disabled checked></input>
 Dive into data</li>
 </ul>
 </div>
 <div id="week-1-jan.-4-8" class="section level3">
 <h3>Week 1 (Jan. 4-8)</h3>
 <ul>
-<li><input type="checkbox" disabled></input>
+<li><input type="checkbox" disabled checked></input>
 Set up weekly meetings</li>
+<li><input type="checkbox" disabled checked></input>
+Create weekly work schedule (i.e. timing of work sessions)</li>
+<li><input type="checkbox" disabled checked></input>
+Address expected data preprocessing challenges<ul>
+<li><input type="checkbox" disabled checked></input>
+Pick a city to start with. <em>Hong Kong</em></li>
+<li><input type="checkbox" disabled checked></input>
+<del>Get Landsat images from USGS Earth Explorer for that city on it’s two dates</del><em>Using contest data</em></li>
+<li><input type="checkbox" disabled checked></input>
+<del>Clip image to cover city </del><em>Using contest data</em></li>
+<li><input type="checkbox" disabled checked></input>
+<del>Figure out what ENVI FLAASH is </del><em>Using contest data</em></li>
+<li><input type="checkbox" disabled checked></input>
+<del>Read about bilinear reampling with spatial data </del><em>Only for curiosity sake, using contest data</em></li>
+</ul></li>
 <li><input type="checkbox" disabled></input>
-Address expected data preprocessing challenges</li>
-<li><input type="checkbox" disabled></input>
-Solidify plan of attack for data preprocessing</li>
+Solidify plan of attack for data preprocessing. <em>In progress</em></li>
 </ul>
 </div>
 <div id="week-2-jan.-11-15" class="section level3">
@@ -394,6 +407,31 @@ Solidify plan of attack for data preprocessing</li>
 Schedule Oral Exam</li>
 <li><input type="checkbox" disabled></input>
 Start writing background info/introduction</li>
+<li><input type="checkbox" disabled></input>
+Go through 2+ random forest resources<ul>
+<li><input type="checkbox" disabled checked></input>
+<a href="http://ceholden.github.io/open-geo-tutorial/R/chapter_5_classification.html"><strong>Classification Vignette - Chris Holden</strong></a></li>
+</ul></li>
+<li><input type="checkbox" disabled></input>
+Data preprocessing steps<ul>
+<li><input type="checkbox" disabled checked></input>
+Determine how you get raster data into R.</li>
+<li><input type="checkbox" disabled checked></input>
+How can you get the raster data to be a data frame (&amp; does it even make sense to do that?). <em>It’s seriously just <code>as.data.frame()</code></em></li>
+<li><input type="checkbox" disabled checked></input>
+Determine how you choose to only use certain bands as input data? Can you just filter it? <em>Yes</em></li>
+<li><input type="checkbox" disabled></input>
+How do I know that the columns of my dataframe are actually what I’m looking for? Where are the bands? <em>See next primary goal below (from meeting notes issue) for strategy</em></li>
+<li><input type="checkbox" disabled></input>
+Strategize how to randomly and evenly divide the polygons. Test if time allows</li>
+</ul></li>
+<li><input type="checkbox" disabled></input>
+Attempt to get from Tiffs to a data frame appropriate for feeding into random forest function. To get started:<ul>
+<li><input type="checkbox" disabled></input>
+Identify a pixel in an LCZ polygon</li>
+<li><input type="checkbox" disabled></input>
+Get the value from a LandSat image band, for that pixel</li>
+</ul></li>
 </ul>
 </div>
 <div id="week-3-jan.-18-22" class="section level3">

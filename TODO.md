@@ -16,22 +16,28 @@
     * [x] <del>Clip image to cover city </del>*Using contest data*
     * [x] <del>Figure out what ENVI FLAASH is </del>*Using contest data*
     * [x] <del>Read about bilinear reampling with spatial data </del>*Only for curiosity sake, using contest data*
-* [ ] Solidify plan of attack for data preprocessing
+* [ ] Solidify plan of attack for data preprocessing. *In progress*
 
 ### Week 2 (Jan. 11-15)
 
 * [ ] Schedule Oral Exam 
 * [ ] Start writing background info/introduction
 * [ ] Go through 2+ random forest resources
+     * [x] [**Classification Vignette - Chris Holden**](http://ceholden.github.io/open-geo-tutorial/R/chapter_5_classification.html)
 * [ ] Data preprocessing steps
      * [x] Determine how you get raster data into R.
-     * [ ] How can you get the raster data to be a data frame (& does it even make sense to do that?)
-     * [ ] Determine how you choose to only use certain bands as input data? Can you just filter it? 
+     * [x] How can you get the raster data to be a data frame (& does it even make sense to do that?). *It's seriously just* `as.data.frame(dat, xy=TRUE)`
+     * [x] Determine how you choose to only use certain bands as input data? Can you just filter it? *Yes*
+     * [ ] How do I know that the columns of my dataframe are actually what I'm looking for? Where are the bands? *See next primary goal below (from meeting notes issue) for strategy*
      * [ ] Strategize how to randomly and evenly divide the polygons. Test if time allows
+* [ ] Attempt to get from Tiffs to a data frame appropriate for feeding into random forest function.  To get started:
+     * [ ] Identify a pixel in an LCZ polygon 
+     * [ ] Get the value from a LandSat image band, for that pixel
       
 ### Week 3 (Jan. 18-22)
 
 * [ ] Finish data preprocessing
+* [ ] Start references
 
 ### Week 4 (Jan 25-29)
 

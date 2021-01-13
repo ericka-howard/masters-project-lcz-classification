@@ -14,6 +14,7 @@ library(randomForest)
 library(raster)
 library(rgdal)
 library(here)
+library(tidyverse)
 #training <- readOGR('training_data.shp', layer='training_data')
 train <- brick(here("../train/hong_kong/lcz/", "hong_kong_lcz_col.tif"))
 #le7 <- brick('LE70220491999322EDC01_stack.gtif')
@@ -34,7 +35,6 @@ what is saga? - alternative to arc or qgis
 
 ```{r}
 all_data <- stack(le8, train)
-all_data_added <- addLayer(train, le8)
 ```
 
 Now what exactly is a RasterStack? 
@@ -42,3 +42,58 @@ Now what exactly is a RasterStack?
 ```{r}
 summary(all_data)
 ```
+
+
+```{r}
+all_data_df <- as.data.frame(all_data, xy=TRUE)
+```
+
+But is that even what I'm looking for?
+
+```{r}
+le8_df <- as.data.frame(le8, xy=TRUE)
+train_df <- as.data.frame(train, xy=TRUE)
+```
+
+```{r}
+summary(all_data_df)
+summary(le8_df)
+summary(train_df)
+```
+
+
+
+
+
+```{r}
+test <- train_df %>%
+  select(hong_kong_lcz_col.1) %>%
+  filter(hong_kong_lcz_col.1 !=0)
+hist(test$hong_kong_lcz_col.1)
+```
+
+```{r}
+test <- train_df %>%
+  select(hong_kong_lcz_col.2) %>%
+  filter(hong_kong_lcz_col.2 !=0)
+hist(test$hong_kong_lcz_col.2)
+```
+
+So the parts that aren't zero in each column are actually different. 
+
+```{r}
+summary(test)
+```
+
+```{r}
+ggplot() +
+    geom_raster(data = le8_df , aes(x = x, y = y, fill = layer)) +
+    scale_fill_viridis_c() +
+    coord_quickmap() +
+  theme(legend.position = "none")
+```
+
+IT'S JUST BAND 1? (bc it's name ends in `_B1`)
+
+
+

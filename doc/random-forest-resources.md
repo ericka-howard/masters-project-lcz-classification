@@ -8,7 +8,7 @@ Random Forest Resources
     Documentation](https://cran.r-project.org/web/packages/randomForest/randomForest.pdf)
   - [ ] [UC Business Analytics R Programming
     Guide](https://uc-r.github.io/random_forests)
-  - [ ] [Victor
+  - [x] [Victor
     Zhou](https://victorzhou.com/blog/intro-to-random-forests/)
   - [ ] [University of Nice Sohia Antipolis
     Powerpoint](https://perso.math.univ-toulouse.fr/motimo/files/2013/07/random-forest.pdf)

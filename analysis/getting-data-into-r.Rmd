@@ -15,10 +15,11 @@ library(raster)
 library(rgdal)
 library(here)
 library(tidyverse)
+library(mapproj)
 #training <- readOGR('training_data.shp', layer='training_data')
-train <- brick(here("../train/hong_kong/lcz/", "hong_kong_lcz_col.tif"))
+train <- brick(here("data/hong_kong/lcz/", "hong_kong_lcz_col.tif"))
 #le7 <- brick('LE70220491999322EDC01_stack.gtif')
-le8 <- brick(here("../train/hong_kong/landsat_8", "LC81220442015291LGN00/LC81220442015291LGN00_B1.tif"))
+le8 <- brick(here("data/hong_kong/landsat_8", "LC81220442015291LGN00/LC81220442015291LGN00_B1.tif"))
 ```
 
 
@@ -66,24 +67,23 @@ summary(train_df)
 
 
 ```{r}
-test <- train_df %>%
+train_df %>%
   select(hong_kong_lcz_col.1) %>%
-  filter(hong_kong_lcz_col.1 !=0)
-hist(test$hong_kong_lcz_col.1)
+  filter(hong_kong_lcz_col.1 !=0) %>%
+  ggplot()+
+  geom_histogram(aes(x=hong_kong_lcz_col.1))
 ```
 
 ```{r}
-test <- train_df %>%
+train_df %>%
   select(hong_kong_lcz_col.2) %>%
-  filter(hong_kong_lcz_col.2 !=0)
-hist(test$hong_kong_lcz_col.2)
+  filter(hong_kong_lcz_col.2 !=0)%>%
+  ggplot()+
+  geom_histogram(aes(x=hong_kong_lcz_col.2))
 ```
 
 So the parts that aren't zero in each column are actually different. 
 
-```{r}
-summary(test)
-```
 
 ```{r}
 ggplot() +
@@ -93,7 +93,7 @@ ggplot() +
   theme(legend.position = "none")
 ```
 
-IT'S JUST BAND 1? (bc it's name ends in `_B1`)
+it's just band1? (bc it's name ends in `_B1`)
 
 
 

@@ -8,14 +8,14 @@
 
 ### Week 1 (Jan. 4-8)
 
-* [ ] Set up weekly meetings
-* [ ] Create weekly work schedule (i.e. timing of work sessions)
-* [ ] Address expected data preprocessing challenges
-    * [ ] Pick a city to start with
-    * [ ] Get Landsat images from USGS Earth Explorer for  that city on it's two dates
-    * [ ] Clip image to cover city
-    * [ ] Figure out what ENVI FLAASH is
-    * [ ] Read about bilinear reampling with spatial data
+* [x] Set up weekly meetings
+* [x] Create weekly work schedule (i.e. timing of work sessions)
+* [x] Address expected data preprocessing challenges
+    * [x] Pick a city to start with. *Hong Kong*
+    * [x] <del>Get Landsat images from USGS Earth Explorer for  that city on it's two dates</del>*Using contest data*
+    * [x] <del>Clip image to cover city </del>*Using contest data*
+    * [x] <del>Figure out what ENVI FLAASH is </del>*Using contest data*
+    * [x] <del>Read about bilinear reampling with spatial data </del>*Only for curiosity sake, using contest data*
 * [ ] Solidify plan of attack for data preprocessing
 
 ### Week 2 (Jan. 11-15)
@@ -24,9 +24,8 @@
 * [ ] Start writing background info/introduction
 * [ ] Go through 2+ random forest resources
 * [ ] Data preprocessing steps
-     * [ ] Use ENVI FLAASH on the chosen city images.
-     * [ ] Play around with the resampling methods. Can you match it up to their steps? 
-     * [ ] Determine how you get raster data into R.
+     * [x] Determine how you get raster data into R.
+     * [ ] How can you get the raster data to be a data frame (& does it even make sense to do that?)
      * [ ] Determine how you choose to only use certain bands as input data? Can you just filter it? 
      * [ ] Strategize how to randomly and evenly divide the polygons. Test if time allows
       

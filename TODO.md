@@ -56,6 +56,7 @@
 
 * [ ] Write Results
 * [ ] Write conclusion
+* [ ] Final Evaluation of where things are at and setting what "finished" means **by Thursday Meeting (18)**
 
 ### Week 8 (Feb. 22-26)
 

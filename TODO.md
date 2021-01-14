@@ -59,7 +59,7 @@
 
 ### Week 8 (Feb. 22-26)
 
-* [ ] Finish writing
+* [ ] Finish writing **by Thursday Meeting (25th)**
 * [ ] Finish polishing figures
 
 ### Week 9 (Mar. 1-5)

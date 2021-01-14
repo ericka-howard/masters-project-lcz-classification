@@ -65,7 +65,7 @@
 ### Week 9 (Mar. 1-5)
 
 * [ ] Prepare Presentation
-* [ ] Submit paper
+* [ ] Submit paper **March 2**
 
 ### Week 10 (Mar. 8-12)
 

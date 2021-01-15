@@ -56,16 +56,17 @@
 
 * [ ] Write Results
 * [ ] Write conclusion
+* [ ] Final Evaluation of where things are at and setting what "finished" means **by Thursday Meeting (18)**
 
 ### Week 8 (Feb. 22-26)
 
-* [ ] Finish writing
+* [ ] Finish writing **by Thursday Meeting (25th)**
 * [ ] Finish polishing figures
 
 ### Week 9 (Mar. 1-5)
 
 * [ ] Prepare Presentation
-* [ ] Submit paper
+* [ ] Submit paper **March 2**
 
 ### Week 10 (Mar. 8-12)
 

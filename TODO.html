@@ -386,59 +386,67 @@ Create weekly work schedule (i.e. timing of work sessions)</li>
 <li><input type="checkbox" disabled checked></input>
 Address expected data preprocessing challenges<ul>
 <li><input type="checkbox" disabled checked></input>
-Pick a city to start with. <em>Hong Kong</em></li>
+<em>Hong Kong.</em> Pick a city to start with.</li>
 <li><input type="checkbox" disabled checked></input>
-<del>Get Landsat images from USGS Earth Explorer for that city on it’s two dates</del><em>Using contest data</em></li>
+<em>Using contest data </em> <del>Get Landsat images from USGS Earth Explorer for that city on it’s two dates</del></li>
 <li><input type="checkbox" disabled checked></input>
-<del>Clip image to cover city </del><em>Using contest data</em></li>
+<em>Using contest data.</em> <del>Clip image to cover city </del></li>
 <li><input type="checkbox" disabled checked></input>
 <del>Figure out what ENVI FLAASH is </del><em>Using contest data</em></li>
 <li><input type="checkbox" disabled checked></input>
-<del>Read about bilinear reampling with spatial data </del><em>Only for curiosity sake, using contest data</em></li>
+</del><em>Only for curiosity sake, using contest data.</em> <del>Read about bilinear reampling with spatial data</li>
 </ul></li>
 <li><input type="checkbox" disabled></input>
-Solidify plan of attack for data preprocessing. <em>In progress</em></li>
+<em>In progress.</em> Solidify plan of attack for data preprocessing.</li>
 </ul>
 </div>
 <div id="week-2-jan.-11-15" class="section level3">
 <h3>Week 2 (Jan. 11-15)</h3>
 <ul>
-<li><input type="checkbox" disabled></input>
+<li><input type="checkbox" disabled checked></input>
 Schedule Oral Exam</li>
 <li><input type="checkbox" disabled></input>
-Start writing background info/introduction</li>
-<li><input type="checkbox" disabled></input>
+<em>Migrated to week 3.</em> <del>Start writing background info/introduction</del></li>
+<li><input type="checkbox" disabled checked></input>
 Go through 2+ random forest resources<ul>
 <li><input type="checkbox" disabled checked></input>
 <a href="http://ceholden.github.io/open-geo-tutorial/R/chapter_5_classification.html"><strong>Classification Vignette - Chris Holden</strong></a></li>
 </ul></li>
-<li><input type="checkbox" disabled></input>
+<li><input type="checkbox" disabled checked></input>
 Data preprocessing steps<ul>
 <li><input type="checkbox" disabled checked></input>
 Determine how you get raster data into R.</li>
 <li><input type="checkbox" disabled checked></input>
-How can you get the raster data to be a data frame (&amp; does it even make sense to do that?). <em>It’s seriously just <code>as.data.frame()</code></em></li>
+How can you get the raster data to be a data frame (&amp; does it even make sense to do that?). <em>It’s seriously just</em> <code>as.data.frame(dat, xy=TRUE)</code></li>
 <li><input type="checkbox" disabled checked></input>
 Determine how you choose to only use certain bands as input data? Can you just filter it? <em>Yes</em></li>
 <li><input type="checkbox" disabled></input>
 How do I know that the columns of my dataframe are actually what I’m looking for? Where are the bands? <em>See next primary goal below (from meeting notes issue) for strategy</em></li>
 <li><input type="checkbox" disabled></input>
-Strategize how to randomly and evenly divide the polygons. Test if time allows</li>
+<em>Migrated to week 4.</em> <del>How did they randomly and evenly divide the polygons? Test if time allows</del></li>
 </ul></li>
-<li><input type="checkbox" disabled></input>
-Attempt to get from Tiffs to a data frame appropriate for feeding into random forest function. To get started:<ul>
-<li><input type="checkbox" disabled></input>
-Identify a pixel in an LCZ polygon</li>
-<li><input type="checkbox" disabled></input>
-Get the value from a LandSat image band, for that pixel</li>
-</ul></li>
+<li><input type="checkbox" disabled checked></input>
+Attempt to get from Tiffs to a data frame appropriate for feeding into random forest function.</li>
 </ul>
 </div>
 <div id="week-3-jan.-18-22" class="section level3">
 <h3>Week 3 (Jan. 18-22)</h3>
 <ul>
+<li><input type="checkbox" disabled checked></input>
+Start references</li>
 <li><input type="checkbox" disabled></input>
-Finish data preprocessing</li>
+Finish data preprocessing<ul>
+<li><input type="checkbox" disabled checked></input>
+Combine bands and get rid of ones not used in paper</li>
+<li><input type="checkbox" disabled></input>
+<em>Migrated to week 4.</em> <del>Figure out how to/how they randomly and evenly divide the polygons.</del></li>
+</ul></li>
+<li><input type="checkbox" disabled checked></input>
+Go through 2+ random forest resources</li>
+<li><input type="checkbox" disabled></input>
+What are the things/arguments that I control when I run that randomForest function?</li>
+<li><input type="checkbox" disabled checked></input>
+Start writing background info/introduction</li>
 </ul>
 </div>
 <div id="week-4-jan-25-29" class="section level3">
@@ -446,6 +454,12 @@ Finish data preprocessing</li>
 <ul>
 <li><input type="checkbox" disabled></input>
 Fit Different Classification Schemes</li>
+<li><input type="checkbox" disabled></input>
+How did they randomly and evenly divide the polygons? Test.</li>
+<li><input type="checkbox" disabled></input>
+Go through 2+ random forest resources</li>
+<li><input type="checkbox" disabled></input>
+Start writing methods</li>
 </ul>
 </div>
 <div id="week-5-feb.-1-5" class="section level3">
@@ -459,7 +473,7 @@ Do modelling and accuracy assessment</li>
 <h3>Week 6 (Feb. 8-12)</h3>
 <ul>
 <li><input type="checkbox" disabled></input>
-Write Methods Section</li>
+Finish Methods Section</li>
 <li><input type="checkbox" disabled></input>
 Start preparing results figures</li>
 </ul>
@@ -471,13 +485,15 @@ Start preparing results figures</li>
 Write Results</li>
 <li><input type="checkbox" disabled></input>
 Write conclusion</li>
+<li><input type="checkbox" disabled></input>
+Final Evaluation of where things are at and setting what “finished” means <strong>by Thursday Meeting (18)</strong></li>
 </ul>
 </div>
 <div id="week-8-feb.-22-26" class="section level3">
 <h3>Week 8 (Feb. 22-26)</h3>
 <ul>
 <li><input type="checkbox" disabled></input>
-Finish writing</li>
+Finish writing <strong>by Thursday Meeting (25th)</strong></li>
 <li><input type="checkbox" disabled></input>
 Finish polishing figures</li>
 </ul>
@@ -488,7 +504,7 @@ Finish polishing figures</li>
 <li><input type="checkbox" disabled></input>
 Prepare Presentation</li>
 <li><input type="checkbox" disabled></input>
-Submit paper</li>
+Submit paper <strong>March 2</strong></li>
 </ul>
 </div>
 <div id="week-10-mar.-8-12" class="section level3">

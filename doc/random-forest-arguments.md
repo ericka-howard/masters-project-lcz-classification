@@ -31,3 +31,7 @@ R](https://www.blopig.com/blog/2017/04/a-very-basic-introduction-to-random-fores
 makes a good point about having different numbers of data points for
 different classes, it makes the classifier more likely to predict the
 dominant class when given new values.
+
+What they say about their picks in the paper:
+
+"In this study, the RF was implemented using a random forest package provided in R software (https://www.r-project.org/). All parameters except for the number of trees were set as the default values provided by the package (i.e., the number of training samples for each tree was 66.7% of the entire training samples, the number of randomly sampled variables as candidates at each split was the square root of the number of input variables, and the minimum size of the terminal node was 1). The number of trees (i.e., ntree) was selected at the modeling process."

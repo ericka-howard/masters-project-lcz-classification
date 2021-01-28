@@ -1,8 +1,6 @@
 Leo Breiman (2001)
 ================
 
-`{r setup, include=FALSE} knitr::opts_chunk$set(echo = TRUE)`
-
 Growing an ensemble of trees and letting them vote for the most popular
 class:
 

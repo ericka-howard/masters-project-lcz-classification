@@ -49,5 +49,11 @@ lcz_and_scenes_df <- bind_cols(lcz, scenes_df)
 ```
 
 ``` r
+names(lcz_and_scenes_df)[1] <- "lcz"
+lcz_and_scenes_df$lcz %<>% factor()
+# left polygon_id as char because undecided if I'd rather go numeric or factor
+```
+
+``` r
 saveRDS(lcz_and_scenes_df, here("results", "hk_df.rds"))
 ```

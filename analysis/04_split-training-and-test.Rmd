@@ -1,0 +1,42 @@
+---
+title: "Split Training and Test"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+Read in dataframe with bands and lcz
+
+```{r}
+all_dat <- readRDS(here("results", "hk_df.rds"))
+```
+
+Check that types are correct
+
+```{r}
+summary(all_dat)
+```
+
+Remove NAs and places with no LCZ class
+
+```{r}
+polys_only <- all_dat %>%
+  filter(lcz != 0) %>%
+  drop_na() %>%
+  mutate(polygon_id = as.numeric(polygon_id))
+```
+
+Look at summaries again
+
+```{r}
+summary(polys_only$lcz)
+summary(polys_only)
+
+ggplot(polys_only, aes(x=polygon_id))+
+  geom_histogram()
+```
+
+

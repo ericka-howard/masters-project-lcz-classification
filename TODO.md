@@ -21,14 +21,14 @@
 ### Week 2 (Jan. 11-15)
 
 * [x] Schedule Oral Exam 
-* [ ] *Migrated to week 3.* <del>Start writing background info/introduction</del>
+* [x] *Migrated to week 3.* <del>Start writing background info/introduction</del>
 * [x] Go through 2+ random forest resources
      * [x] [**Classification Vignette - Chris Holden**](http://ceholden.github.io/open-geo-tutorial/R/chapter_5_classification.html)
 * [x] Data preprocessing steps
      * [x] Determine how you get raster data into R.
      * [x] How can you get the raster data to be a data frame (& does it even make sense to do that?). *It's seriously just* `as.data.frame(dat, xy=TRUE)`
      * [x] Determine how you choose to only use certain bands as input data? Can you just filter it? *Yes*
-     * [ ] How do I know that the columns of my dataframe are actually what I'm looking for? Where are the bands? *See next primary goal below (from meeting notes issue) for strategy*
+     * [x] How do I know that the columns of my dataframe are actually what I'm looking for? Where are the bands? *See next primary goal below (from meeting notes issue) for strategy*
      * [ ] *Migrated to week 4.* <del>How did they randomly and evenly divide the polygons? Test if time allows</del>
 * [x] Attempt to get from Tiffs to a data frame appropriate for feeding into random forest function. 
       
@@ -47,7 +47,7 @@
 * [ ] Fit Different Classification Schemes
 * [ ] How did they randomly and evenly divide the polygons? Test.
 * [ ] Go through 2+ random forest resources
-* [ ] Start writing methods
+* [x] Start writing methods
 
 ### Week 5 (Feb. 1-5)
 

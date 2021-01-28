@@ -16,12 +16,5 @@
       <Category>14</Category>
       <Category>17</Category>
     </CategoryNames>
-    <Metadata>
-      <MDI key="STATISTICS_MAXIMUM">17</MDI>
-      <MDI key="STATISTICS_MEAN">12.365110679543</MDI>
-      <MDI key="STATISTICS_MINIMUM">1</MDI>
-      <MDI key="STATISTICS_STDDEV">5.2788560048199</MDI>
-      <MDI key="STATISTICS_VALID_PERCENT">81.48</MDI>
-    </Metadata>
   </PAMRasterBand>
 </PAMDataset>

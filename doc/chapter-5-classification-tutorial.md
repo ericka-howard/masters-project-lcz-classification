@@ -10,8 +10,6 @@ Holden](https://github.com/ceholden/open-geo-tutorial)
 library(randomForest)
 ```
 
-    ## Warning: package 'randomForest' was built under R version 4.0.3
-
     ## randomForest 4.6-14
 
     ## Type rfNews() to see new features/changes/bug fixes.
@@ -25,8 +23,6 @@ library(raster)
 ``` r
 library(rgdal)
 ```
-
-    ## Warning: package 'rgdal' was built under R version 4.0.3
 
     ## rgdal: version: 1.5-19, (SVN revision 1092)
     ## Geospatial Data Abstraction Library extensions to R successfully loaded
@@ -62,10 +58,10 @@ if (file.exists('LE70220491999322EDC01_stack.gtif') == F) {
 le7 <- brick('LE70220491999322EDC01_stack.gtif')
 ```
 
-  - Had to use comment by mysteRious on [stack
+-   Had to use comment by mysteRious on [stack
     overflow](https://stackoverflow.com/questions/35666638/cant-access-user-library-in-r-non-zero-exit-status-warning)
     to get `rgdal` to install.
-  - `brick()` [“Create a RasterBrick Object: A RasterBrick is a
+-   `brick()` [“Create a RasterBrick Object: A RasterBrick is a
     multi-layer raster object. They are typically created from a
     multi-band file; but they can also exist entirely in
     memory.”](https://www.rdocumentation.org/packages/raster/versions/1.7-6/topics/brick)
@@ -76,7 +72,7 @@ Extract the reflectance data covering the training data labels.
 roi_data <- extract(le7, training, df=TRUE)
 ```
 
-  - `extract()` [“Extract values from a Raster\* object at the locations
+-   `extract()` [“Extract values from a Raster\* object at the locations
     of spatial vector data. There are methods for points, lines, and
     polygons (classes from `sp` or `sf`), for a matrix or data.frame of
     points. You can also use cell numbers and Extent (rectangle) objects
@@ -219,7 +215,7 @@ le7_pred <- predict(le7_class, model=rf, na.rm=T)
 
 ### Map
 
-Let’s make a map\!
+Let’s make a map!
 
 ``` r
 # Create color map

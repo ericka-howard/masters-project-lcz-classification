@@ -23,8 +23,7 @@ train_test <- train_test %>%
 train <- train_test %>%
   filter(tt == "train")
 test <- train_test %>%
-  filter(tt="test")
-rm(train_test)
+  filter(tt=="test")
 ```
 
 ## Create & Evaluate Model

@@ -10,6 +10,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library(randomForest)
 library(tidyverse)
 library(here)
+library(raster)
+library(rgdal)
+library(mapproj)
 ```
 
 ## Load and Prep Data
@@ -24,12 +27,14 @@ train <- train_test %>%
   filter(tt == "train")
 test <- train_test %>%
   filter(tt=="test")
+test <- test[, -c(2, 39)]
+train <- train[, -c(2,39)]
 ```
 
 ## Create & Evaluate Model
 
 ```{r}
-rf <- randomForest(lcz ~ . -tt -polygon_id, data=train, importance=TRUE)
+rf <- randomForest(lcz ~ ., data=train, importance=TRUE)
 print(rf)
 ```
 
@@ -37,27 +42,63 @@ print(rf)
 importance(rf)
 ```
 
-```{r}
+```{r, fig.height=12, fig.width=12}
 varImpPlot(rf)
 ```
 
 ## Predict
 
 ```{r}
-only_bands <- test[,-c("lcz", "polygon_id")]
+only_bands <- test[,2:37]
 ```
 
 ```{r}
-bands_lcz_predicted <- predict(only_bands, model=rf, na.rm=T)
+bands_lcz_predicted <- predict(rf, newdata=test, na.rm=T)
 ```
 
 ```{r}
-plot(bands_lcz_predicted)
+test$lcz_predicted <- bands_lcz_predicted
 ```
 
-## Save
+
+## Check Predictions
 
 ```{r}
-writeRaster(bands_lcz_predicted, here("results", "hk_pred1_02012021.tif"), overwrite=T)
+ggplot(test)+
+  geom_point(aes(x=lcz, y=lcz_predicted), alpha=0.01)
+```
+
+```{r}
+test %>%
+  group_by(lcz, lcz_predicted) %>%
+  summarise(n=n()) %>%
+  ungroup() %>%
+  # mutate(lcz = as.numeric(lcz),
+  #        lcz_predicted = as.numeric(lcz_predicted)) %>%
+  filter(lcz != lcz_predicted) %>%
+  ggplot()+
+  geom_tile(aes(x=lcz, y=lcz_predicted, fill=n))+
+  scale_fill_viridis_c()+
+  theme_minimal()
+```
+
+
+## Predict with all data and save as raster (just because)
+
+```{r}
+all_hk_bands <- stackOpen(here("results", "bands_rasterstack.stk"))
+names(all_hk_bands) <- names(only_bands)
+```
+
+```{r}
+all_hk_bands_lcz_predicted <- predict(all_hk_bands, model=rf, na.rm=T)
+```
+
+```{r}
+plot(all_hk_bands_lcz_predicted)
+```
+
+```{r}
+writeRaster(all_hk_bands_lcz_predicted, here("results", "hk_pred1_02012021.tif"), overwrite=T)
 ```
 

@@ -53,6 +53,7 @@ names(s4) <- c("b1", "b2", "b3", "b4", "b5", "b6", "b7", "b10", "b11")
 
 ```{r stack-all}
 scenes <- stack(s1, s2, s3, s4)
+stackSave(scenes, here("results", "bands_rasterstack.stk"))
 scenes_df <- as.data.frame(scenes)
 ```
 

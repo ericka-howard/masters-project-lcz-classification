@@ -1,0 +1,64 @@
+---
+title: "DIfferent Classification Schemes"
+author: "Ericka B. Smith"
+date: "2/1/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(randomForest)
+library(tidyverse)
+library(here)
+```
+
+## Load and Prep Data
+
+```{r}
+train_test <- readRDS(here("results", "hk_only_polys_with_traintest.rds"))
+train_test <- train_test %>%
+  mutate(lcz = as.factor(lcz),
+         polygon_id = as.factor(polygon_id),
+         tt = as.factor(tt))
+train <- train_test %>%
+  filter(tt == "train")
+test <- train_test %>%
+  filter(tt="test")
+rm(train_test)
+```
+
+## Create & Evaluate Model
+
+```{r}
+rf <- randomForest(lcz ~ . -tt -polygon_id, data=train, importance=TRUE)
+print(rf)
+```
+
+```{r}
+importance(rf)
+```
+
+```{r}
+varImpPlot(rf)
+```
+
+## Predict
+
+```{r}
+only_bands <- test[,-c("lcz", "polygon_id")]
+```
+
+```{r}
+bands_lcz_predicted <- predict(only_bands, model=rf, na.rm=T)
+```
+
+```{r}
+plot(bands_lcz_predicted)
+```
+
+## Save
+
+```{r}
+writeRaster(bands_lcz_predicted, here("results", "hk_pred1_02012021.tif"), overwrite=T)
+```
+

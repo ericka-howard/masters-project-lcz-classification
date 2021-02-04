@@ -16,7 +16,7 @@
     * [x] *Using contest data.* <del>Clip image to cover city </del>
     * [x] <del>Figure out what ENVI FLAASH is </del>*Using contest data*
     * [x]  </del>*Only for curiosity sake, using contest data.* <del>Read about bilinear reampling with spatial data
-* [ ] *In progress.* Solidify plan of attack for data preprocessing. 
+* [x] Solidify plan of attack for data preprocessing. 
 
 ### Week 2 (Jan. 11-15)
 
@@ -29,34 +29,39 @@
      * [x] How can you get the raster data to be a data frame (& does it even make sense to do that?). *It's seriously just* `as.data.frame(dat, xy=TRUE)`
      * [x] Determine how you choose to only use certain bands as input data? Can you just filter it? *Yes*
      * [x] How do I know that the columns of my dataframe are actually what I'm looking for? Where are the bands? *See next primary goal below (from meeting notes issue) for strategy*
-     * [ ] *Migrated to week 4.* <del>How did they randomly and evenly divide the polygons? Test if time allows</del>
+     * [x] *Migrated to week 4.* <del>How did they randomly and evenly divide the polygons? Test if time allows</del>
 * [x] Attempt to get from Tiffs to a data frame appropriate for feeding into random forest function. 
       
 ### Week 3 (Jan. 18-22)
 
 * [x] Start references
-* [ ] Finish data preprocessing
+* [x] Finish data preprocessing
     * [x] Combine bands and get rid of ones not used in paper
-    * [ ] *Migrated to week 4.* <del>Figure out how to/how they randomly and evenly divide the polygons.</del>
+    * [x] *Migrated to week 4.* <del>Figure out how to/how they randomly and evenly divide the polygons.</del>
 * [x] Go through 2+ random forest resources
-* [ ] What are the things/arguments that I control when I run that randomForest function? 
+* [x] What are the things/arguments that I control when I run that randomForest function? 
 * [x] Start writing background info/introduction
 
 ### Week 4 (Jan 25-29)
 
-* [ ] Fit Different Classification Schemes
-* [ ] How did they randomly and evenly divide the polygons? Test.
-* [ ] Go through 2+ random forest resources
+* [x] Fit Different Classification Schemes
+* [x] How did they randomly and evenly divide the polygons? Test.
+* [x] Go through 2+ random forest resources
 * [x] Start writing methods
 
 ### Week 5 (Feb. 1-5)
 
-* [ ] Do modelling and accuracy assessment
+* [x] Randomly and Evenly Divide the Polygons.
+* [x] Fit Different Classification Schemes
+* [x] At least set up accuracy metrics (add calculation formats into R somewhere)
+* [x] Organize repo, especially docs section
+* [x] Cite some of claims in introduction
 
 ### Week 6 (Feb. 8-12)
 
 * [ ] Finish Methods Section
 * [ ] Start preparing results figures
+* [ ] Which models look the best? Why?
 
 ### Week 7 (Feb. 15-19)
 

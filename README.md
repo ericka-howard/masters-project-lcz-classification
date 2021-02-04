@@ -6,7 +6,7 @@ The focus will be on random forest without inclusion of convolutional neural net
 
 The data used will be Landsat 8 data from the [2017 IEEE GRSS Data Fusion Contest](http://www.grss-ieee.org/2017-ieee-grss-data-fusion-contest/).
 
-The classification scheme used by the [World Urban Database and Access Portal Tools project](http://www.wudapt.org/) (S1 in the paper) will be compared with the classification scheme from [Danylo et. al (2016)](https://www.sciencedirect.com/science/article/pii/S0924271619302205#b0085), S2 in the paper, which includes more spectral information as input variables. If time allows then the classification scheme from [Verdonck et. al (2017)](https://www.sciencedirect.com/science/article/pii/S0924271619302205#b0360), S3 in the paper, will also be tested. 
+The classification scheme used by the [World Urban Database and Access Portal Tools project](http://www.wudapt.org/) (S1 in the paper) will be recreated. If time allows, it will be compared to the classification scheme from [Danylo et. al (2016)](https://doi.org/10.1109/JSTARS.2016.2539977), S2 in the paper, which includes more spectral information as input variables. 
 
 In order to assess accuracy a portion of the same methods as used in the paper will be employed. The specific measures will be 
 

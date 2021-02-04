@@ -13,6 +13,7 @@ library(here)
 library(raster)
 library(rgdal)
 library(mapproj)
+source(here("R", "get_accuracy_metrics.R"))
 ```
 
 ## Load and Prep Data
@@ -62,6 +63,10 @@ test$lcz_predicted <- bands_lcz_predicted
 
 
 ## Check Predictions
+
+```{r}
+get_accuracy_metrics(test)
+```
 
 ```{r}
 ggplot(test)+

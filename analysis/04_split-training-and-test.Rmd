@@ -128,11 +128,28 @@ poly_list_tt <- poly_list %>%
             n_polygons = n())
 ```
 
+Final clean-up
+
+```{r}
+polygons_only_split <- polygons_only_split %>%
+  mutate(lcz = as.factor(lcz),
+         polygon_id = as.factor(polygon_id),
+         tt = as.factor(tt))
+train <- polygons_only_split %>%
+  filter(tt == "train")
+test <- polygons_only_split %>%
+  filter(tt=="test")
+test <- test[, -c(2, 39)]
+train <- train[, -c(2,39)]
+```
+
 Save data
 
 ```{r}
 saveRDS(poly_list_tt, here("results", "table_3_equivalent.rds"))
 saveRDS(polygons_only_split, here("results", "hk_only_polys_with_traintest.rds"))
+saveRDS(train, here("results", "train.rds"))
+saveRDS(test, here("results", "test.rds"))
 ggsave(here("results", "class_polygon_pixel_counts_plot.tiff"))
 ```
 

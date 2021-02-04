@@ -16,21 +16,14 @@ library(mapproj)
 source(here("R", "get_accuracy_metrics.R"))
 ```
 
-## Load and Prep Data
+## Load Data
 
 ```{r}
-train_test <- readRDS(here("results", "hk_only_polys_with_traintest.rds"))
-train_test <- train_test %>%
-  mutate(lcz = as.factor(lcz),
-         polygon_id = as.factor(polygon_id),
-         tt = as.factor(tt))
-train <- train_test %>%
-  filter(tt == "train")
-test <- train_test %>%
-  filter(tt=="test")
-test <- test[, -c(2, 39)]
-train <- train[, -c(2,39)]
+train <- readRDS(here("results", "train.rds"))
+test <- readRDS(here("results", "test.rds"))
 ```
+
+# Start with default mtry=6
 
 ## Create & Evaluate Model
 
@@ -40,7 +33,7 @@ print(rf)
 ```
 
 ```{r}
-importance(rf)
+# importance(rf)
 ```
 
 ```{r, fig.height=12, fig.width=12}
@@ -58,52 +51,284 @@ bands_lcz_predicted <- predict(rf, newdata=test, na.rm=T)
 ```
 
 ```{r}
-test$lcz_predicted <- bands_lcz_predicted
+test1 <- test
+test1$lcz_predicted <- bands_lcz_predicted
 ```
 
 
 ## Check Predictions
 
 ```{r}
-get_accuracy_metrics(test)
-```
-
-```{r}
-ggplot(test)+
-  geom_point(aes(x=lcz, y=lcz_predicted), alpha=0.01)
-```
-
-```{r}
-test %>%
+test1 %>%
   group_by(lcz, lcz_predicted) %>%
   summarise(n=n()) %>%
   ungroup() %>%
-  # mutate(lcz = as.numeric(lcz),
-  #        lcz_predicted = as.numeric(lcz_predicted)) %>%
   filter(lcz != lcz_predicted) %>%
   ggplot()+
   geom_tile(aes(x=lcz, y=lcz_predicted, fill=n))+
-  scale_fill_viridis_c()+
-  theme_minimal()
+  scale_fill_viridis_c(option="plasma")+
+  labs(title= "Incorrect LCZ Predictions",caption = "Note that class 17 (Water) is not included on the x-axis.\nThis is because all predictions for this group were correct.")+
+  xlab("Actual LCZ Class")+
+  ylab("Predicted LCZ Class")+
+  theme_classic()+
+  theme(axis.ticks = element_blank())
 ```
 
 
-## Predict with all data and save as raster (just because)
+<!-- ## Predict with all data and save as raster (just because) -->
+
+<!-- ```{r} -->
+<!-- all_hk_bands <- stackOpen(here("results", "bands_rasterstack.stk")) -->
+<!-- names(all_hk_bands) <- names(only_bands) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- all_hk_bands_lcz_predicted <- predict(all_hk_bands, model=rf, na.rm=T) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- plot(all_hk_bands_lcz_predicted) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- writeRaster(all_hk_bands_lcz_predicted, here("results", "hk_pred1_02012021.tif"), overwrite=T) -->
+<!-- ``` -->
+
+
+# Again with mtry=8
 
 ```{r}
-all_hk_bands <- stackOpen(here("results", "bands_rasterstack.stk"))
-names(all_hk_bands) <- names(only_bands)
+rf2 <- randomForest(lcz ~ ., data=train, importance=TRUE, mtry=8)
+print(rf2)
 ```
 
 ```{r}
-all_hk_bands_lcz_predicted <- predict(all_hk_bands, model=rf, na.rm=T)
+# importance(rf2)
+```
+
+```{r, fig.height=12, fig.width=12}
+varImpPlot(rf2)
+```
+
+## Predict
+
+```{r}
+only_bands2 <- test[,2:37]
 ```
 
 ```{r}
-plot(all_hk_bands_lcz_predicted)
+bands_lcz_predicted2 <- predict(rf2, newdata=test, na.rm=T)
 ```
 
 ```{r}
-writeRaster(all_hk_bands_lcz_predicted, here("results", "hk_pred1_02012021.tif"), overwrite=T)
+test2 <- test
+test2$lcz_predicted <- bands_lcz_predicted
 ```
+
+
+## Check Predictions
+
+
+```{r}
+test2 %>%
+  group_by(lcz, lcz_predicted) %>%
+  summarise(n=n()) %>%
+  ungroup() %>%
+  filter(lcz != lcz_predicted) %>%
+  ggplot()+
+  geom_tile(aes(x=lcz, y=lcz_predicted, fill=n))+
+  scale_fill_viridis_c(option="plasma")+
+  labs(title= "Incorrect LCZ Predictions for rf2")+
+  xlab("Actual LCZ Class")+
+  ylab("Predicted LCZ Class")+
+  theme_classic()+
+  theme(axis.ticks = element_blank())
+```
+
+
+# Again with mtry=4
+
+
+```{r}
+rf3 <- randomForest(lcz ~ ., data=train, importance=TRUE, mtry=4)
+print(rf3)
+```
+
+
+```{r}
+# importance(rf2)
+```
+
+
+```{r, fig.height=12, fig.width=12}
+varImpPlot(rf3)
+```
+
+## Predict
+
+```{r}
+only_bands3 <- test[,2:37]
+```
+
+
+```{r}
+bands_lcz_predicted3 <- predict(rf3, newdata=test, na.rm=T)
+```
+
+
+```{r}
+test3 <- test
+test3$lcz_predicted <- bands_lcz_predicted
+```
+
+
+## Check Predictions
+
+
+```{r}
+test3 %>%
+  group_by(lcz, lcz_predicted) %>%
+  summarise(n=n()) %>%
+  ungroup() %>%
+  filter(lcz != lcz_predicted) %>%
+  ggplot()+
+  geom_tile(aes(x=lcz, y=lcz_predicted, fill=n))+
+  scale_fill_viridis_c(option="plasma")+
+  labs(title= "Incorrect LCZ Predictions for rf3")+
+  xlab("Actual LCZ Class")+
+  ylab("Predicted LCZ Class")+
+  theme_classic()+
+  theme(axis.ticks = element_blank())
+```
+
+
+# Compare all 3 with different mtry
+
+```{r}
+get_accuracy_metrics(test1)
+get_accuracy_metrics(test2)
+get_accuracy_metrics(test3)
+```
+
+
+# change ntrees to 1000, mtry back to 6
+
+
+```{r}
+rf4 <- randomForest(lcz ~ ., data=train, importance=TRUE, ntree=1000)
+print(rf4)
+```
+
+
+```{r}
+# importance(rf2)
+```
+
+
+```{r, fig.height=12, fig.width=12}
+varImpPlot(rf4)
+```
+
+## Predict
+
+```{r}
+only_bands4 <- test[,2:37]
+```
+
+
+```{r}
+bands_lcz_predicted4 <- predict(rf4, newdata=test, na.rm=T)
+```
+
+
+```{r}
+test4 <- test
+test4$lcz_predicted <- bands_lcz_predicted
+```
+
+
+## Check Predictions
+
+
+```{r}
+test4 %>%
+  group_by(lcz, lcz_predicted) %>%
+  summarise(n=n()) %>%
+  ungroup() %>%
+  filter(lcz != lcz_predicted) %>%
+  ggplot()+
+  geom_tile(aes(x=lcz, y=lcz_predicted, fill=n))+
+  scale_fill_viridis_c(option="plasma")+
+  labs(title= "Incorrect LCZ Predictions for rf4")+
+  xlab("Actual LCZ Class")+
+  ylab("Predicted LCZ Class")+
+  theme_classic()+
+  theme(axis.ticks = element_blank())
+```
+
+
+# Now with ntree=250, mtry still 6
+
+
+```{r}
+rf5 <- randomForest(lcz ~ ., data=train, importance=TRUE,ntree=250)
+print(rf5)
+```
+
+
+```{r}
+# importance(rf2)
+```
+
+
+```{r, fig.height=12, fig.width=12}
+varImpPlot(rf5)
+```
+
+## Predict
+
+```{r}
+only_bands5 <- test[,2:37]
+```
+
+
+```{r}
+bands_lcz_predicted5 <- predict(rf5, newdata=test, na.rm=T)
+```
+
+
+```{r}
+test5 <- test
+test5$lcz_predicted <- bands_lcz_predicted
+```
+
+
+## Check Predictions
+
+
+```{r}
+test5 %>%
+  group_by(lcz, lcz_predicted) %>%
+  summarise(n=n()) %>%
+  ungroup() %>%
+  filter(lcz != lcz_predicted) %>%
+  ggplot()+
+  geom_tile(aes(x=lcz, y=lcz_predicted, fill=n))+
+  scale_fill_viridis_c(option="plasma")+
+  labs(title= "Incorrect LCZ Predictions for rf5")+
+  xlab("Actual LCZ Class")+
+  ylab("Predicted LCZ Class")+
+  theme_classic()+
+  theme(axis.ticks = element_blank())
+```
+
+
+# Compare all 3 with different ntree
+
+```{r}
+get_accuracy_metrics(test1)
+get_accuracy_metrics(test4)
+get_accuracy_metrics(test5)
+```
+
 

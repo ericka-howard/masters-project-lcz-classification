@@ -290,9 +290,22 @@ ggplot(polygons_only_split) +
   group_by(lcz, tt) %&gt;%
   summarise(total_n_pixels = sum(n_pixels),
             n_polygons = n())</code></pre>
+<p>Final clean-up</p>
+<pre class="r"><code>polygons_only_split &lt;- polygons_only_split %&gt;%
+  mutate(lcz = as.factor(lcz),
+         polygon_id = as.factor(polygon_id),
+         tt = as.factor(tt))
+train &lt;- polygons_only_split %&gt;%
+  filter(tt == &quot;train&quot;)
+test &lt;- polygons_only_split %&gt;%
+  filter(tt==&quot;test&quot;)
+test &lt;- test[, -c(2, 39)]
+train &lt;- train[, -c(2,39)]</code></pre>
 <p>Save data</p>
 <pre class="r"><code>saveRDS(poly_list_tt, here(&quot;results&quot;, &quot;table_3_equivalent.rds&quot;))
 saveRDS(polygons_only_split, here(&quot;results&quot;, &quot;hk_only_polys_with_traintest.rds&quot;))
+saveRDS(train, here(&quot;results&quot;, &quot;train.rds&quot;))
+saveRDS(test, here(&quot;results&quot;, &quot;test.rds&quot;))
 ggsave(here(&quot;results&quot;, &quot;class_polygon_pixel_counts_plot.tiff&quot;))</code></pre>
 <pre><code>## Saving 7 x 5 in image</code></pre>
 

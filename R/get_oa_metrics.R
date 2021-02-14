@@ -7,7 +7,7 @@
 #' get_accuracy_metrics(dat=data.frame(lcz = as.factor(c(1,2,12,13)),
 #'                                     predicted_lcz = as.factor(c(1,3,12,13))))
 
-get_accuracy_metrics <- function(dat){
+get_oa_metrics <- function(dat){
   dat <- dat %>%
     mutate(lcz = as.numeric(lcz),
            lcz_predicted = as.numeric(lcz_predicted),

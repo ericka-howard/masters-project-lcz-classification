@@ -13,7 +13,8 @@ library(here)
 library(raster)
 library(rgdal)
 library(mapproj)
-source(here("R", "get_accuracy_metrics.R"))
+library(purrr)
+source(here("R", "get_oa_metrics.R"))
 ```
 
 ## Load Data
@@ -205,9 +206,9 @@ test3 %>%
 # Compare all 3 with different mtry
 
 ```{r}
-get_accuracy_metrics(test1)
-get_accuracy_metrics(test2)
-get_accuracy_metrics(test3)
+get_oa_metrics(test1)
+get_oa_metrics(test2)
+get_oa_metrics(test3)
 ```
 
 
@@ -326,9 +327,9 @@ test5 %>%
 # Compare all 3 with different ntree
 
 ```{r}
-get_accuracy_metrics(test1)
-get_accuracy_metrics(test4)
-get_accuracy_metrics(test5)
+get_oa_metrics(test1)
+get_oa_metrics(test4)
+get_oa_metrics(test5)
 ```
 
 

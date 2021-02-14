@@ -13,7 +13,6 @@ library(here)
 library(raster)
 library(rgdal)
 library(mapproj)
-library(purrr)
 source(here("R", "get_oa_metrics.R"))
 ```
 
@@ -48,7 +47,7 @@ only_bands <- test[,2:37]
 ```
 
 ```{r}
-bands_lcz_predicted <- predict(rf, newdata=test, na.rm=T)
+bands_lcz_predicted <- predict(rf, newdata=only_bands, na.rm=T)
 ```
 
 ```{r}
@@ -123,7 +122,7 @@ bands_lcz_predicted2 <- predict(rf2, newdata=test, na.rm=T)
 
 ```{r}
 test2 <- test
-test2$lcz_predicted <- bands_lcz_predicted
+test2$lcz_predicted <- bands_lcz_predicted2
 ```
 
 
@@ -179,7 +178,7 @@ bands_lcz_predicted3 <- predict(rf3, newdata=test, na.rm=T)
 
 ```{r}
 test3 <- test
-test3$lcz_predicted <- bands_lcz_predicted
+test3$lcz_predicted <- bands_lcz_predicted3
 ```
 
 
@@ -244,7 +243,7 @@ bands_lcz_predicted4 <- predict(rf4, newdata=test, na.rm=T)
 
 ```{r}
 test4 <- test
-test4$lcz_predicted <- bands_lcz_predicted
+test4$lcz_predicted <- bands_lcz_predicted4
 ```
 
 
@@ -300,7 +299,7 @@ bands_lcz_predicted5 <- predict(rf5, newdata=test, na.rm=T)
 
 ```{r}
 test5 <- test
-test5$lcz_predicted <- bands_lcz_predicted
+test5$lcz_predicted <- bands_lcz_predicted5
 ```
 
 

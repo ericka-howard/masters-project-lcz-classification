@@ -1,0 +1,65 @@
+---
+title: "08_winning-random-forest"
+author: "Ericka B. Smith"
+date: "2/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(randomForest)
+library(tidyverse)
+library(here)
+library(raster)
+library(rgdal)
+library(mapproj)
+source(here("R", "get_oa_metrics.R"))
+source(here("R", "get_f1_score.R"))
+source(here("R", "predict_on_test_data.R"))
+```
+
+Load Data
+
+```{r}
+train <- readRDS(here("results", "train.rds"))
+test <- readRDS(here("results", "test.rds"))
+```
+
+Create Model
+
+```{r}
+rf <- randomForest(lcz ~ ., data=train, importance=TRUE)
+```
+
+
+Predict on Test Data
+
+```{r}
+predicted <- predict_on_test_data(test, rf)
+```
+
+Get metrics
+
+```{r}
+oa <- get_oa_metrics(predicted)
+f1 <- get_f1_score(predicted)
+```
+
+Make Plots
+
+```{r}
+some_plot <- #some plot
+imp_plot <- varImpPlot(rf)
+```
+
+Save things
+
+```{r}
+saveRDS(rf, here("results", "winning_rf.rds"))
+ggsave(some_plot)
+#etc
+```
+
+
+
+

@@ -1,0 +1,56 @@
+---
+title: "07_iterating-over-tuning-parameters"
+author: "Ericka B. Smith"
+date: "2/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(randomForest)
+library(tidyverse)
+library(here)
+library(raster)
+library(rgdal)
+library(purrr)
+library(mapproj)
+source(here("R", "get_oa_metrics.R"))
+source(here("R", "get_f1_score.R"))
+source(here("R", "predict_lcz.R"))
+```
+
+## Load Data
+
+```{r}
+train <- readRDS(here("results", "train.rds"))
+test <- readRDS(here("results", "test.rds"))
+```
+
+# Start with default mtry=6
+
+## Create & Evaluate Model
+
+```{r}
+rf <- randomForest(lcz ~ ., data=train, importance=TRUE, keep.inbag = T)
+print(rf)
+inbag <- rf$inbag
+```
+
+
+```{r}
+getting_accuracy_metrics_oob <- function(x){
+  bag <- inbag[,x]
+  index_vals <- as.numeric(names(bag[which(bag==0)]))
+  oob <- train[index_vals,]
+  oob_prediction <- predict_lcz(oob, rf)
+  oas <- get_oa_metrics(oob_prediction)
+  return(oas)
+  }
+```
+
+
+```{r}
+metrics_galore <- map_dfr(1:500, ~getting_accuracy_metrics_oob(.x))
+```
+
+

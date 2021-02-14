@@ -88,12 +88,12 @@ $$
 Additionally, the $F_1$ score will be used. This is the harmonic mean of precision (user’s accuracy, UA) and recall (producer’s accuracy, PA). 
 
 $$
-UA\ = \frac{number\ of\ correctly\ identified\ positives\ results}{total\ number\ of\ identified\ positives}
+UA(z)\ = \frac{number\ of\ correctly\ identified\ pixels\ in\ class\ z}{total\ number\ of\ pixels\ identified\ as\ class\ z}
 $$
 
 
 $$
-PA\ = \frac{number\ of\ correctly\ identified\ positives}{number\ of\ true\ positives}
+PA(z)\ = \frac{number\ of\ correctly\ identified\ pixels\ in\ class\ z}{number\ of\ pixels\ truly\ in\ class\ z}
 $$
 
 $$

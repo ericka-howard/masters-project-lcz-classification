@@ -9,6 +9,7 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
 ```
 
 # Introduction
@@ -38,6 +39,10 @@ ________________(MORE) v ________________________
 All bands of all four Landsat 8 scenes amounted to 36 input variables. #land area, #pixels, # of polygons
 Train vs test. Pixels = observations, etc
 ____________(MORE) ^ ___________________
+
+```{r}
+
+```
 
 ## 2.2 Random Forests
 

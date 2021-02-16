@@ -31,18 +31,38 @@ test <- readRDS(here("results", "test.rds"))
 ## Create & Evaluate Model
 
 ```{r}
-rf <- randomForest(lcz ~ ., data=train, importance=TRUE, keep.inbag = T)
+rf <- randomForest(lcz ~ ., data=train, ntree=5, keep.inbag = T, keep.forest=T)
 print(rf)
-inbag <- rf$inbag
 ```
 
 
+This gets a list of how each tree predicts each pixel. the newdata=train thing doesn't entirely make sense to me but it looks like it's just how it has to be. [1](https://stats.stackexchange.com/questions/253351/predict-function-tuning-for-random-forest)
+
+```{r}
+inbag <- rf$inbag
+ind_tree_preds <- as.data.frame(predict(rf, newdata=train, predict.all=TRUE)$individual)
+```
+
+
+
+```{r}
+bag <- inbag[,2]
+index_vals <- as.numeric(names(bag[which(bag==0)]))
+lcz_predicted <- ind_tree_preds[index_vals, 2]
+oob_prediction <- cbind(train[index_vals,], lcz_predicted)
+oas <- get_oa_metrics(oob_prediction)
+```
+
+
+
+
+original
 ```{r}
 getting_accuracy_metrics_oob <- function(x){
   bag <- inbag[,x]
   index_vals <- as.numeric(names(bag[which(bag==0)]))
-  oob <- train[index_vals,]
-  oob_prediction <- predict_lcz(oob, rf)
+  lcz_predicted <- ind_tree_preds[index_vals, x]
+  oob_prediction <- cbind(train[index_vals,], lcz_predicted)
   oas <- get_oa_metrics(oob_prediction)
   return(oas)
   }
@@ -50,7 +70,8 @@ getting_accuracy_metrics_oob <- function(x){
 
 
 ```{r}
-metrics_galore <- map_dfr(1:500, ~getting_accuracy_metrics_oob(.x))
+metrics_galore <- map_dfr(1:5, ~getting_accuracy_metrics_oob(.x))
 ```
 
+look here for oob error info [here](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm)
 

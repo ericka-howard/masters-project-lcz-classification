@@ -14,6 +14,7 @@ library(raster)
 library(rgdal)
 library(purrr)
 library(mapproj)
+library(forcats)
 source(here("R", "get_oa_metrics.R"))
 source(here("R", "get_f1_score.R"))
 source(here("R", "predict_lcz.R"))
@@ -31,26 +32,47 @@ test <- readRDS(here("results", "test.rds"))
 ## Create & Evaluate Model
 
 ```{r}
-rf <- randomForest(lcz ~ ., data=train, ntree=5, keep.inbag = T, keep.forest=T)
+ntrees <- 500
+rf <- randomForest(lcz ~ ., data=train, ntree=ntrees, keep.inbag = T, keep.forest=T)
 print(rf)
 ```
-
-
-This gets a list of how each tree predicts each pixel. the newdata=train thing doesn't entirely make sense to me but it looks like it's just how it has to be. [1](https://stats.stackexchange.com/questions/253351/predict-function-tuning-for-random-forest)
+## Calculate OOB Error rate
 
 ```{r}
 inbag <- rf$inbag
-ind_tree_preds <- as.data.frame(predict(rf, newdata=train, predict.all=TRUE)$individual)
+ind_tree_preds <- predict(rf, predict.all=TRUE)
+correct <- ind_tree_preds == train$lcz
+(length(correct)-sum(correct))/length(correct)
 ```
 
 
 
 ```{r}
-bag <- inbag[,2]
-index_vals <- as.numeric(names(bag[which(bag==0)]))
-lcz_predicted <- ind_tree_preds[index_vals, 2]
-oob_prediction <- cbind(train[index_vals,], lcz_predicted)
-oas <- get_oa_metrics(oob_prediction)
+is_oob_vote_correct <- function(pixel_row) {
+  # get list of inbag values for a given row/observation
+  bag <- inbag[pixel_row, ]
+  # find where that row/observation is out of bag
+  index_vals <- which(bag == 0)
+  # use our list of individual tree predictions to extract what the predicted 
+  # value for that row/observation is every time it's out of bag
+  votes <- ind_tree_preds[pixel_row, index_vals]
+  # count up those votes
+  ordering_votes <- votes %>% fct_inorder() %>% levels()
+  # get the highest number of votes
+  winner <- ordering_votes[1]
+  # is that winning class correct?
+  correct <- winner == train$lcz[pixel_row]
+  return(correct)
+}
+```
+
+```{r}
+# vote <- NULL
+# correct <- NULL
+# is_correct <- NULL
+
+is_correct <-map_lgl(1:nrow(train), ~is_oob_vote_correct(.x))
+oob_error_rate <- 1-(sum(is_correct, na.rm=T)/length(is_correct))
 ```
 
 

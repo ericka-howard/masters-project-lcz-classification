@@ -39,13 +39,29 @@ print(rf)
 ## Calculate OOB Error rate
 
 ```{r}
-inbag <- rf$inbag
+# inbag <- rf$inbag
+# gets list of OOB prediction for each row (each pixel observation)
 ind_tree_preds <- predict(rf, predict.all=TRUE)
+# checks when OOB prediction is the same as true LCZ value
 correct <- ind_tree_preds == train$lcz
+# calculate OOB error rate
 (length(correct)-sum(correct))/length(correct)
 ```
 
+## Apply to OA
 
+Looking at it, OA is the same as 1-OOB Error Rate. Let's try.
+
+```{r}
+oob_df <- data.frame(lcz = train$lcz, 
+                        lcz_predicted = ind_tree_preds)
+oas <- get_oa_metrics(oob_df)
+1-oas$oa
+```
+
+Yep it's the same.
+
+Do I have any reason to expect that oa_nat or oa_urb are not only going to be especially different, but also that varying parameters in `randomForest()` is going to interact differently with either?
 
 ```{r}
 is_oob_vote_correct <- function(pixel_row) {
@@ -95,5 +111,5 @@ getting_accuracy_metrics_oob <- function(x){
 metrics_galore <- map_dfr(1:5, ~getting_accuracy_metrics_oob(.x))
 ```
 
-look here for oob error info [here](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm)
+
 

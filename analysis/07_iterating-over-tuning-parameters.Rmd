@@ -32,43 +32,41 @@ test <- readRDS(here("results", "test.rds"))
 ## Create & Evaluate Model
 
 ```{r}
-ntrees <- 500
-rf <- randomForest(lcz ~ ., data=train, ntree=ntrees, keep.inbag = T, keep.forest=T)
-print(rf)
+rf <- randomForest(lcz ~ ., data=train, ntree=50, keep.inbag = T)
 ```
 ## Calculate OOB Error rate
 
 ```{r}
-# inbag <- rf$inbag
-# gets list of OOB prediction for each row (each pixel observation)
-ind_tree_preds <- predict(rf, predict.all=TRUE)
-# checks when OOB prediction is the same as true LCZ value
-correct <- ind_tree_preds == train$lcz
-# calculate OOB error rate
-(length(correct)-sum(correct))/length(correct)
+# print(rf)
+# # gets list of OOB prediction for each row (each pixel observation)
+# ind_tree_preds <- predict(rf, predict.all=TRUE)
+# # checks when OOB prediction is the same as true LCZ value
+# correct <- ind_tree_preds == train$lcz
+# # calculate OOB error rate
+# (length(correct)-sum(correct))/length(correct)
 ```
+OA is the same as 1-OOB Error Rate.
 
-## Apply to OA
-
-Looking at it, OA is the same as 1-OOB Error Rate. Let's try.
+Now with different parameters.
 
 ```{r}
-oob_df <- data.frame(lcz = train$lcz, 
-                        lcz_predicted = ind_tree_preds)
+try_parameter <- function(dat, response, ...)
+
+rf <- randomForest(lcz ~ ., 
+                    data=dat, 
+                    ...,
+                    keep.inbag = T)
+predict(rf, predict.all=T)
+oob_df <- data.frame(lcz = dat$lcz , 
+                     lcz_predicted = predict(rf, predict.all=T))
+
 oas <- get_oa_metrics(oob_df)
-1-oas$oa
+f1 <- get_f1_score(oob_df, true=lcz, predicted = lcz_predicted)
+metrics <- list(param_val, oas, f1)
+return(metrics)
 ```
 
-Yep it's the same.
 
-Do I have any reason to expect that oa_nat or oa_urb are not only going to be especially different, but also that varying parameters in `randomForest()` is going to interact differently with either?
-
-Probably not. Maybe for F1 score though..
-
-Format of these iterations should be similar either way.
-
-
-(Saving for later)
 
 ```{r}
 #metrics_galore <- map_dfr(1:5, ~getting_accuracy_metrics_oob(.x))

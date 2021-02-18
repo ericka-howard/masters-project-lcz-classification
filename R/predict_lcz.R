@@ -9,9 +9,6 @@
 #' @return the same test_pixels dataframe, with an additional column of 
 #' the predicted LCZ value for each test pixel, called "lcz_predicted"
 #' @examples
-#' get_accuracy_metrics(dat=data.frame(lcz = as.factor(c(1,2,12,13)),
-#'                                     predicted_lcz = as.factor(c(1,3,12,13))))
-
 
 predict_lcz <- function(test_pixels, current_rf){
   only_bands <- subset(test_pixels, select= -lcz)

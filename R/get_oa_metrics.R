@@ -28,5 +28,5 @@ get_oa_metrics <- function(dat){
   oa_urb <- sum(urb$n[which(urb$correct == "correct")]) / sum(urb$n)
   oa_nat <- sum(nat$n[which(nat$correct == "correct")]) / sum(nat$n)
   # send back
-  list("oa" = oa, "oa_urb" = oa_urb, "oa_nat" = oa_nat)
+  tibble("oa" = oa, "oa_urb" = oa_urb, "oa_nat" = oa_nat)
 }

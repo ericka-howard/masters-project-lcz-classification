@@ -3,8 +3,7 @@
 #' @param dat A dataframe with at least two variables, true and predicted
 #' @param true the name of the "ground truth" variable (ex. lcz)
 #' @param predicted the name of the predicted variable (ex. lcz_predicted)
-#' @return a tibble with lcz class, n_true, n_correct, n_predicted,
-#' UA, PA, and F1-score
+#' @return a tibble with lcz class and F1-score
 #' @examples
 #' get_f1_score(dat = tibble(
 #' lcz = factor(c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1)),
@@ -32,7 +31,12 @@ get_f1_score <- function(dat, true, predicted){
     mutate(
       ua = n_correct/n_predicted,
       pa = n_correct/n_true,
-      f1 = (2 * ua * pa) / (ua + pa))
+      f1 = (2 * ua * pa) / (ua + pa),
+      n_true = NULL,
+      n_correct = NULL,
+      n_predicted = NULL,
+      ua=NULL,
+      pa=NULL)
 }
 
 

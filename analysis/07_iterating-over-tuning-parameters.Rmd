@@ -50,26 +50,28 @@ OA is the same as 1-OOB Error Rate.
 Now with different parameters.
 
 ```{r}
-try_parameter <- function(dat, response, ...)
-
-rf <- randomForest(lcz ~ ., 
-                    data=dat, 
-                    ...,
-                    keep.inbag = T)
-predict(rf, predict.all=T)
-oob_df <- data.frame(lcz = dat$lcz , 
-                     lcz_predicted = predict(rf, predict.all=T))
-
-oas <- get_oa_metrics(oob_df)
-f1 <- get_f1_score(oob_df, true=lcz, predicted = lcz_predicted)
-metrics <- list(param_val, oas, f1)
-return(metrics)
+try_parameter <- function(dat, ...){
+  rf <- randomForest(lcz ~ .,
+                     data=dat,
+                     ...,
+                     keep.inbag = T)
+  predict(rf, predict.all=T)
+  oob_df <- tibble(lcz = dat$lcz, 
+                       lcz_predicted = predict(rf, predict.all=T)) %>%
+    drop_na()
+  oas <- get_oa_metrics(oob_df)
+  f1 <- get_f1_score(oob_df, true=lcz, predicted = lcz_predicted)
+  return(list(oas, f1))
+}
 ```
 
-
+# almost all the way there but need to get it to save the name in some way so that I can keep track of which parameter goes with which accuracy vals
 
 ```{r}
-#metrics_galore <- map_dfr(1:5, ~getting_accuracy_metrics_oob(.x))
+metrics <- try_parameter(train, mtry=5)
+
+bind_rows(current_oa_dat, "name" = metrics[[1]])
+bind_cols(current_f1_dat, metrics[[2]])
 ```
 
 

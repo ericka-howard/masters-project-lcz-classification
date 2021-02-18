@@ -27,14 +27,14 @@ get_f1_score <- function(dat, true, predicted){
     )
   # do calculations
   pa %>% 
-    left_join(ua) %>% 
+    left_join(ua, by="lcz") %>% 
     mutate(
       ua = n_correct/n_predicted,
       pa = n_correct/n_true,
       f1 = (2 * ua * pa) / (ua + pa),
-      n_true = NULL,
-      n_correct = NULL,
-      n_predicted = NULL,
+      n_true=NULL,
+      n_correct=NULL,
+      n_predicted=NULL,
       ua=NULL,
       pa=NULL)
 }

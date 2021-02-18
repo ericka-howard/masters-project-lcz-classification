@@ -4,7 +4,9 @@ author: "Ericka B. Smith"
 header-includes:
   - \usepackage{setspace}\linespread{1.5}
 date: "Winter 2021"
-output: pdf_document
+output: 
+  pdf_document:
+    number_sections: true
 ---
 
 ```{r setup, include=FALSE}
@@ -14,7 +16,7 @@ library(kableExtra)
 
 # Introduction
 
-## 1.1 Background
+## Background
 
 The population worldwide is increasing and urbanizing (United Nations et al., 2019). In addition, issues surrounding environmental change and pollution are exacerbated in cities (Bechtel et al., 2015) (Santamouris, 2020). These changes compound the effects of each other and, as a result, a greater understanding of these processes is more important now than ever before (Bechtel et al., 2015).
 
@@ -22,13 +24,13 @@ Urban Heat Islands, where urban areas are warmer than the neighboring rural area
 
 Unfortunately, information on these sites can be difficult to obtain. Though there is a plethora of satellite imagery, the current methods to classify this imagery are somewhat lacking (Yokoya et al., 2018). Historically the focus was on the broad categories of urban vs. rural, which does not give enough information about the nuanced climate within a large urban area (Stewart & Oke, 2012). Local Climate Zone (LCZ) classification was created by Stewart and Oke (2012) to alleviate this problem, but it often requires a significant investment from individuals with specialist knowledge to successfully classify a city (Bechtel et al., 2015). Even the best models have low accuracy outside of their training city (Verdonck et al., 2017) (Yokoya et al., 2018). Therefore, this issue with generalizing a model to other cities, transferability, is a topic of great interest in current Urban Heat Island research (Tuia et al., 2017) (Yokoya et al., 2018).
 
-## 1.2 Objective
+## Objective
 
 The goal of this project is to recreate aspects of the article Comparison between convolutional neural networks and random forest for local climate zone classification in mega urban areas using Landsat images (Yoo et al., 2019), where methods for predicting LCZ classes for four large cities throughout the world were compared. To do so, a small training dataset from the 2017 Institute of Electrical and Electronics Engineers (IEEE) Geoscience and Remote Sensing Society (GRSS) Data Fusion Contest (Tuia et al., 2017) was used as ground truth for LCZ classes. This was combined with satellite input data to create a series of models, which were then compared to a larger, full LCZ layer for each city and assessed for accuracy. The primary types of models considered in the Yoo et al. (2019) work were random forests and convolutional neural networks. However, for this project the focus will be only on random forests. In addition, rather than four cities, this investigation will focus on just Hong Kong. This city was chosen due to its lack of "red-star classes" (LCZ classes with 3 or fewer polygons) in the study area. The red-star classes add complexity to the splitting up of the data into training and test sets. In addition, since they by nature address only rare classes, this complexity was deemed unnecessary for this project. Here, a classification scheme like the one used by the World Urban Database and Access Portal Tools (WUDAPT) project, denoted as Scheme 1 (S1) in Yoo et al. (2019) will be compared with the classification scheme from Danylo et al. (2016) , denoted as Scheme 2 (S2) in Yoo et al. (2019) which includes more spectral information as input variables.
 
 # Methods
 
-## 2.1 Data
+## Data
 
 Data for this analysis was accessed from the 2017 IEEE GRSS Data Fusion Contest. Only the Hong Kong LCZ reference and Landsat 8 datasets were used.
 The LCZ reference data from the contest set was taken from the WUDAPT database, checked for correctness, and then provided as a 100m resolution raster layer. In this provided layer the LCZ classes are numbered 1-17, rather than 1-10 and A-G, and initial inspection of the data verified that numbers 11-17 directly match classes A-G. In Yoo et al. (2019) the first step they took with the reference data was randomly dividing the polygons of each class into training and testing groups. This required some preprocessing since I only had access to the data in raster form and without any sort of polygon identification. Pixels within the same polygon cannot be put into both training and validation groups because it will artificially increase accuracy metrics (Zhen et al., 2013). 
@@ -44,7 +46,7 @@ ____________(MORE) ^ ___________________
 
 ```
 
-## 2.2 Random Forests
+## Random Forests
 
 Random forests consist of many decision trees. A decision tree can be used for categorization or regression. Here I’ll focus on categorization since my goal is to predict LCZ class, which is a categorical variable. Decision trees work by putting each observation in the original (“training”) dataset through a series of conditional statements, or tests, in order to group it with other observations that are similar. These similar groups are expected to have similar values for the variable you’re interested in predicting. Since the true value of that variable is known for the observations in the training dataset it’s possible to measure the accuracy of each prospective structuring of these conditional statements, and therefore to pick the best tree. 
 
@@ -72,7 +74,7 @@ This choice of the number of trees to create is a tuning parameter. Too many tre
 
 Once the model has been tuned to optimality, the random forest is used to decide about a new set of input values. This is called bagging, because you’re bootstrapping the data and using the aggregate to make a decision . Bagging is useful because it reduces variance without introducing bias. The decision itself is made by putting the new set of input values into each decision tree individually and seeing which outcome each tree classifies the variable of interest into. These are all combined either by direct vote (for categorical variables) or an average (for quantitative variables) and this becomes the final predicted result.
 
-## 2.4 Accuracy Assessment
+## Accuracy Assessment
 
 In line with the methods used in our reference paper and the remote sensing field, accuracy metrics will be based on predictions for the test dataset and will include the following:
 

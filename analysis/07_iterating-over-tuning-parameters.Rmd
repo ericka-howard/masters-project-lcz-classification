@@ -63,52 +63,15 @@ Yep it's the same.
 
 Do I have any reason to expect that oa_nat or oa_urb are not only going to be especially different, but also that varying parameters in `randomForest()` is going to interact differently with either?
 
-```{r}
-is_oob_vote_correct <- function(pixel_row) {
-  # get list of inbag values for a given row/observation
-  bag <- inbag[pixel_row, ]
-  # find where that row/observation is out of bag
-  index_vals <- which(bag == 0)
-  # use our list of individual tree predictions to extract what the predicted 
-  # value for that row/observation is every time it's out of bag
-  votes <- ind_tree_preds[pixel_row, index_vals]
-  # count up those votes
-  ordering_votes <- votes %>% fct_inorder() %>% levels()
-  # get the highest number of votes
-  winner <- ordering_votes[1]
-  # is that winning class correct?
-  correct <- winner == train$lcz[pixel_row]
-  return(correct)
-}
-```
+Probably not. Maybe for F1 score though..
+
+Format of these iterations should be similar either way.
+
+
+(Saving for later)
 
 ```{r}
-# vote <- NULL
-# correct <- NULL
-# is_correct <- NULL
-
-is_correct <-map_lgl(1:nrow(train), ~is_oob_vote_correct(.x))
-oob_error_rate <- 1-(sum(is_correct, na.rm=T)/length(is_correct))
-```
-
-
-
-
-original
-```{r}
-getting_accuracy_metrics_oob <- function(x){
-  bag <- inbag[,x]
-  index_vals <- as.numeric(names(bag[which(bag==0)]))
-  lcz_predicted <- ind_tree_preds[index_vals, x]
-  oob_prediction <- cbind(train[index_vals,], lcz_predicted)
-  oas <- get_oa_metrics(oob_prediction)
-  return(oas)
-  }
-```
-
-
-```{r}
-metrics_galore <- map_dfr(1:5, ~getting_accuracy_metrics_oob(.x))
+#metrics_galore <- map_dfr(1:5, ~getting_accuracy_metrics_oob(.x))
 ```
 
 

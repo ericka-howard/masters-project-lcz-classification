@@ -4,7 +4,7 @@
 #' that represent LCZ classes and range from 0 to 17
 #' @return list of three values, OA, OA_urb, and OA_nat
 #' @examples
-#' get_accuracy_metrics(dat=data.frame(lcz = as.factor(c(1,2,12,13)),
+#' get_oa_metrics(dat=data.frame(lcz = as.factor(c(1,2,12,13)),
 #'                                     predicted_lcz = as.factor(c(1,3,12,13))))
 
 get_oa_metrics <- function(dat){

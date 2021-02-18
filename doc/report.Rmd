@@ -55,14 +55,14 @@ Each point in which a conditional statement is evaluated and the data could pote
 Splits are typically evaluated by Gini impurity or entropy.
 
 $$
-Gini\ Impurity\ =\ I_G(t)\  = 1 - \sum_{i=1}^{C}p(i|t)^2
+\text{Gini Impurity} =\ I_G(t)\  = 1 - \sum_{i=1}^{C}p(i|t)^2
 $$
 
 $$
-Entropy\ =\ I_H(t)\ = -\sum_{i=1}^{C}p(i|t)log_2p(i|t)
+\text{Entropy} =\ I_H(t)\ = -\sum_{i=1}^{C}p(i|t)log_2p(i|t)
 $$
 
-Where $p(i|t)$ is the proportion of samples that belong to class $i$ for a particular node t.
+Where $p(i|t)$ is the proportion of samples that belong to class $i$ for a particular node $t$.
 
 A Gini Impurity of 0 or an entropy value of 0 indicates a completely homogeneous group, which cannot be improved upon. A split doesn’t need to have a value of 0 to create the best node though, these metrics are used for comparison. All possible different variables and different cutoffs within those variables are all tried and their Gini impurity or entropy calculated, then, the one with the best (lowest) value is the split used at that node. This is done recursively at each node until all possible splits no longer offer a decrease in the metric of choice. The resulting collection of nodes is a decision tree. 
 

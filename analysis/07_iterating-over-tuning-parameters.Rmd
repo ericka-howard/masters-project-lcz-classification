@@ -15,9 +15,13 @@ library(rgdal)
 library(purrr)
 library(mapproj)
 library(forcats)
+library(reshape2)
+library(viridis)
 source(here("R", "get_oa_metrics.R"))
 source(here("R", "get_f1_score.R"))
 source(here("R", "predict_lcz.R"))
+source(here("R", "try_parameter.R"))
+theme_set(theme_light())
 ```
 
 ## Load Data
@@ -27,16 +31,13 @@ train <- readRDS(here("results", "train.rds"))
 test <- readRDS(here("results", "test.rds"))
 ```
 
-# Start with default mtry=6
 
-## Create & Evaluate Model
+## Replicate OOB Error Rate
 
 ```{r}
-rf <- randomForest(lcz ~ ., data=train, ntree=50, keep.inbag = T)
-```
+## make model
+#rf <- randomForest(lcz ~ ., data=train, ntree=50, keep.inbag = T)
 ## Calculate OOB Error rate
-
-```{r}
 # print(rf)
 # # gets list of OOB prediction for each row (each pixel observation)
 # ind_tree_preds <- predict(rf, predict.all=TRUE)
@@ -45,33 +46,51 @@ rf <- randomForest(lcz ~ ., data=train, ntree=50, keep.inbag = T)
 # # calculate OOB error rate
 # (length(correct)-sum(correct))/length(correct)
 ```
+
 OA is the same as 1-OOB Error Rate.
 
-Now with different parameters.
+## Iterating over mtry
 
-```{r}
-try_parameter <- function(dat, ...){
-  rf <- randomForest(lcz ~ .,
-                     data=dat,
-                     ...,
-                     keep.inbag = T)
-  predict(rf, predict.all=T)
-  oob_df <- tibble(lcz = dat$lcz, 
-                       lcz_predicted = predict(rf, predict.all=T)) %>%
-    drop_na()
-  oas <- get_oa_metrics(oob_df)
-  f1 <- get_f1_score(oob_df, true=lcz, predicted = lcz_predicted)
-  return(list(oas, f1))
-}
-```
-
-# almost all the way there but need to get it to save the name in some way so that I can keep track of which parameter goes with which accuracy vals
+using `try_parameter(dat, ...)` function
 
 ```{r}
 metrics <- try_parameter(train, mtry=5)
+```
 
-bind_rows(current_oa_dat, "name" = metrics[[1]])
-bind_cols(current_f1_dat, metrics[[2]])
+```{r}
+ntree_list <- map_dfr(seq(from=5, to=500, by=10), ~try_parameter(train, ntree=.x))
+```
+
+
+```{r}
+ntree_list %>%
+  filter(ntree, oa, oa_urb, oa_nat) %>%
+  melt(id.vars= "ntree", measure.vars=c("oa", "oa_urb", "oa_nat"), value.name = "Accuracy", variable.name="Metric") %>%
+  ggplot()+
+  geom_point(aes(x=ntree, y=Accuracy, color=Metric))+
+  geom_smooth(aes(x=ntree, y=Accuracy, color=Metric), se=F)+
+  ggtitle("Overall Accuracy Metrics for varying numbers of trees",
+          subtitle="Calculations are based on out-of-bag sample")+
+  xlab("Number of Trees (ntree)")+
+  scale_color_viridis(discrete=T,
+                      breaks=c("oa", "oa_urb", "oa_nat"),
+                      labels=c("Overall", "Urban", "Natural"))
+```
+
+```{r}
+# ntree_list %>%
+#   filter %>%
+#   melt(id.vars= "ntree", measure.vars=c("oa", "oa_urb", "oa_nat"), value.name = "Accuracy", variable.name="Metric") %>%
+#   ggplot()+
+#   geom_point(aes(x=ntree, y=Accuracy, color=Metric))+
+#   geom_smooth(aes(x=ntree, y=Accuracy, color=Metric), se=F)+
+#   ggtitle("Overall Accuracy Metrics for varying numbers of trees",
+#           subtitle="Calculations are based on out-of-bag sample")+
+#   xlab("Number of Trees (ntree)")+
+#   scale_color_viridis(discrete=T,
+#                       breaks=c("oa", "oa_urb", "oa_nat"),
+#                       labels=c("Overall", "Urban", "Natural"))
+# ggsave(here("results/plots", "varied_ntree_oas.tiff"))
 ```
 
 

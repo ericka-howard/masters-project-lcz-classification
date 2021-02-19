@@ -36,7 +36,10 @@ get_f1_score <- function(dat, true, predicted){
       n_correct=NULL,
       n_predicted=NULL,
       ua=NULL,
-      pa=NULL)
+      pa=NULL) %>%
+    pivot_wider(names_from = lcz,
+                names_prefix = "f1_",
+                values_from = f1)
 }
 
 

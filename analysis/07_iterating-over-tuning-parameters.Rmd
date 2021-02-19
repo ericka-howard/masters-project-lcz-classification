@@ -64,7 +64,7 @@ ntree_list <- map_dfr(seq(from=5, to=500, by=10), ~try_parameter(train, ntree=.x
 
 ```{r}
 ntree_list %>%
-  filter(ntree, oa, oa_urb, oa_nat) %>%
+  dplyr::select(ntree, oa, oa_urb, oa_nat) %>%
   melt(id.vars= "ntree", measure.vars=c("oa", "oa_urb", "oa_nat"), value.name = "Accuracy", variable.name="Metric") %>%
   ggplot()+
   geom_point(aes(x=ntree, y=Accuracy, color=Metric))+
@@ -75,22 +75,72 @@ ntree_list %>%
   scale_color_viridis(discrete=T,
                       breaks=c("oa", "oa_urb", "oa_nat"),
                       labels=c("Overall", "Urban", "Natural"))
+
+ggsave(here("results/plots", "varied_ntree_oas.tiff"))
+```
+
+
+Kind of hate the next plot.
+```{r}
+# cols <- c("1"= "#482677FF",
+#           "2" = "#453781FF",
+#           "3" = "#404788FF",
+#           "4"= "#39568CFF",
+#           "5" = "#33638DFF",
+#           "6" = "#2D708EFF",
+#           "8"= "#287D8EFF",
+#           "10" = "#238A8DFF",
+#           "11" = "#29AF7FFF",
+#           "12"= "#3CBB75FF",
+#           "13" = "#55C667FF",
+#           "14" = "#73D055FF",
+#           "17"= "#95D840FF",
+#           "Urban" = "#440154FF",
+#           "Natural" = "#FDE725FF")
+urban_classes <- c("1", "2", "3", "4", "5", "6", "8", "10")
+f1_list <- names(ntree_list)[c(1, 5:ncol(ntree_list))]
+# make plot
+ntree_list %>%
+  dplyr::select(f1_list) %>%
+  rename_at(vars(contains("f1_")), funs(str_replace(., "f1_", ""))) %>%
+  melt(id.vars= "ntree", value.name = "F1", variable.name="Class") %>%
+  mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural")) %>%
+  ggplot()+
+  geom_smooth(aes(x=ntree, y=F1, color=Class), alpha=0.5, se=F)+
+  geom_smooth(aes(x=ntree, y=F1, lty=Type), color="black",se=F)+
+  ggtitle("F-1 Scores by class for varying numbers of trees",
+          subtitle="Calculations are based on out-of-bag sample")+
+  xlab("Number of Trees (ntree)")+
+  scale_color_viridis(discrete=T)+
+  scale_linetype_manual(labels=c("Urban", "Natural"),
+                 values=c("dotted", "dashed"))
+  # scale_color_manual(labels= c("Urban","1","2","3","4","5","6","8","10","Natural","11","12","13","14","17"),
+  #                    values = c("#440154FF","#482677FF", "#453781FF","#404788FF","#39568CFF","#33638DFF","#2D708EFF",
+  #                               "#287D8EFF","#238A8DFF","#FDE725FF", "#29AF7FFF","#3CBB75FF","#55C667FF","#73D055FF",
+  #                               "#95D840FF"))
+
+ggsave(here("results/plots", "varied_ntree_f1_not_done.tiff"))
 ```
 
 ```{r}
-# ntree_list %>%
-#   filter %>%
-#   melt(id.vars= "ntree", measure.vars=c("oa", "oa_urb", "oa_nat"), value.name = "Accuracy", variable.name="Metric") %>%
-#   ggplot()+
-#   geom_point(aes(x=ntree, y=Accuracy, color=Metric))+
-#   geom_smooth(aes(x=ntree, y=Accuracy, color=Metric), se=F)+
-#   ggtitle("Overall Accuracy Metrics for varying numbers of trees",
-#           subtitle="Calculations are based on out-of-bag sample")+
-#   xlab("Number of Trees (ntree)")+
-#   scale_color_viridis(discrete=T,
-#                       breaks=c("oa", "oa_urb", "oa_nat"),
-#                       labels=c("Overall", "Urban", "Natural"))
-# ggsave(here("results/plots", "varied_ntree_oas.tiff"))
+urban_classes <- c("1", "2", "3", "4", "5", "6", "8", "10")
+f1_list <- names(ntree_list)[c(1, 5:ncol(ntree_list))]
+# make plot
+dat <- ntree_list %>%
+  dplyr::select(f1_list) %>%
+  rename_at(vars(contains("f1_")), funs(str_replace(., "f1_", ""))) %>%
+  melt(id.vars= "ntree", value.name = "F1", variable.name="Class") %>%
+  mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural"))
+
+ggplot(dat)+
+  geom_boxplot(aes(x=Class, y=F1))
+
+ggsave(here("results/plots", "varied_ntree_f1_alternative_not_done.tiff"))
+```
+
+
+```{r}
+write.csv(ntree_list, here("results/run_output_tables", "ntree"))
 ```
 
 

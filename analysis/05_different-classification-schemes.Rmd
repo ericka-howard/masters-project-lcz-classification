@@ -13,7 +13,7 @@ library(here)
 library(raster)
 library(rgdal)
 library(mapproj)
-source(here("R", "get_accuracy_metrics.R"))
+source(here("R", "get_oa_metrics.R"))
 ```
 
 ## Load Data
@@ -47,7 +47,7 @@ only_bands <- test[,2:37]
 ```
 
 ```{r}
-bands_lcz_predicted <- predict(rf, newdata=test, na.rm=T)
+bands_lcz_predicted <- predict(rf, newdata=only_bands, na.rm=T)
 ```
 
 ```{r}
@@ -122,7 +122,7 @@ bands_lcz_predicted2 <- predict(rf2, newdata=test, na.rm=T)
 
 ```{r}
 test2 <- test
-test2$lcz_predicted <- bands_lcz_predicted
+test2$lcz_predicted <- bands_lcz_predicted2
 ```
 
 
@@ -178,7 +178,7 @@ bands_lcz_predicted3 <- predict(rf3, newdata=test, na.rm=T)
 
 ```{r}
 test3 <- test
-test3$lcz_predicted <- bands_lcz_predicted
+test3$lcz_predicted <- bands_lcz_predicted3
 ```
 
 
@@ -205,9 +205,9 @@ test3 %>%
 # Compare all 3 with different mtry
 
 ```{r}
-get_accuracy_metrics(test1)
-get_accuracy_metrics(test2)
-get_accuracy_metrics(test3)
+get_oa_metrics(test1)
+get_oa_metrics(test2)
+get_oa_metrics(test3)
 ```
 
 
@@ -243,7 +243,7 @@ bands_lcz_predicted4 <- predict(rf4, newdata=test, na.rm=T)
 
 ```{r}
 test4 <- test
-test4$lcz_predicted <- bands_lcz_predicted
+test4$lcz_predicted <- bands_lcz_predicted4
 ```
 
 
@@ -299,7 +299,7 @@ bands_lcz_predicted5 <- predict(rf5, newdata=test, na.rm=T)
 
 ```{r}
 test5 <- test
-test5$lcz_predicted <- bands_lcz_predicted
+test5$lcz_predicted <- bands_lcz_predicted5
 ```
 
 
@@ -326,9 +326,9 @@ test5 %>%
 # Compare all 3 with different ntree
 
 ```{r}
-get_accuracy_metrics(test1)
-get_accuracy_metrics(test4)
-get_accuracy_metrics(test5)
+get_oa_metrics(test1)
+get_oa_metrics(test4)
+get_oa_metrics(test5)
 ```
 
 

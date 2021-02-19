@@ -1,0 +1,27 @@
+---
+title: "06_tuning"
+author: "Ericka B. Smith"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(randomForest)
+library(here)
+```
+
+Load Data
+
+```{r}
+train <- readRDS(here("results", "train.rds"))
+test <- readRDS(here("results", "test.rds"))
+```
+
+Use `tuneRF()` to look at optimal values of `mtry`
+
+```{r}
+tuneRF(subset(train, select=-lcz), train$lcz, mtryStart = 2, improve=0.01)
+```
+
+Typically 8 or 16 wins out.
+

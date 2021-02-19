@@ -54,3 +54,22 @@ the total number of variables, and hover around that value to compare
 ## Statquest: Random Forests Part 2 - Missing data and clustering
 
 [video link](https://www.youtube.com/watch?v=sQ870aTKqiM&t=0s)
+
+Two types of missing data:
+
+1. Missing in original dataset
+    * Make an initial guess that might be bad, then refine it
+    * Starts with same filling methods as decision tree
+    * To refine, make a bunch of decision trees. When samples end up in the same 
+    leaf, they are similar. Use this information to create a proximity matrix
+    for the sample with missing data. The proximity values are used as weights to 
+    re-predict the missing value via a weighted average. Then you do it again,
+    6 or 7 times, until the missing values converge
+    * _Note, 1-proximity values is distance. You can draw a heat map with distances, 
+    and an MDS plot._
+2. Missing in new sample
+    * Create two copies of data, one with one value of predicted variable, one 
+    with the other. 
+    * Run these samples through all the trees in the forest. See how often it's
+    correctly labeled. The option that is correctly labeled the most is the one
+    that "wins" (is used to fill the missing point)

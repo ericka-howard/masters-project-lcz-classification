@@ -1,0 +1,40 @@
+---
+title: "09_make-complete-predicted-map"
+author: "Ericka B. Smith"
+date: "2/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(randomForest)
+library(raster)
+library(rgdal)
+library(here)
+library(tidyverse)
+library(mapproj)
+```
+
+```{r}
+rf <- readRDS(here("results", "winning_rf.rds"))
+all_scenes <- stackOpen(scenes, here("results", "bands_rasterstack.stk"))
+```
+
+
+```{r}
+predicted_map <- predict(all_scenes, model=rf, na.rm=T)
+```
+
+Make a plot: 
+
+```{r}
+plot(predicted_map)
+```
+
+Save predictions as raster:
+
+```{r}
+writeRaster(predicted_map, here("results", "fully_predicted_hong_kong_map.tif"), overwrite=T)
+```
+
+Go into qGIS to set coloring as wanted? Do here?

@@ -60,8 +60,15 @@
 ### Week 6 (Feb. 8-12)
 
 * [ ] Finish Methods Section
+    * [ ] Description of data (actual volume of data involved + how this data relates to the model)
+    * [ ] Explanation of how a typical decision tree is built
+    * [ ] Explain Gini Impurity & Information Gain. What "best" means
 * [ ] Start preparing results figures
+    * [ ] Table/Plot that shows the OA over the tuning parameters tried
+    * [ ] Variable importance plot
+    * [ ] One complete map of predictions
 * [ ] Which models look the best? Why?
+* [ ] Create F1 metric function
 
 ### Week 7 (Feb. 15-19)
 

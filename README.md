@@ -1,4 +1,4 @@
-# Local Climate Zone Classification in Mega Urban Areas Using Landsat Images and Random Forest
+# Local Climate Zone Classification in Mega Urban Areas Using Landsat Images and Random Forests
 
 **The goal of this project is to replicate aspects of *[Comparison between convolutional neural networks and random forest for local climate zone classification in mega urban areas using Landsat images](https://doi.org/10.1016/j.isprsjprs.2019.09.009)***
 

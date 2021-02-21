@@ -21,7 +21,7 @@ source(here("R", "get_oa_metrics.R"))
 source(here("R", "get_f1_score.R"))
 source(here("R", "predict_lcz.R"))
 source(here("R", "try_parameter.R"))
-theme_set(theme_light())
+theme_set(theme_minimal())
 ```
 
 ## Load Data
@@ -133,13 +133,20 @@ dat <- ntree_list %>%
   mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural"))
 
 ggplot(dat)+
-  geom_boxplot(aes(x=Class, y=F1))
+  geom_raster(aes(x=ntree, y=Class, fill=F1))+
+  scale_fill_viridis(option="magma")+ 
+  theme_minimal()+
+  ggtitle(label="F-1 Score by Class", subtitle="Calculations are based on out-of-bag sample.")+
+  xlab("Number of Trees (ntree)")
+  
 
-ggsave(here("results/plots", "varied_ntree_f1_alternative_not_done.tiff"))
+ggsave(here("results/plots", "varied_ntree_f1_alternative.tiff"))
 ```
 
 
 ```{r}
+ntree_list <- read_csv(here("results/run_output_tables", "ntree"))
+ntree_list <- ntree_list[,2:18]
 write.csv(ntree_list, here("results/run_output_tables", "ntree"))
 ```
 

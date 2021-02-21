@@ -59,7 +59,7 @@ $$
 $$
 
 $$
-\text{Entropy} =\ I_H(t)\ = -\sum_{i=1}^{C}p(i|t)log_2p(i|t)
+\text{Entropy} =\ I_H(t)\ = -\sum_{i=1}^{C}p(i|t)\log_2p(i|t)
 $$
 
 Where $i$ is a class in the predictor variable, ranging from 1 to $C$. $C$ is the total number of classes represented for a particular node, $t$. $p(i|t)$ is the proportion of samples that belong to each $i$, for a particular node $t$.
@@ -79,32 +79,32 @@ To use a random forest to make predictions for a new set of input values, the va
 In line with the methods used in our reference paper and the remote sensing field, accuracy metrics will be based on predictions for the test dataset and will include the following:
 
 $$
-Overall\ Accuracy\ =\ OA\ = \frac{number\ of\ correctly\ classified\ reference\ sites}{total\ number\ of\ reference\ sites}
+\text{Overall Accuracy}= OA= \frac{\text{number of correctly classified reference sites}}{\text{total number of reference sites}}
 $$
 .
 
 $$
-Overall\ Accuracy\ in\ Urban\ Areas\ =\ OA_{urb}\ = \frac{number\ of\ correctly\ classified\ urban\ reference\ sites}{total\ number\ of\ urban\ reference\ sites}
+\text{Overall Accuracy in Urban Areas} = OA_{urb}\ = \frac{\text{number of correctly classified urban reference sites}}{\text{total number of urban reference sites}}
 $$
 .
 
 $$
-Overall\ Accuracy\ in\ Natural\ Areas\ =\ OA_{nat}\ = \frac{number\ of\ correctly\ classified\ natural\ reference\ sites}{total\ number\ of\ natural\ reference\ sites}
+\text{Overall Accuracy in Natural Areas}=OA_{nat}\ = \frac{\text{number of correctly classified natural reference sites}}{\text{total number of natural reference sites}}
 $$
 
 Additionally, the $F_1$ score will be used. This is the harmonic mean of precision (user’s accuracy, UA) and recall (producer’s accuracy, PA). 
 
 $$
-UA(z)\ = \frac{number\ of\ correctly\ identified\ pixels\ in\ class\ z}{total\ number\ of\ pixels\ identified\ as\ class\ z}
+UA(z)\ = \frac{\text{number of correctly identified pixels in class z}}{\text{total number of pixels identified as class z}}
 $$
 
 
 $$
-PA(z)\ = \frac{number\ of\ correctly\ identified\ pixels\ in\ class\ z}{number\ of\ pixels\ truly\ in\ class\ z}
+PA(z) = \frac{\text{number of correctly identified pixels in class z}}{\text{number of pixels truly in class z}}
 $$
 
 $$
-F_1\ Score\ = 2*\frac{UA*PA}{UA+PA}
+\text{F-1 Score} = 2*\frac{UA*PA}{UA+PA}
 $$
 
 # Results

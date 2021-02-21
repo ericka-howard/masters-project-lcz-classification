@@ -17,11 +17,12 @@ library(mapproj)
 library(forcats)
 library(reshape2)
 library(viridis)
+library(ggpubr)
 source(here("R", "get_oa_metrics.R"))
 source(here("R", "get_f1_score.R"))
 source(here("R", "predict_lcz.R"))
 source(here("R", "try_parameter.R"))
-theme_set(theme_minimal())
+theme_set(theme_pubclean())
 ```
 
 ## Load Data
@@ -54,11 +55,11 @@ OA is the same as 1-OOB Error Rate.
 using `try_parameter(dat, ...)` function
 
 ```{r}
-metrics <- try_parameter(train, mtry=5)
+# metrics <- try_parameter(train, mtry=5)
 ```
 
-```{r}
-ntree_list <- map_dfr(seq(from=5, to=500, by=10), ~try_parameter(train, ntree=.x))
+```{r, warning=FALSE}
+ntree_list <- map_dfr(seq(from=5, to=500, by=5), ~try_parameter(train, ntree=.x))
 ```
 
 
@@ -74,9 +75,10 @@ ntree_list %>%
   xlab("Number of Trees (ntree)")+
   scale_color_viridis(discrete=T,
                       breaks=c("oa", "oa_urb", "oa_nat"),
-                      labels=c("Overall", "Urban", "Natural"))
+                      labels=c("Overall", "Urban", "Natural"))+
+  theme(legend.position = "right")
 
-ggsave(here("results/plots", "varied_ntree_oas.tiff"))
+ggsave(here("results/plots", "varied_ntree_oas.pdf"))
 ```
 
 
@@ -113,13 +115,14 @@ ntree_list %>%
   xlab("Number of Trees (ntree)")+
   scale_color_viridis(discrete=T)+
   scale_linetype_manual(labels=c("Urban", "Natural"),
-                 values=c("dotted", "dashed"))
+                 values=c("dotted", "dashed"))+
+  theme(legend.position = "right")
   # scale_color_manual(labels= c("Urban","1","2","3","4","5","6","8","10","Natural","11","12","13","14","17"),
   #                    values = c("#440154FF","#482677FF", "#453781FF","#404788FF","#39568CFF","#33638DFF","#2D708EFF",
   #                               "#287D8EFF","#238A8DFF","#FDE725FF", "#29AF7FFF","#3CBB75FF","#55C667FF","#73D055FF",
   #                               "#95D840FF"))
 
-ggsave(here("results/plots", "varied_ntree_f1_not_done.tiff"))
+ggsave(here("results/plots", "varied_ntree_f1_not_done.pdf"))
 ```
 
 ```{r}
@@ -127,7 +130,7 @@ urban_classes <- c("1", "2", "3", "4", "5", "6", "8", "10")
 f1_list <- names(ntree_list)[c(1, 5:ncol(ntree_list))]
 # make plot
 dat <- ntree_list %>%
-  dplyr::select(f1_list) %>%
+  dplyr::select(all_of(f1_list)) %>%
   rename_at(vars(contains("f1_")), funs(str_replace(., "f1_", ""))) %>%
   melt(id.vars= "ntree", value.name = "F1", variable.name="Class") %>%
   mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural"))
@@ -135,12 +138,12 @@ dat <- ntree_list %>%
 ggplot(dat)+
   geom_raster(aes(x=ntree, y=Class, fill=F1))+
   scale_fill_viridis(option="magma")+ 
-  theme_minimal()+
   ggtitle(label="F-1 Score by Class", subtitle="Calculations are based on out-of-bag sample.")+
-  xlab("Number of Trees (ntree)")
+  xlab("Number of Trees (ntree)")+
+  theme(legend.position = "right")
   
 
-ggsave(here("results/plots", "varied_ntree_f1_alternative.tiff"))
+ggsave(here("results/plots", "varied_ntree_f1_alternative.pdf"))
 ```
 
 

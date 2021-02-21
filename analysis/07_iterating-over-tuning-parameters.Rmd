@@ -76,7 +76,7 @@ ntree_list %>%
                       breaks=c("oa", "oa_urb", "oa_nat"),
                       labels=c("Overall", "Urban", "Natural"))
 
-ggsave(here("results/plots", "varied_ntree_oas.tiff"))
+ggsave(here("results/plots", "varied_ntree_oas.pdf"))
 ```
 
 
@@ -119,7 +119,7 @@ ntree_list %>%
   #                               "#287D8EFF","#238A8DFF","#FDE725FF", "#29AF7FFF","#3CBB75FF","#55C667FF","#73D055FF",
   #                               "#95D840FF"))
 
-ggsave(here("results/plots", "varied_ntree_f1_not_done.tiff"))
+ggsave(here("results/plots", "varied_ntree_f1_not_done.pdf"))
 ```
 
 ```{r}
@@ -140,7 +140,7 @@ ggplot(dat)+
   xlab("Number of Trees (ntree)")
   
 
-ggsave(here("results/plots", "varied_ntree_f1_alternative.tiff"))
+ggsave(here("results/plots", "varied_ntree_f1_alternative.pdf"))
 ```
 
 

@@ -70,8 +70,8 @@ ntree_list %>%
   ggplot()+
   geom_point(aes(x=ntree, y=Accuracy, color=Metric))+
   geom_smooth(aes(x=ntree, y=Accuracy, color=Metric), se=F)+
-  ggtitle("Overall Accuracy Metrics for varying numbers of trees",
-          subtitle="Calculations are based on out-of-bag sample")+
+  ggtitle("Overall Accuracy Metrics for Varying Numbers of Trees",
+          subtitle="Calculations are based on out-of-bag sample.")+
   xlab("Number of Trees (ntree)")+
   scale_color_viridis(discrete=T,
                       breaks=c("oa", "oa_urb", "oa_nat"),
@@ -138,8 +138,9 @@ dat <- ntree_list %>%
 ggplot(dat)+
   geom_raster(aes(x=ntree, y=Class, fill=F1))+
   scale_fill_viridis(option="magma")+ 
-  ggtitle(label="F-1 Score by Class", subtitle="Calculations are based on out-of-bag sample.")+
-  xlab("Number of Trees (ntree)")+
+  labs(title="F-1 Score by Class and Number of Trees", 
+          subtitle="Calculations are based on out-of-bag sample.",
+       x="Number of Trees (ntree)")+
   theme(legend.position = "right")
   
 
@@ -150,7 +151,7 @@ ggsave(here("results/plots", "varied_ntree_f1_alternative.pdf"))
 ```{r}
 ntree_list <- read_csv(here("results/run_output_tables", "ntree"))
 ntree_list <- ntree_list[,2:18]
-write.csv(ntree_list, here("results/run_output_tables", "ntree"))
+#write.csv(ntree_list, here("results/run_output_tables", "ntree"))
 ```
 
 

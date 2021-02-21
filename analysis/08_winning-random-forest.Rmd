@@ -15,7 +15,8 @@ library(rgdal)
 library(mapproj)
 source(here("R", "get_oa_metrics.R"))
 source(here("R", "get_f1_score.R"))
-source(here("R", "predict_on_test_data.R"))
+source(here("R", "predict_lcz.R"))
+source(here("R", "try_parameter.R"))
 ```
 
 Load Data
@@ -28,24 +29,62 @@ test <- readRDS(here("results", "test.rds"))
 Create Model
 
 ```{r}
-rf <- randomForest(lcz ~ ., data=train, importance=TRUE)
+rf <- randomForest(lcz ~ ., data=train, ntree=125, importance=TRUE)
 ```
 
 
 Predict on Test Data
 
 ```{r}
-predicted <- predict_on_test_data(test, rf)
+predicted <- predict_lcz(test, rf)
 ```
 
 Get metrics
 
 ```{r}
 oa <- get_oa_metrics(predicted)
-f1 <- get_f1_score(predicted)
+f1 <- get_f1_score(predicted, lcz, lcz_predicted)
 ```
 
 Make Plots
+
+```{r}
+oa_dat <- oa %>%
+  pivot_longer(everything()) #%>%
+  # ggplot()+
+  # geom_bar(aes(x = name, y=value), stat='identity')
+  # ggtitle("Overall Accuracy Metrics for Varying Numbers of Trees",
+  #         subtitle="Calculations are based on out-of-bag sample.")+
+  # xlab("Number of Trees (ntree)")+
+  # scale_color_viridis(discrete=T,
+  #                     breaks=c("oa", "oa_urb", "oa_nat"),
+  #                     labels=c("Overall", "Urban", "Natural"))+
+  # theme(legend.position = "right")
+
+  
+  
+urban_classes <- c("1", "2", "3", "4", "5", "6", "8", "10")
+f1_list <- names(f1)
+# make plot
+f1 %>%
+  rename_at(vars(contains("f1_")), funs(str_replace(., "f1_", ""))) %>%
+  pivot_longer(everything(), names_to = "Class", values_to = "F1") %>%
+  mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural")) %>%
+  dplyr::arrange(as.numeric(Class)) %>%
+  mutate(Class= factor(Class, levels = Class)) %>%
+ggplot()+
+  geom_bar(aes(x=Class, y=F1, fill=Type), stat="identity")+
+  geom_bar(data=oa_dat, aes(x=name, y=value), stat="identity")
+  ggtitle("F-1 Scores by class for varying numbers of trees",
+          subtitle="Calculations are based on out-of-bag sample")+
+  xlab("Number of Trees (ntree)")+
+  scale_fill_viridis(discrete=T)+
+  scale_linetype_manual(labels=c("Urban", "Natural"),
+                 values=c("dotted", "dashed"))+
+  theme(legend.position = "right")
+
+ggarrange(p1, p2)
+```
 
 ```{r}
 some_plot <- #some plot

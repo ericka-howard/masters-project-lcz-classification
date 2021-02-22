@@ -1,7 +1,6 @@
 ---
 title: "09_make-complete-predicted-map"
 author: "Ericka B. Smith"
-date: "2/14/2021"
 output: html_document
 ---
 
@@ -13,11 +12,13 @@ library(rgdal)
 library(here)
 library(tidyverse)
 library(mapproj)
+library(magrittr)
+source(here("R", "get_rasterstack.R"))
 ```
 
 ```{r}
 rf <- readRDS(here("results", "winning_rf.rds"))
-all_scenes <- stackOpen(scenes, here("results", "bands_rasterstack.stk"))
+all_scenes <- get_rasterstack()
 ```
 
 
@@ -37,4 +38,26 @@ Save predictions as raster:
 writeRaster(predicted_map, here("results", "fully_predicted_hong_kong_map.tif"), overwrite=T)
 ```
 
-Go into qGIS to set coloring as wanted? Do here?
+Go into qGIS to set coloring as wanted?
+
+Or just here.
+
+```{r}
+colormap <- read.csv(here("data", "cmap_Qgis_WUDAPT_LCZ.txt"))
+colormap <- colormap[-c(7,9,15,16),]
+hex_colors <- colormap %>%
+  mutate(hex= rgb(r,g,b,maxColorValue = 255))
+```
+
+```{r}
+pred_map_pts<- rasterToPoints(predicted_map, spatial = TRUE)
+# Then to a 'conventional' dataframe
+pred_map_df  <- data.frame(pred_map_pts)
+pred_map_df$layer %<>% factor()
+ggplot() +
+ geom_raster(data = pred_map_df , aes(x = x, y = y, fill = layer)) + 
+    ggtitle("Hong Kong")+
+  scale_fill_manual(values = hex_colors$hex, labels=hex_colors$class_num)
+```
+
+

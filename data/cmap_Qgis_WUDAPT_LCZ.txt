@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 class_num,r,g,b,class_name
 1,140,0,0,Compact Highrise
 2,209,0,0,Compact Midrise
@@ -15,4 +16,23 @@ class_num,r,g,b,class_name
 14,185,219,121,Low plants
 15,0,0,0,Bare rock or paved
 16,251,247,174,Bare soil or sand
+=======
+class_num,r,g,b,class_name
+1,140,0,0,Compact Highrise
+2,209,0,0,Compact Midrise
+3,255,0,0,Compact Lowrise
+4,191,77,0,Open Highrise
+5,255,102,0,Open Midrise
+6,255,153,85,Open Lowrise
+7,250,238,5,Lightweight lowrise
+8,188,188,188,Large lowrise
+9,255,204,170,Sparsely built
+10,85,85,85,Heavy industry
+11,0,106,0,Dense trees
+12,0,170,0,Scattered trees
+13,100,133,37,Bush or scrub
+14,185,219,121,Low plants
+15,0,0,0,Bare rock or paved
+16,251,247,174,Bare soil or sand
+>>>>>>> 7c74e5d6ef91a0c3d93899ea848a6ea258db9a13
 17,106,106,255,Water

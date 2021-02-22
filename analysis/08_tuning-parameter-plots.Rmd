@@ -1,0 +1,69 @@
+---
+title: "08_tuning-parameter-plots"
+author: "Ericka Smith"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(forcats)
+library(reshape2)
+library(viridis)
+library(ggpubr)
+theme_set(theme_pubclean())
+```
+
+Load data
+
+```{r, warning=FALSE}
+current_data_name <- "ntree_25_to_2500_data.rds"
+param_dat <- read_csv(here("results/run_output_tables", current_data_name))
+param_dat <- param_dat[,2:18]
+```
+
+Name output plots
+
+```{r}
+current_line_plot_name <- "ntree_25_to_2500_line_plot.pdf"
+current_heatmap_name <- "ntree_25_to_2500_heatmap.pdf"
+```
+
+```{r}
+param_dat %>%
+  dplyr::select(ntree, oa, oa_urb, oa_nat) %>%
+  melt(id.vars= "ntree", measure.vars=c("oa", "oa_urb", "oa_nat"), value.name = "Accuracy", variable.name="Metric") %>%
+  ggplot()+
+  geom_point(aes(x=ntree, y=Accuracy, color=Metric), size=0.75)+
+  geom_smooth(aes(x=ntree, y=Accuracy, color=Metric), se=F)+
+  ggtitle("Overall Accuracy Metrics for Varying Numbers of Trees")+
+  xlab("Number of Trees (ntree)")+
+  scale_color_viridis(discrete=T,
+                      breaks=c("oa", "oa_urb", "oa_nat"),
+                      labels=c("Overall", "Urban", "Natural"))+
+  theme(legend.position = "right")
+
+ggsave(here("results/plots", current_line_plot_name))
+```
+
+```{r}
+urban_classes <- c("1", "2", "3", "4", "5", "6", "8", "10")
+f1_list <- names(param_dat)[c(1, 5:ncol(param_dat))]
+# make plot
+dat <- param_dat %>%
+  dplyr::select(all_of(f1_list)) %>%
+  rename_at(vars(contains("f1_")), funs(str_replace(., "f1_", ""))) %>%
+  melt(id.vars= "ntree", value.name = "F1", variable.name="Class") %>%
+  mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural"))
+
+ggplot(dat)+
+  geom_raster(aes(x=ntree, y=Class, fill=F1))+
+  scale_fill_viridis(option="magma")+ 
+  labs(title="F-1 Score by Class and Number of Trees", 
+       x="Number of Trees (ntree)")+
+  theme(legend.position = "right")
+  
+
+ggsave(here("results/plots", current_heatmap_name))
+```

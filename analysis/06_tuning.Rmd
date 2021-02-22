@@ -8,6 +8,10 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(randomForest)
 library(here)
+source(here("R", "get_oa_metrics.R"))
+source(here("R", "get_f1_score.R"))
+source(here("R", "predict_lcz.R"))
+source(here("R", "try_parameter.R"))
 ```
 
 Load Data
@@ -25,3 +29,18 @@ tuneRF(subset(train, select=-lcz), train$lcz, mtryStart = 2, improve=0.01)
 
 Typically 8 or 16 wins out.
 
+
+## Replicate OOB Error Rate
+
+```{r}
+# make model
+rf <- randomForest(lcz ~ ., data=train, ntree=50, keep.inbag = T)
+# Calculate OOB Error rate
+print(rf)
+# gets list of OOB prediction for each row (each pixel observation)
+ind_tree_preds <- predict(rf, predict.all=TRUE)
+# checks when OOB prediction is the same as true LCZ value
+correct <- ind_tree_preds == train$lcz
+# calculate OOB error rate
+(length(correct)-sum(correct))/length(correct)
+```

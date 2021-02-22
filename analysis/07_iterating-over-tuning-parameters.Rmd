@@ -1,7 +1,6 @@
 ---
 title: "07_iterating-over-tuning-parameters"
 author: "Ericka B. Smith"
-date: "2/14/2021"
 output: html_document
 ---
 
@@ -10,145 +9,36 @@ knitr::opts_chunk$set(echo = TRUE)
 library(randomForest)
 library(tidyverse)
 library(here)
-library(raster)
-library(rgdal)
 library(purrr)
-library(mapproj)
-library(forcats)
-library(reshape2)
-library(viridis)
-library(ggpubr)
 source(here("R", "get_oa_metrics.R"))
 source(here("R", "get_f1_score.R"))
 source(here("R", "predict_lcz.R"))
 source(here("R", "try_parameter.R"))
-theme_set(theme_pubclean())
 ```
 
-## Load Data
+### Load Data
 
 ```{r}
 train <- readRDS(here("results", "train.rds"))
 test <- readRDS(here("results", "test.rds"))
 ```
 
-
-## Replicate OOB Error Rate
-
-```{r}
-## make model
-#rf <- randomForest(lcz ~ ., data=train, ntree=50, keep.inbag = T)
-## Calculate OOB Error rate
-# print(rf)
-# # gets list of OOB prediction for each row (each pixel observation)
-# ind_tree_preds <- predict(rf, predict.all=TRUE)
-# # checks when OOB prediction is the same as true LCZ value
-# correct <- ind_tree_preds == train$lcz
-# # calculate OOB error rate
-# (length(correct)-sum(correct))/length(correct)
-```
-
-OA is the same as 1-OOB Error Rate.
-
-## Iterating over mtry
-
-using `try_parameter(dat, ...)` function
+### Name Output
 
 ```{r}
-# metrics <- try_parameter(train, mtry=5)
+current_parameter_varied_rds_name <-  "ntree_25_to_2500_data.rds"
 ```
 
-Changed to load data so that the simulation isn't repeatedly run
+### Iterating over ntree
 
-```{r, warning=FALSE}
-ntree_list <- read_csv(here("results/run_output_tables", "ntree"))
-ntree_list <- ntree_list[,2:18]
-# ntree_list <- map_dfr(seq(from=5, to=500, by=5), ~try_parameter(train, ntree=.x))
+```{r, warning=FALSE, message=FALSE}
+ntree_list <- map_dfr(seq(from=25, to=2500, by=25), ~try_parameter(train, ntree=.x))
 ```
 
+### Save data
 
 ```{r}
-ntree_list %>%
-  dplyr::select(ntree, oa, oa_urb, oa_nat) %>%
-  melt(id.vars= "ntree", measure.vars=c("oa", "oa_urb", "oa_nat"), value.name = "Accuracy", variable.name="Metric") %>%
-  ggplot()+
-  geom_point(aes(x=ntree, y=Accuracy, color=Metric), size=0.75)+
-  geom_smooth(aes(x=ntree, y=Accuracy, color=Metric), se=F)+
-  ggtitle("Overall Accuracy Metrics for Varying Numbers of Trees")+#,
-          #subtitle="Calculations are based on out-of-bag sample.")+
-  xlab("Number of Trees (ntree)")+
-  scale_color_viridis(discrete=T,
-                      breaks=c("oa", "oa_urb", "oa_nat"),
-                      labels=c("Overall", "Urban", "Natural"))+
-  theme(legend.position = "right")
-
-ggsave(here("results/plots", "varied_ntree_oas.pdf"))#, width=7, height=4.5, units="in", dpi=300)
-```
-
-
-Kind of hate the next plot.
-```{r}
-# cols <- c("1"= "#482677FF",
-#           "2" = "#453781FF",
-#           "3" = "#404788FF",
-#           "4"= "#39568CFF",
-#           "5" = "#33638DFF",
-#           "6" = "#2D708EFF",
-#           "8"= "#287D8EFF",
-#           "10" = "#238A8DFF",
-#           "11" = "#29AF7FFF",
-#           "12"= "#3CBB75FF",
-#           "13" = "#55C667FF",
-#           "14" = "#73D055FF",
-#           "17"= "#95D840FF",
-#           "Urban" = "#440154FF",
-#           "Natural" = "#FDE725FF")
-urban_classes <- c("1", "2", "3", "4", "5", "6", "8", "10")
-f1_list <- names(ntree_list)[c(1, 5:ncol(ntree_list))]
-# make plot
-ntree_list %>%
-  dplyr::select(f1_list) %>%
-  rename_at(vars(contains("f1_")), funs(str_replace(., "f1_", ""))) %>%
-  melt(id.vars= "ntree", value.name = "F1", variable.name="Class") %>%
-  mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural")) %>%
-  ggplot()+
-  geom_smooth(aes(x=ntree, y=F1, color=Class), alpha=0.5, se=F)+
-  geom_smooth(aes(x=ntree, y=F1, lty=Type), color="black",se=F)+
-  ggtitle("F-1 Scores by class for varying numbers of trees")+#,
-          #subtitle="Calculations are based on out-of-bag sample")+
-  xlab("Number of Trees (ntree)")+
-  scale_color_viridis(discrete=T)+
-  scale_linetype_manual(labels=c("Urban", "Natural"),
-                 values=c("dotted", "dashed"))+
-  theme(legend.position = "right")
-
-ggsave(here("results/plots", "varied_ntree_f1_not_done.pdf"))
-```
-
-```{r}
-urban_classes <- c("1", "2", "3", "4", "5", "6", "8", "10")
-f1_list <- names(ntree_list)[c(1, 5:ncol(ntree_list))]
-# make plot
-dat <- ntree_list %>%
-  dplyr::select(all_of(f1_list)) %>%
-  rename_at(vars(contains("f1_")), funs(str_replace(., "f1_", ""))) %>%
-  melt(id.vars= "ntree", value.name = "F1", variable.name="Class") %>%
-  mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural"))
-
-ggplot(dat)+
-  geom_raster(aes(x=ntree, y=Class, fill=F1))+
-  scale_fill_viridis(option="magma")+ 
-  labs(title="F-1 Score by Class and Number of Trees", 
-          subtitle="Calculations are based on out-of-bag sample.",
-       x="Number of Trees (ntree)")+
-  theme(legend.position = "right")
-  
-
-ggsave(here("results/plots", "varied_ntree_f1_alternative.pdf"))
-```
-
-```{r}
-#write.csv(ntree_list, here("results/run_output_tables", "ntree"))
+write.csv(ntree_list, here("results/run_output_tables", current_parameter_varied_rds_name))
 ```
 
 

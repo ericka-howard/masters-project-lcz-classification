@@ -37,8 +37,9 @@ param_dat %>%
   ggplot()+
   geom_point(aes(x=ntree, y=Accuracy, color=Metric), size=0.75)+
   geom_smooth(aes(x=ntree, y=Accuracy, color=Metric), se=F)+
-  ggtitle("Overall Accuracy Metrics for Varying Numbers of Trees")+
-  xlab("Number of Trees (ntree)")+
+  ggtitle("Overall Accuracy Metrics by Numbers of Trees")+
+  xlab("\nNumber of Trees")+
+  ylab("Accuracy\n")+
   scale_color_viridis(discrete=T,
                       breaks=c("oa", "oa_urb", "oa_nat"),
                       labels=c("Overall", "Urban", "Natural"))+
@@ -60,8 +61,9 @@ dat <- param_dat %>%
 ggplot(dat)+
   geom_raster(aes(x=ntree, y=Class, fill=F1))+
   scale_fill_viridis(option="magma")+ 
-  labs(title="F-1 Score by Class and Number of Trees", 
-       x="Number of Trees (ntree)")+
+  labs(title="F-1 Score by Class for 25 to 2500 Trees", 
+       x="\nNumber of Trees",
+       y="Class\n")+
   theme(legend.position = "right")
   
 

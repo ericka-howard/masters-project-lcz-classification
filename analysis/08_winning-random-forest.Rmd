@@ -1,7 +1,6 @@
 ---
 title: "08_winning-random-forest"
 author: "Ericka B. Smith"
-date: "2/14/2021"
 output: html_document
 ---
 
@@ -12,16 +11,20 @@ library(tidyverse)
 library(here)
 library(raster)
 library(rgdal)
+library(forcats)
 library(mapproj)
+library(ggpubr)
+library(viridis)
+theme_set(theme_pubclean())
+```
+
+Load Data and Functions
+
+```{r}
 source(here("R", "get_oa_metrics.R"))
 source(here("R", "get_f1_score.R"))
 source(here("R", "predict_lcz.R"))
 source(here("R", "try_parameter.R"))
-```
-
-Load Data
-
-```{r}
 train <- readRDS(here("results", "train.rds"))
 test <- readRDS(here("results", "test.rds"))
 ```
@@ -49,54 +52,95 @@ f1 <- get_f1_score(predicted, lcz, lcz_predicted)
 Make Plots
 
 ```{r}
-oa_dat <- oa %>%
-  pivot_longer(everything()) #%>%
-  # ggplot()+
-  # geom_bar(aes(x = name, y=value), stat='identity')
-  # ggtitle("Overall Accuracy Metrics for Varying Numbers of Trees",
-  #         subtitle="Calculations are based on out-of-bag sample.")+
-  # xlab("Number of Trees (ntree)")+
-  # scale_color_viridis(discrete=T,
-  #                     breaks=c("oa", "oa_urb", "oa_nat"),
-  #                     labels=c("Overall", "Urban", "Natural"))+
-  # theme(legend.position = "right")
+ordering <-
+  c(
+    "F1-17",
+    "F1-14",
+    "F1-13",
+    "F1-12",
+    "F1-11",
+    "F1-10",
+    "F1-8",
+    "F1-6",
+    "F1-5",
+    "F1-4",
+    "F1-3",
+    "F1-2",
+    "F1-1",
+    "OA-NAT",
+    "OA-URB",
+    "OA"
+  )
+urban <-
+  c("F1-10",
+    "F1-8",
+    "F1-6",
+    "F1-5",
+    "F1-4",
+    "F1-3",
+    "F1-2",
+    "F1-1",
+    "OA-URB")
+natural <- c("F1-17", "F1-14", "F1-13", "F1-12", "F1-11", "OA-NAT")
 
-  
-  
-urban_classes <- c("1", "2", "3", "4", "5", "6", "8", "10")
-f1_list <- names(f1)
-# make plot
-f1 %>%
-  rename_at(vars(contains("f1_")), funs(str_replace(., "f1_", ""))) %>%
-  pivot_longer(everything(), names_to = "Class", values_to = "F1") %>%
-  mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural")) %>%
-  dplyr::arrange(as.numeric(Class)) %>%
-  mutate(Class= factor(Class, levels = Class)) %>%
-ggplot()+
-  geom_bar(aes(x=Class, y=F1, fill=Type), stat="identity")+
-  geom_bar(data=oa_dat, aes(x=name, y=value), stat="identity")
-  ggtitle("F-1 Scores by class for varying numbers of trees",
-          subtitle="Calculations are based on out-of-bag sample")+
-  xlab("Number of Trees (ntree)")+
-  scale_fill_viridis(discrete=T)+
-  scale_linetype_manual(labels=c("Urban", "Natural"),
-                 values=c("dotted", "dashed"))+
+bind_cols(oa, f1) %>%
+  rename_at(vars(everything()), ~ toupper(gsub("_", "-", .x))) %>%
+  pivot_longer(everything(), names_to = "Accuracy Metric") %>%
+  mutate(
+    `Accuracy Metric` = fct_relevel(`Accuracy Metric`, ordering),
+    Type = case_when(
+      `Accuracy Metric` %in% urban ~ "Urban",
+      `Accuracy Metric` %in% natural ~ "Natural",
+      TRUE ~ "Overall"
+    )
+  ) %>%
+ggplot() +
+  geom_bar(aes(x = value, y = `Accuracy Metric`, fill = Type), stat = 'identity') +
+  scale_fill_viridis(discrete = T, option = "cividis") +
+  labs(title = "Accuracy Metrics for Test Dataset",
+       subtitle = "Random forest created with 125 trees.",
+       x = "Value") +
   theme(legend.position = "right")
 
-ggarrange(p1, p2)
+ggsave(here("results/plots", "test_set_accuracy_metrics_barplot.pdf"))
 ```
 
 ```{r}
-some_plot <- #some plot
 imp_plot <- varImpPlot(rf)
+class(imp_plot)
+
+imp_plot + theme_pubclean()
+
+
+
+rf$importance %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Predictor Variable") %>%
+  separate(
+    col = `Predictor Variable`,
+    into = c("Band", "Scene"),
+    sep = -1,
+    remove = F
+  ) %>%
+  mutate(Band = parse_number(Band),
+         Band = factor(Band)) %>%
+  ggplot() +
+  geom_bar(aes(x = MeanDecreaseGini, y = Band, fill = Scene),
+           stat = 'identity',
+           position = "dodge") +
+  scale_fill_viridis(discrete = T) +
+  theme(legend.position = "right") +
+  labs(title = "Importance Measures for Each Predictor Variable",
+       subtitle = "Predictor variables are grouped into band and scene. (ntree=125).",
+       x = "Mean Decrease in Gini Impurity")
+
+ggsave(here("results/plots", "importance_barplot_ntree125.pdf"))
 ```
 
-Save things
+Save Random Forest
 
 ```{r}
 saveRDS(rf, here("results", "winning_rf.rds"))
-ggsave(some_plot)
-#etc
 ```
 
 

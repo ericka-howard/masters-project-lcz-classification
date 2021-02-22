@@ -117,10 +117,6 @@ ntree_list %>%
   scale_linetype_manual(labels=c("Urban", "Natural"),
                  values=c("dotted", "dashed"))+
   theme(legend.position = "right")
-  # scale_color_manual(labels= c("Urban","1","2","3","4","5","6","8","10","Natural","11","12","13","14","17"),
-  #                    values = c("#440154FF","#482677FF", "#453781FF","#404788FF","#39568CFF","#33638DFF","#2D708EFF",
-  #                               "#287D8EFF","#238A8DFF","#FDE725FF", "#29AF7FFF","#3CBB75FF","#55C667FF","#73D055FF",
-  #                               "#95D840FF"))
 
 ggsave(here("results/plots", "varied_ntree_f1_not_done.pdf"))
 ```

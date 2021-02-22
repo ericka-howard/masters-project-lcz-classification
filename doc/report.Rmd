@@ -60,7 +60,6 @@ Splits are typically evaluated by Gini impurity or entropy.
 $$
 \text{Gini Impurity} =\ I_G(t)\  = 1 - \sum_{i=1}^{C}p(i|t)^2
 $$
-
 $$
 \text{Entropy} =\ I_H(t)\ = -\sum_{i=1}^{C}p(i|t)\log_2p(i|t)
 $$
@@ -86,13 +85,9 @@ In line with the methods used in our reference paper and the remote sensing fiel
 $$
 \text{Overall Accuracy}= OA= \frac{\text{number of correctly classified reference sites}}{\text{total number of reference sites}}
 $$
-.
-
 $$
 \text{Overall Accuracy in Urban Areas} = OA_{urb}\ = \frac{\text{number of correctly classified urban reference sites}}{\text{total number of urban reference sites}}
 $$
-.
-
 $$
 \text{Overall Accuracy in Natural Areas}=OA_{nat}\ = \frac{\text{number of correctly classified natural reference sites}}{\text{total number of natural reference sites}}
 $$
@@ -102,14 +97,11 @@ Additionally, the $F_1$ score will be used. This is the harmonic mean of precisi
 $$
 UA(z)\ = \frac{\text{number of correctly identified pixels in class z}}{\text{total number of pixels identified as class z}}
 $$
-
-
 $$
 PA(z) = \frac{\text{number of correctly identified pixels in class z}}{\text{number of pixels truly in class z}}
 $$
-
 $$
-\text{F-1 Score} = 2*\frac{UA*PA}{UA+PA}
+F_1\text{ Score} = 2*\frac{UA*PA}{UA+PA}
 $$
 
 # Results
@@ -117,7 +109,6 @@ $$
 ## Varying the Parameter for Number of Trees
 
 The parameter for the number of trees, ntree, was varied between 5 and 500 at intervals of 5. The resulting overall accuracy metrics indicate a leveling off around 125 trees (Figure 2). There's also a clear distinction between accuracy in urban vs. natural classes. The plot of F-1 scores (Figure 3) explores each class individually more clearly. It's clear that there are three approximate groupings of classes. Classes 11 (dense trees), 12 (scattered trees), 13 (bush, scrub), 14 (low plants), and 17 (water) have the highest F-1 scores throughout, though 12 (scattered trees) stands out as a little lower than the others. Classes 6 (open low-rise), 8 (large low-rise), and 10 (heavy industry) have much lower F-1 scores that don't seem to improve greatly as the number of trees increases. Finally, in the middle are classes 1 though 5 (compact high-rise, compact midrise, compact low-rise, open high-rise, and open-midrise, respectively). They are all in the middle range between the other two groupings, and do appear to respond to increased numbers of trees. 
-
 
 ![The increase in OA metrics levels off around 125 trees. Urban classes (1-10) have much lower accuracy than natural classes (11-17).](../results/plots/varied_ntree_oas.pdf)
 
@@ -137,7 +128,13 @@ In general there is not a clear pattern in which bands or scenes proved to be th
 
 ![There is not a clear pattern in Mean Decrease for Gini Impurity between the different bands and scenes, though there is some indication that bands in scene 4 were particularly effective as predictors.](../results/plots/importance_barplot_ntree125.pdf)
 
-# Conclusion
+## A full prediction
+
+Despite the decreased overall accuracy for the random forest based on the test data, it is the best fitting model based on the training data,  and therefore the one I used for the full prediction of LCZ classes throughout the Hong Kong area of interest (Figure 6).
+
+# Discussion
+
+Though
 
 \newpage
 

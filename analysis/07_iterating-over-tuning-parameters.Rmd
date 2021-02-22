@@ -58,8 +58,12 @@ using `try_parameter(dat, ...)` function
 # metrics <- try_parameter(train, mtry=5)
 ```
 
+Changed to load data so that the simulation isn't repeatedly run
+
 ```{r, warning=FALSE}
-ntree_list <- map_dfr(seq(from=5, to=500, by=5), ~try_parameter(train, ntree=.x))
+ntree_list <- read_csv(here("results/run_output_tables", "ntree"))
+ntree_list <- ntree_list[,2:18]
+# ntree_list <- map_dfr(seq(from=5, to=500, by=5), ~try_parameter(train, ntree=.x))
 ```
 
 
@@ -68,17 +72,17 @@ ntree_list %>%
   dplyr::select(ntree, oa, oa_urb, oa_nat) %>%
   melt(id.vars= "ntree", measure.vars=c("oa", "oa_urb", "oa_nat"), value.name = "Accuracy", variable.name="Metric") %>%
   ggplot()+
-  geom_point(aes(x=ntree, y=Accuracy, color=Metric))+
+  geom_point(aes(x=ntree, y=Accuracy, color=Metric), size=0.75)+
   geom_smooth(aes(x=ntree, y=Accuracy, color=Metric), se=F)+
-  ggtitle("Overall Accuracy Metrics for Varying Numbers of Trees",
-          subtitle="Calculations are based on out-of-bag sample.")+
+  ggtitle("Overall Accuracy Metrics for Varying Numbers of Trees")+#,
+          #subtitle="Calculations are based on out-of-bag sample.")+
   xlab("Number of Trees (ntree)")+
   scale_color_viridis(discrete=T,
                       breaks=c("oa", "oa_urb", "oa_nat"),
                       labels=c("Overall", "Urban", "Natural"))+
   theme(legend.position = "right")
 
-ggsave(here("results/plots", "varied_ntree_oas.pdf"))
+ggsave(here("results/plots", "varied_ntree_oas.pdf"))#, width=7, height=4.5, units="in", dpi=300)
 ```
 
 
@@ -110,8 +114,8 @@ ntree_list %>%
   ggplot()+
   geom_smooth(aes(x=ntree, y=F1, color=Class), alpha=0.5, se=F)+
   geom_smooth(aes(x=ntree, y=F1, lty=Type), color="black",se=F)+
-  ggtitle("F-1 Scores by class for varying numbers of trees",
-          subtitle="Calculations are based on out-of-bag sample")+
+  ggtitle("F-1 Scores by class for varying numbers of trees")+#,
+          #subtitle="Calculations are based on out-of-bag sample")+
   xlab("Number of Trees (ntree)")+
   scale_color_viridis(discrete=T)+
   scale_linetype_manual(labels=c("Urban", "Natural"),
@@ -143,10 +147,7 @@ ggplot(dat)+
 ggsave(here("results/plots", "varied_ntree_f1_alternative.pdf"))
 ```
 
-
 ```{r}
-ntree_list <- read_csv(here("results/run_output_tables", "ntree"))
-ntree_list <- ntree_list[,2:18]
 #write.csv(ntree_list, here("results/run_output_tables", "ntree"))
 ```
 

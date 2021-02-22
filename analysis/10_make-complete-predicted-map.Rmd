@@ -1,7 +1,6 @@
 ---
 title: "09_make-complete-predicted-map"
 author: "Ericka B. Smith"
-date: "2/14/2021"
 output: html_document
 ---
 
@@ -13,11 +12,12 @@ library(rgdal)
 library(here)
 library(tidyverse)
 library(mapproj)
+source(here("R", "get_rasterstack.R"))
 ```
 
 ```{r}
 rf <- readRDS(here("results", "winning_rf.rds"))
-all_scenes <- stackOpen(scenes, here("results", "bands_rasterstack.stk"))
+all_scenes <- get_rasterstack()
 ```
 
 
@@ -37,4 +37,4 @@ Save predictions as raster:
 writeRaster(predicted_map, here("results", "fully_predicted_hong_kong_map.tif"), overwrite=T)
 ```
 
-Go into qGIS to set coloring as wanted? Do here?
+Go into qGIS to set coloring as wanted

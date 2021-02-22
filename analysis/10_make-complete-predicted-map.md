@@ -1,40 +1,27 @@
----
-title: "09_make-complete-predicted-map"
-author: "Ericka B. Smith"
-output: github_document
----
+09\_make-complete-predicted-map
+================
+Ericka B. Smith
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(randomForest)
-library(raster)
-library(rgdal)
-library(here)
-library(tidyverse)
-library(mapproj)
-library(magrittr)
-source(here("R", "get_rasterstack.R"))
-```
-
-```{r}
+``` r
 rf <- readRDS(here("results", "winning_rf.rds"))
 all_scenes <- get_rasterstack()
 ```
 
-
-```{r}
+``` r
 predicted_map <- predict(all_scenes, model=rf, na.rm=T)
 ```
 
-Make a plot: 
+Make a plot:
 
-```{r}
+``` r
 plot(predicted_map)
 ```
 
+![](10_make-complete-predicted-map_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
 Save predictions as raster:
 
-```{r}
+``` r
 writeRaster(predicted_map, here("results", "fully_predicted_hong_kong_map.tif"), overwrite=T)
 ```
 
@@ -42,14 +29,14 @@ Go into qGIS to set coloring as wanted?
 
 Or just here.
 
-```{r}
+``` r
 colormap <- read.csv(here("data", "cmap_Qgis_WUDAPT_LCZ.txt"))
 colormap <- colormap[-c(7,9,15,16),]
 hex_colors <- colormap %>%
   mutate(hex= rgb(r,g,b,maxColorValue = 255))
 ```
 
-```{r}
+``` r
 pred_map_pts<- rasterToPoints(predicted_map, spatial = TRUE)
 # Then to a 'conventional' dataframe
 pred_map_df  <- data.frame(pred_map_pts)
@@ -60,4 +47,4 @@ ggplot() +
   scale_fill_manual(values = hex_colors$hex, labels=hex_colors$class_num)
 ```
 
-
+![](10_make-complete-predicted-map_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

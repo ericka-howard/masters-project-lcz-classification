@@ -2,7 +2,7 @@
 title: "Local Climate Zone classification in mega urban areas using Landsat images and random forests: A case study of Hong Kong"
 author: "Ericka B. Smith"
 header-includes:
-  - \usepackage{setspace}\linespread{1.5}
+  - \usepackage{setspace}\linespread{2}
 date: "Winter 2021"
 output: 
   pdf_document:
@@ -110,15 +110,21 @@ $$
 
 The parameter for the number of trees was initially varied between 5 and 500 at intervals of 5. The resulting overall accuracy metrics indicate a leveling off around 125 trees (Figure 2). There's also a clear distinction between accuracy in urban vs. natural classes, with natural classes having a much higher overall accuracy.
 
-![The increase in OA metrics levels off around 125 trees. Urban classes (1-10) have much lower accuracy than natural classes (11-17). These metrics were calculated based on the out-of-bag dataset.](../results/plots/ntree_5_to_500_line_plot.pdf)
+```{r image-ref-for-in-text, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The increase in OA metrics levels off around 125 trees. Urban classes (1-10) have much lower accuracy than natural classes (11-17). These metrics were calculated based on the out-of-bag dataset.', out.width="100%", strip.white=TRUE, fig.pos='H'}
+knitr::include_graphics("../results/plots/ntree_5_to_500_line_plot.pdf")
+```
 
 The plot of F-1 scores (Figure 3) explores each class individually. It's clear that there are three approximate groupings. The dense trees; scattered trees; bush, scrub; low plants; and water classes (11, 12, 13, 14, and 17, respectively) have the highest F-1 scores throughout, staying in the high 0.9 range almost irrespective of number of random forest trees, though scattered trees (12) stands out as a little lower than the others. The open low-rise, large low-rise, and heavy industry classes (6, 8, and 10, respectively) have much lower F-1 scores which are around 0.5 to 0.7. Finally, in the middle are the compact high-rise, compact mid-rise, compact low-rise, open high-rise, and open mid-rise classes (1-5, respectively), with F-1 scores hovering around 0.7 to 0.9.
 
-![The variation between LCZ classes in F-1 score can be seen. As the number of trees in the random forest increases, F-1 score also increases, until around 100 trees. Note three approximate groupings of 1-5, 6-10, and 11-17. These metrics were calculated based on the out-of-bag dataset.](../results/plots/ntree_5_to_500_heatmap.pdf)
+```{r image-ref-for-in-text2, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The variation between LCZ classes in F-1 score can be seen. As the number of trees in the random forest increases, F-1 score also increases, until around 100 trees. Note three approximate groupings of 1-5, 6-10, and 11-17. These metrics were calculated based on the out-of-bag dataset.', out.width="100%", fig.pos='H'}
+knitr::include_graphics("../results/plots/ntree_5_to_500_heatmap.pdf")
+```
 
 Almost all of the classes' F-1 scores appear to respond to increased numbers of trees, to an extent. This response seems to stop entirely once the number of trees reaches 100, but to explore it more thoroughly I ran another simulation varying the number of trees between 25 and 2500 at intervals of 25. Increasing the number of trees has little to no effect on the F-1 score by class (Figure 4).
 
-![The number of trees in the random forest does not seem to have a strong effect on the F-1 scores by class. This is based on the out-of-bag dataset and the number of trees was adjusted from 25 to 2500 in intervals of 25.](../results/plots/ntree_25_to_2500_heatmap.pdf)
+```{r image-ref-for-in-text3, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The number of trees in the random forest does not seem to have a strong effect on the F-1 scores by class. This is based on the out-of-bag dataset and the number of trees was adjusted from 25 to 2500 in intervals of 25', out.width="100%", fig.pos='H'}
+knitr::include_graphics("../results/plots/ntree_25_to_2500_heatmap.pdf")
+```
 
 ## Predicting on the Test Dataset
 
@@ -126,13 +132,17 @@ Almost all of the classes' F-1 scores appear to respond to increased numbers of 
 
 Accuracy metrics dropped dramatically upon applying the random forest to the test data (Figure 4). The F-1 Score for class 17, Water, remained high, but since water has a very characteristic signature this is not surprising. Classification for classes 2 (compact midrise), 5 (open midrise), 8 (large low-rise), and 14 (low plants) performed especially poorly.
 
-![Accuracy among random forest predictions for the test dataset varied widely, but was overall lower than expected. Classes 2, 5, 8, and 14 have particularly low F-1 Scores.](../results/plots/test_set_accuracy_metrics_barplot.pdf)
+```{r image-ref-for-in-text4, echo = FALSE, message=FALSE, fig.align='center', fig.cap='Accuracy among random forest predictions for the test dataset varied widely, but was overall lower than expected. Classes 2, 5, 8, and 14 have particularly low F-1 Scores', out.width="100%", fig.pos='H'}
+knitr::include_graphics("../results/plots/test_set_accuracy_metrics_barplot.pdf")
+```
 
 ### Importance Measures
 
 In general there is not a clear pattern in which bands or scenes proved to be the best predictors based on mean decrease in Gini Impurity (Figure 5). However, bands 7, 10, and 11 in Scene 4 were particularly useful. Scene 4 overall seems to contribute the most effectively to the model, surpassing the other scenes in each of the bads except for 4,5, and 6. 
 
-![There is not a clear pattern in Mean Decrease for Gini Impurity between the different bands and scenes, though there is some indication that bands in scene 4 were particularly effective as predictors.](../results/plots/importance_barplot_ntree125.pdf)
+```{r image-ref-for-in-text5, echo = FALSE, message=FALSE, fig.align='center', fig.cap='There is not a clear pattern in Mean Decrease for Gini Impurity between the different bands and scenes, though there is some indication that bands in scene 4 were particularly effective as predictors.', out.width="100%", fig.pos='H'}
+knitr::include_graphics("../results/plots/importance_barplot_ntree125.pdf")
+```
 
 ## A full prediction
 

@@ -184,7 +184,7 @@ knitr::include_graphics("../results/plots/ntree_25_to_2500_facet_plot.pdf")
 OA and F-1 metrics dropped dramatically upon applying the random forest to the test data (Figure 4). The F-1 Score for class 17, Water, remained high, but since water has a very characteristic signature this is not surprising. Classification for classes 2 (compact midrise), 5 (open midrise), 8 (large low-rise), and 14 (low plants) performed especially poorly.
 
 ```{r image-ref-for-in-text4, echo = FALSE, message=FALSE, fig.align='center', fig.cap='Accuracy among random forest predictions for the test dataset varied widely, but was overall lower than expected. Classes 2, 5, 8, and 14 have particularly low F-1 Scores', out.width="75%", fig.pos='H'}
-knitr::include_graphics("../results/plots/test_set_accuracy_metrics_barplot.pdf")
+knitr::include_graphics("../results/plots/test_set_validation_metrics_barplot_separated.pdf")
 ```
 
 ### Importance Measures

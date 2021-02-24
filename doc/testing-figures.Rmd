@@ -1,5 +1,5 @@
 ---
-title: "testing table"
+title: "Making Table 1"
 author: "Ericka B. Smith"
 output: pdf_document
 ---
@@ -16,43 +16,6 @@ library(tidyr)
 ```{r}
 (dat <- readRDS(here("results", "table_3_equivalent.rds")))
 ```
-
-
-
-```{r}
-tst <- dat %>% 
-  ungroup() %>%
-  mutate(lcz = fct_drop(lcz, only = "0")) %>%
-  pivot_wider(names_from=tt, values_from=c(total_n_pixels, n_polygons)) %>%
-  unite("Train", c(n_polygons_train, total_n_pixels_train), sep = "        (") %>%
-  unite("Test", c(n_polygons_test, total_n_pixels_test), sep = " (") %>%
-  mutate(Train = paste(Train, ")", sep=""),
-         Test = paste(Test, ")", sep=""))
-# 
-# 
-#   relocate(lcz, n_polygons_train, total_n_pixels_train, n_polygons_test, total_n_pixels_test) %>%
-#   rename
-
-```
-
-```{r}
-
-
-```
-
-
-
-```{r}
-# #kable(tst, format="latex", booktabs=T, caption = "etc etc") %>% add_header_above(., c(' '=1, 'Parts'=4'))
-#  kable(tst, format='latex',align='c',linesep='',booktabs=TRUE,escape=FALSE,
-#         col.names = linebreak(colnames(tst),align = 'c')) %>%
-#   add_header_above(c(" " = 1, "title" = 2)) %>%
-#   #collapse_rows(columns = c(1,3),valign = 'middle')%>%
-#   kable_styling(latex_options = c('striped','HOLD_position','scale_down'))
-```
-
-
-
 
 ```{r}
 tibble(lcz = factor(c("7", "7", "9", "9", "15", "15", "16", "16")),#,
@@ -89,7 +52,8 @@ tibble(lcz = factor(c("7", "7", "9", "9", "15", "15", "16", "16")),#,
 kable(caption = "Delineation of training and test data by polygon and pixel.", format='latex',linesep='',booktabs=TRUE,escape=FALSE,
         col.names = linebreak(c("Local Climate Zone", "Train", "Test"))) %>%
   kable_styling(latex_options = c('striped','HOLD_position'), font_size = 8) %>%
-  add_footnote("Number of polygons is listed first, with number of pixels in parentheses.")
+  add_footnote("Number of polygons is listed first, with number of pixels in parentheses.") %>%
+  save_kable("table1.png")
 ```
 
 

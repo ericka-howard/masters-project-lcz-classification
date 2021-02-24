@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.2.23)  23 FEB 2021 16:30
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.2.23)  23 FEB 2021 16:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -384,13 +384,6 @@ Package graphics Info: Driver file: pdftex.def on input line 105.
 (c:/Users/erick/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/setspace/setspace.
 sty
 Package: setspace 2011/12/19 v6.7a set line spacing
-) (c:/Users/erick/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/float/float.sty
-Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count278
-\float@exts=\toks24
-\float@box=\box49
-\@float@everytoks=\toks25
-\@floatcapt=\box50
 )
 (c:/Users/erick/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/booktabs/booktabs.
 sty
@@ -405,12 +398,12 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \cmidrulesep=\dimen169
 \cmidrulekern=\dimen170
 \defaultaddspace=\dimen171
-\@cmidla=\count279
-\@cmidlb=\count280
+\@cmidla=\count278
+\@cmidlb=\count279
 \@aboverulesep=\dimen172
 \@belowrulesep=\dimen173
-\@thisruleclass=\count281
-\@lastruleclass=\count282
+\@thisruleclass=\count280
+\@lastruleclass=\count281
 \@thisrulewidth=\dimen174
 )
 (c:/Users/erick/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/tools/longtable.st
@@ -420,32 +413,32 @@ Package: longtable 2020/01/07 v4.13 Multi-page Table package (DPC)
 \LTright=\skip54
 \LTpre=\skip55
 \LTpost=\skip56
-\LTchunksize=\count283
+\LTchunksize=\count282
 \LTcapwidth=\dimen175
-\LT@head=\box51
-\LT@firsthead=\box52
-\LT@foot=\box53
-\LT@lastfoot=\box54
-\LT@cols=\count284
-\LT@rows=\count285
-\c@LT@tables=\count286
-\c@LT@chunks=\count287
-\LT@p@ftn=\toks26
+\LT@head=\box49
+\LT@firsthead=\box50
+\LT@foot=\box51
+\LT@lastfoot=\box52
+\LT@cols=\count283
+\LT@rows=\count284
+\c@LT@tables=\count285
+\c@LT@chunks=\count286
+\LT@p@ftn=\toks24
 ) (c:/Users/erick/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/tools/array.sty
 Package: array 2020/10/01 v2.5c Tabular extension package (FMi)
 \col@sep=\dimen176
-\ar@mcellbox=\box55
+\ar@mcellbox=\box53
 \extrarowheight=\dimen177
-\NC@list=\toks27
+\NC@list=\toks25
 \extratabsurround=\skip57
 \backup@length=\skip58
-\ar@cellbox=\box56
+\ar@cellbox=\box54
 )
 (c:/Users/erick/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/multirow/multirow.
 sty
 Package: multirow 2021/01/29 v2.7 Span multiple rows of a table
 \multirow@colwidth=\skip59
-\multirow@cntb=\count288
+\multirow@cntb=\count287
 \multirow@dima=\skip60
 \bigstrutjot=\dimen178
 )
@@ -453,10 +446,17 @@ Package: multirow 2021/01/29 v2.7 Span multiple rows of a table
 y
 \wrapoverhang=\dimen179
 \WF@size=\dimen180
-\c@WF@wrappedlines=\count289
-\WF@box=\box57
-\WF@everypar=\toks28
+\c@WF@wrappedlines=\count288
+\WF@box=\box55
+\WF@everypar=\toks26
 Package: wrapfig 2003/01/31  v 3.6
+) (c:/Users/erick/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count289
+\float@exts=\toks27
+\float@box=\box56
+\@float@everytoks=\toks28
+\@floatcapt=\box57
 )
 (c:/Users/erick/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/colortbl/colortbl.
 sty
@@ -543,28 +543,21 @@ Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
 \rotheadsize=\dimen195
 \c@nlinenum=\count298
 \TeXr@lab=\toks33
-) (c:/Users/erick/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/natbib/natbib.st
-y
-Package: natbib 2010/09/13 8.31b (PWD, AO)
-\bibhang=\skip65
-\bibsep=\skip66
-LaTeX Info: Redefining \cite on input line 694.
-\c@NAT@ctr=\count299
 )
 (c:/Users/erick/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/l3backend/l3backen
 d-pdftex.def
 File: l3backend-pdftex.def 2021-02-18 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count300
+\l__color_backend_stack_int=\count299
 \l__pdf_internal_box=\box67
 ) (./report.aux
 ! Undefined control sequence.
 l.22 \abx@aux@refcontext
                         {nty/global//global/global} 
 Here is how much of TeX's memory you used:
- 11345 strings out of 480946
- 163508 string characters out of 5905086
- 475669 words of memory out of 5000000
- 28412 multiletter control sequences out of 15000+600000
+ 11022 strings out of 480946
+ 159613 string characters out of 5905086
+ 469292 words of memory out of 5000000
+ 28093 multiletter control sequences out of 15000+600000
  406526 words of font info for 29 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  71i,0n,74p,240b,270s stack positions out of 5000i,500n,10000p,200000b,80000s

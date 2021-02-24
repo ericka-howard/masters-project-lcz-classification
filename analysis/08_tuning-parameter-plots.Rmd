@@ -12,37 +12,46 @@ library(forcats)
 library(reshape2)
 library(viridis)
 library(ggpubr)
-theme_set(theme_pubclean())
+theme_set(theme_pubr())
 ```
 
 Load data
 
 ```{r, warning=FALSE}
-current_data_name <- "ntree_25_to_2500_data.rds"
-param_dat <- read_csv(here("results/run_output_tables", current_data_name))
-param_dat <- param_dat[,2:18]
+current_data_name <- "ntree_5_to_500_data.rds"
+param_dat <-
+  read_csv(here("results/run_output_tables", current_data_name))
+param_dat <- param_dat[, 2:18]
 ```
 
 Name output plots
 
 ```{r}
-current_line_plot_name <- "ntree_25_to_2500_line_plot.pdf"
-current_heatmap_name <- "ntree_25_to_2500_heatmap.pdf"
+current_line_plot_name <- "ntree_5_to_500_line_plot.pdf"
+current_heatmap_name <- "ntree_5_to_500_heatmap.pdf"
+f1_facet_plot_name <- "ntree_5_to_500_facet_plot.pdf"
 ```
 
 ```{r}
 param_dat %>%
   dplyr::select(ntree, oa, oa_urb, oa_nat) %>%
-  melt(id.vars= "ntree", measure.vars=c("oa", "oa_urb", "oa_nat"), value.name = "Accuracy", variable.name="Metric") %>%
-  ggplot()+
-  geom_point(aes(x=ntree, y=Accuracy, color=Metric), size=0.75)+
-  geom_smooth(aes(x=ntree, y=Accuracy, color=Metric), se=F)+
-  ggtitle("Overall Accuracy Metrics by Numbers of Trees")+
-  xlab("\nNumber of Trees")+
-  ylab("Accuracy\n")+
-  scale_color_viridis(discrete=T,
-                      breaks=c("oa", "oa_urb", "oa_nat"),
-                      labels=c("Overall", "Urban", "Natural"))+
+  melt(
+    id.vars = "ntree",
+    measure.vars = c("oa", "oa_urb", "oa_nat"),
+    value.name = "Accuracy",
+    variable.name = "Metric"
+  ) %>%
+  ggplot(aes(x = ntree, y = Accuracy, color = Metric)) +
+  geom_point(size = 0.75) +
+  geom_smooth(se = F) +
+  ggtitle("Overall Accuracy Metrics by Numbers of Trees") +
+  xlab("\nNumber of Trees") +
+  ylab("Accuracy\n") +
+  scale_color_manual(
+    breaks = c("oa", "oa_urb", "oa_nat"),
+    labels = c("Overall", "Urban", "Natural"),
+    values = c("#FDE725FF", "#1F968BFF", "#440154FF")
+  ) +
   theme(legend.position = "right")
 
 ggsave(here("results/plots", current_line_plot_name))
@@ -55,17 +64,74 @@ f1_list <- names(param_dat)[c(1, 5:ncol(param_dat))]
 dat <- param_dat %>%
   dplyr::select(all_of(f1_list)) %>%
   rename_at(vars(contains("f1_")), funs(str_replace(., "f1_", ""))) %>%
-  melt(id.vars= "ntree", value.name = "F1", variable.name="Class") %>%
+  melt(id.vars = "ntree",
+       value.name = "F1",
+       variable.name = "Class") %>%
   mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural"))
 
-ggplot(dat)+
-  geom_raster(aes(x=ntree, y=Class, fill=F1))+
-  scale_fill_viridis(option="magma")+ 
-  labs(title="F-1 Score by Class for 25 to 2500 Trees", 
-       x="\nNumber of Trees",
-       y="Class\n")+
+ggplot(dat) +
+  geom_raster(aes(x = ntree, y = Class, fill = F1)) +
+  scale_fill_viridis(option = "magma") +
+  labs(title = "F-1 Score by Class for 25 to 2500 Trees",
+       x = "\nNumber of Trees",
+       y = "Class\n") +
   theme(legend.position = "right")
-  
 
 ggsave(here("results/plots", current_heatmap_name))
+```
+
+
+```{r fig.height=7, fig.width=5}
+ggplot(dat, aes(x = ntree, y = F1, color = Type)) +
+  geom_smooth(se = F, size=0.5) +
+  geom_point(size = 0.25)+
+labs(title ="F-1 Score by Class for 5 to 500 Trees",
+     x ="\nNumber of Trees",
+     y =  "F-1 Score\n") +
+  facet_grid(Class ~ ., scales = "free") +
+  scale_color_manual(values = c("Urban" = "#1F968BFF", "Natural" = "#440154FF")) +
+  theme(
+    axis.text = element_text(size = 7),
+    strip.text.y = element_text(angle = 0),
+    legend.position = "right"
+  )
+ggsave(here("results/plots", f1_facet_plot_name))
+```
+
+Try putting them together
+
+```{r}
+param_higher_ntree_dat <-
+  read_csv(here("results/run_output_tables", "ntree_25_to_2500_data.rds"))
+param_higher_ntree_dat <- param_higher_ntree_dat[, 2:18]
+
+dat_25_2500 <- param_higher_ntree_dat %>%
+  dplyr::select(all_of(f1_list)) %>%
+  rename_at(vars(contains("f1_")), funs(str_replace(., "f1_", ""))) %>%
+  melt(id.vars = "ntree",
+       value.name = "F1",
+       variable.name = "Class") %>%
+  mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural"))
+```
+
+
+```{r fig.height=7, fig.width=5}
+p2 <- ggplot(dat_25_2500, aes(x = ntree, y = F1, color = Type)) +
+  geom_smooth(se = F, size=0.5) +
+  geom_point(size = 0.25) +
+  labs(title ="F-1 Score by Class for 25 to 2500 Trees",
+       x =  "\nNumber of Trees",
+       y = "F-1 Score") +
+  facet_grid(Class ~ ., scales = "free") +
+  scale_color_manual(values = c("Urban" = "#1F968BFF", "Natural" = "#440154FF")) +
+  theme(
+    axis.text = element_text(size = 7),
+    strip.text.y = element_text(angle = 0),
+    legend.position = "right"
+  )
+ggsave(here("results/plots", "ntree_25_to_2500_facet_plot.pdf"))
+
+# facet_pair <- ggarrange(p1, p2, common.legend = F, legend = "bottom")
+# annotate_figure(facet_pair, top = text_grob("\nF-1 Score by Class for Two Scales of Numbers of Trees", face="bold", size = 14))
+# ggsave(here("results/plots", "ntree_5_to_2500_combined_facet_plot.pdf"))
 ```

@@ -16,6 +16,7 @@ library(mapproj)
 library(broom)
 library(ggpubr)
 library(viridis)
+library(cowplot)
 theme_set(theme_pubclean())
 ```
 
@@ -30,10 +31,15 @@ train <- readRDS(here("results", "train.rds"))
 test <- readRDS(here("results", "test.rds"))
 ```
 
-Create Model
+Load Model
+
 
 ```{r}
-rf <- randomForest(lcz ~ ., data=train, ntree=125, importance=TRUE)
+rf <- readRDS(here("results", "winning_rf.rds"))
+```
+
+```{r}
+#rf <- randomForest(lcz ~ ., data=train, ntree=125, importance=TRUE)
 ```
 
 
@@ -141,7 +147,75 @@ ggsave(here("results/plots", "importance_barplot_ntree125.pdf"))
 Save Random Forest
 
 ```{r}
-saveRDS(rf, here("results", "winning_rf.rds"))
+#saveRDS(rf, here("results", "winning_rf.rds"))
+```
+
+# Why does the plot looks like overall urban accuracy is better than the sum of it's parts? Because f1 is different than OA and that isn't clear enough
+
+```{r}
+f1
+
+```
+
+```{r}
+ordering <-
+  c(
+    "F1-17",
+    "F1-14",
+    "F1-13",
+    "F1-12",
+    "F1-11",
+    "F1-10",
+    "F1-8",
+    "F1-6",
+    "F1-5",
+    "F1-4",
+    "F1-3",
+    "F1-2",
+    "F1-1",
+    "OA-NAT",
+    "OA-URB",
+    "OA"
+  )
+urban <-
+  c("F1-10",
+    "F1-8",
+    "F1-6",
+    "F1-5",
+    "F1-4",
+    "F1-3",
+    "F1-2",
+    "F1-1",
+    "OA-URB")
+natural <- c("F1-17", "F1-14", "F1-13", "F1-12", "F1-11", "OA-NAT")
+
+prep_and_plot <- function(dat){
+  dat %>%
+  rename_at(vars(everything()), ~ toupper(gsub("_", "-", .x))) %>%
+  pivot_longer(everything(), names_to = "Metric") %>%
+  mutate(
+    Type = case_when(
+      Metric %in% urban ~ "Urban",
+      Metric %in% natural ~ "Natural",
+      TRUE ~ "Overall"
+    )
+  ) %>%
+    ggplot() +
+  geom_bar(aes(x = value, y = Metric, fill = Type), stat = 'identity') +
+  scale_fill_viridis(discrete = T, option = "cividis") +
+  labs(title ="", #"Accuracy Metrics for Test Dataset",
+       subtitle ="", #"Random forest created with 125 trees.",
+       x = "")+#"Value") +
+  theme(legend.position = "right")
+    
+}
+
+oa_plot <- prep_and_plot(oa)
+f1_plot <- prep_and_plot(f1)
+
+facet_pair <- ggarrange(oa_plot, f1_plot, ncol=1, common.legend = T, legend = "right")
+annotate_figure(facet_pair, top = text_grob("Validation Metrics for Test Dataset", face="bold", size = 14))
+ggsave(here("results/plots", "test_set_validation_metrics_barplot_separated.pdf"))
 ```
 
 

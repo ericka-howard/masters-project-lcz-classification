@@ -2,7 +2,8 @@
 title: "Local Climate Zone classification in mega urban areas using Landsat images and random forests: A case study of Hong Kong"
 author: "Ericka B. Smith"
 header-includes:
-  - \usepackage{setspace}\linespread{1.5}
+  - \usepackage{setspace}\linespread{2}
+  - \usepackage{float}
 date: "Winter 2021"
 output: 
   pdf_document:

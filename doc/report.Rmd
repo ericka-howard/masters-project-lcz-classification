@@ -17,7 +17,9 @@ library(dplyr)
 library(forcats)
 library(kableExtra)
 library(tidyr)
+library(readr)
 table_dat <- readRDS("../results/table_3_equivalent.rds") 
+scene_dat <- read_csv(here("data", "scene_info.csv"))
 ```
 
 # Introduction
@@ -48,15 +50,51 @@ The LCZ reference data from the contest set was taken from the WUDAPT database, 
 
 In Yoo et al. (2019) they downloaded and preprocessed their own Landsat 8 data to facilitate some of their classification schemes, but the contest data was sufficient for the narrower scope of this project. The Landsat 8 data provided by the contest includes four different dates, or “scenes,” each of which were downloaded from the USGS EarthExplorer portal (Table 1). Then the atmospheric band (band 9) and the panchromatic band (band 8) were left out, and the data were resampled using the area weighted average to 100 m x 100 m grids (Yokoya et al., 2018). To get these data into a usable format they were loaded into R by band (each band is a separate raster layer) and stacked by scene. All the scenes were then stacked with the LCZ reference data and converted to a dataframe, ready to be used as input data.
 
-```{r tbl1, echo = FALSE, message=FALSE, fig.align='center', out.width="75%", fig.pos='H'}
-knitr::include_graphics("../results/plots/ntree_5_to_500_facet_plot.pdf")
+```{r echo=FALSE}
+scene_dat[,2:3] %>%
+kable(caption = "Acquisition Dates of Each Landsat 8 Scene", format='latex',linesep='',booktabs=TRUE,escape=FALSE) %>%
+  kable_styling(latex_options = c('striped','HOLD_position'), font_size = 8)
 ```
-
-![](../results/tables/table)
 
 All 9 available bands of all 4 Landsat scenes amounted to 36 input variables. Each pixel is an observation, with 279,312 pixels total over the almost 2,800 square kilometers that are contained within the area of interest. The LCZ reference data has 179 polygons, which cover 8,846 pixels. This is approximately 88.5 square kilometers and 3% of the total area of interest. The LCZ reference data was randomly split into training and test sets by LCZ class and polygon. The resulting groups are not exactly equal in pixel numbers, but I determined that randomization of polygons takes precedence over equality in pixels due to the potential for artificially high accuracy values, as mentioned before. In order to get as close as possible a barplot was made showing the number of pixels in training and test, by class, so that equality in pixel number could be explored without having knowledge of polygon groupings. Sampling was repeated until these bars looked marginally even. (Table 2).
 
-![](../results/tables/table_2.jpg)
+```{r echo=FALSE}
+tibble(lcz = factor(c("7", "7", "9", "9", "15", "15", "16", "16")),#,
+       tt = factor(c("train", "test", "train", "test", "train", "test", "train", "test")), 
+                 total_n_pixels = rep(0, times=8), 
+                 n_polygons = rep(0, times=8)) %>%
+  bind_rows(table_dat) %>%
+  mutate(lcz = fct_relevel(lcz, c("1", "2","3", "4","5", "6","7", "8","9", "10","11", "12","13", "14","15", "16","17"))) %>%
+  arrange(lcz) %>%
+  ungroup() %>%
+  pivot_wider(names_from=tt, values_from=c(total_n_pixels, n_polygons)) %>%
+  unite("Train", c(n_polygons_train, total_n_pixels_train), sep = "        (") %>%
+  unite("Test", c(n_polygons_test, total_n_pixels_test), sep = " (") %>%
+  mutate(Train = paste(Train, ")", sep=""),
+         Test = paste(Test, ")", sep="")) %>%
+  relocate(Test, .after=Train) %>%
+  mutate(lcz = fct_recode(lcz, "Class 1: Compact high-rise" = "1",
+                     "Class 2: Compact mid-rise" = "2",
+                     "Class 3: Compact low-rise" = "3",
+                     "Class 4: Open high-rise" = "4",
+                     "Class 5: Open mid-rise" = "5",
+                     "Class 6: Open low-rise" = "6",
+                     "Class 7: Lightweight low-rise" = "7",
+                     "Class 8: Large low-rise" = "8",
+                     "Class 9: Sparsely built" = "9",
+                     "Class 10: Heavy Industry" = "10",
+                     "Class 11: Dense trees" = "11",
+                     "Class 12: Scattered trees" = "12",
+                     "Class 13: Bush, scrub" = "13",
+                     "Class 14: Low plants" = "14",
+                     "Class 15: Bare rock or paved" = "15",
+                     "Class 16: Bare soil or sand" = "16",
+                     "Class 17: Water" = "17")) %>%
+kable(caption = "Delineation of training and test data by polygon and pixel.", format='latex',linesep='',booktabs=TRUE,escape=FALSE,
+        col.names = linebreak(c("Local Climate Zone", "Train", "Test"))) %>%
+  kable_styling(latex_options = c('striped','HOLD_position'), font_size = 8) %>%
+  add_footnote("Number of polygons is listed first, with number of pixels in parentheses.")
+```
 
 ## Random Forests
 
@@ -109,7 +147,7 @@ $$
 
 # Results
 
-## Varying the Parameter for Number of Trees ( formatting option 2)
+## Varying the Parameter for Number of Trees
 
 The parameter for the number of trees was initially varied between 5 and 500 at intervals of 5. The resulting overall accuracy metrics indicate a leveling off around 125 trees (Figure 2). There's also a clear distinction between accuracy in urban vs. natural classes, with natural classes having a much higher overall accuracy.
 
@@ -162,8 +200,6 @@ The results of this analysis point to an issue in the current method for using r
 That being said, there are a number of other reasons this discrepancy in accuracy between classes could be occurring. The uneven distribution of polygons in different classes in the training dataset is likely an important contributor. The small proportion of training and test pixels relative to the entire are of interest also may be cause for concern. However, the latter is not actually tested for our accuracy methods due to lack of a fully classified ground truth layer. Without this layer it is not possible to test the transferability of these models to other urban areas, but based on the classification success within Hong Kong, it is likely that transferability is poor. 
 
 In terms of my results varying the parameters of the random forest, there is an upper limit to how accurate the model can be. That upper limit may be in part due to the appropriateness of the method, but I postulate that the quality and amount of data is the true culprit. I suggest this as an area for future study, as it would be valuable to understand what level of initial classification commitment is necessary for a robust LCZ analysis.
-
-\newpage
 
 # References
 

@@ -32,6 +32,9 @@ source(here("R", "predict_lcz.R"))
 source(here("R", "try_parameter.R"))
 train <- readRDS(here("results", "train.rds"))
 test <- readRDS(here("results", "test.rds"))
+scene_dat <- read_csv(here("data", "scene_info.csv"))
+band_info <- read_csv(here("data", "landsat_bands.txt")) %>%
+  mutate(Band = factor(Band))
 ```
 
 Load Model
@@ -61,67 +64,13 @@ f1 <- get_f1_score(predicted, lcz, lcz_predicted)
 
 Make Plots
 
-```{r}
-ordering <-
-  c(
-    "F1-17",
-    "F1-14",
-    "F1-13",
-    "F1-12",
-    "F1-11",
-    "F1-10",
-    "F1-8",
-    "F1-6",
-    "F1-5",
-    "F1-4",
-    "F1-3",
-    "F1-2",
-    "F1-1",
-    "OA-NAT",
-    "OA-URB",
-    "OA"
-  )
-urban <-
-  c("F1-10",
-    "F1-8",
-    "F1-6",
-    "F1-5",
-    "F1-4",
-    "F1-3",
-    "F1-2",
-    "F1-1",
-    "OA-URB")
-natural <- c("F1-17", "F1-14", "F1-13", "F1-12", "F1-11", "OA-NAT")
-
-bind_cols(oa, f1) %>%
-  rename_at(vars(everything()), ~ toupper(gsub("_", "-", .x))) %>%
-  pivot_longer(everything(), names_to = "Accuracy Metric") %>%
-  mutate(
-    `Accuracy Metric` = fct_relevel(`Accuracy Metric`, ordering),
-    Type = case_when(
-      `Accuracy Metric` %in% urban ~ "Urban",
-      `Accuracy Metric` %in% natural ~ "Natural",
-      TRUE ~ "Overall"
-    )
-  ) %>%
-ggplot() +
-  geom_bar(aes(x = value, y = `Accuracy Metric`, fill = Type), stat = 'identity') +
-  scale_fill_viridis(discrete = T, option = "cividis") +
-  labs(title = "Accuracy Metrics for Test Dataset",
-       subtitle = "Random forest created with 125 trees.",
-       x = "Value") +
-  theme(legend.position = "right")
-
-ggsave(here("results/plots", "test_set_accuracy_metrics_barplot.pdf"))
-```
-
-```{r}
+```{r fig.height=6}
 imp_plot <- varImpPlot(rf)
 class(imp_plot)
 
-imp_plot + theme_pubclean()
-
-
+get_date <- function(scene_num){
+  date <- scene_dat$Date[which(scene_dat$Scene==scene_num)]
+}
 
 rf$importance %>%
   as.data.frame() %>%
@@ -133,53 +82,31 @@ rf$importance %>%
     remove = F
   ) %>%
   mutate(Band = parse_number(Band),
-         Band = factor(Band)) %>%
+         Band = factor(Band),
+         Scene = as.double(Scene)) %>%
+  left_join(scene_dat, by="Scene") %>%
+  left_join(band_info, by="Band") %>%
+  mutate(Scenes = paste("Scene", Scene, ":\n", Date),
+         Band = paste("Band", Band, ":\n", Description)) %>%
   ggplot() +
-  geom_bar(aes(x = MeanDecreaseGini, y = Band, fill = Scene),
+  geom_bar(aes(x = MeanDecreaseGini, y = Band, fill = Scenes),
            stat = 'identity',
-           position = "dodge") +
+           position = "dodge",
+           color="black") +
+  facet_grid(Band~., scales="free")+
   scale_fill_viridis(discrete = T) +
-  theme(legend.position = "right") +
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        strip.text=element_blank()) +
   labs(title = "Importance Measures for Each Predictor Variable",
-       subtitle = "Predictor variables are grouped into band and scene. (ntree=125).",
-       x = "Mean Decrease in Gini Impurity")
+       x = "Mean Decrease in Gini Impurity",
+       y="")
 
 ggsave(here("results/plots", "importance_barplot_ntree125.pdf"))
 ```
 
-Save Random Forest
-
-```{r}
-#saveRDS(rf, here("results", "winning_rf.rds"))
-```
-
-# Why does the plot looks like overall urban accuracy is better than the sum of it's parts? Because f1 is different than OA and that isn't clear enough
-
-```{r}
-f1
-
-```
 
 ```{r fig.height=6}
-ordering <-
-  c(
-    "F1-17",
-    "F1-14",
-    "F1-13",
-    "F1-12",
-    "F1-11",
-    "F1-10",
-    "F1-8",
-    "F1-6",
-    "F1-5",
-    "F1-4",
-    "F1-3",
-    "F1-2",
-    "F1-1",
-    "OA-NAT",
-    "OA-URB",
-    "OA"
-  )
 urban <-
   c("F1-10",
     "F1-8",
@@ -192,48 +119,75 @@ urban <-
     "OA-URB")
 natural <- c("F1-17", "F1-14", "F1-13", "F1-12", "F1-11", "OA-NAT")
 
-prep_and_plot <- function(dat, metric_name){
+prep_and_plot <- function(dat, metric_name) {
   dat %>%
-  rename_at(vars(everything()), ~ toupper(gsub("_", "-", .x))) %>%
-  pivot_longer(everything(), names_to = "Metric") %>%
-  mutate(
-    Type = case_when(
-      Metric %in% urban ~ "Urban",
-      Metric %in% natural ~ "Natural",
-      TRUE ~ "Overall"
-    ),
-    Metric = fct_reorder(Metric, value)
-  ) %>%
+    rename_at(vars(everything()), ~ toupper(gsub("_", "-", .x))) %>%
+    pivot_longer(everything(), names_to = "Metric") %>%
+    mutate(
+      Type = case_when(
+        Metric %in% urban ~ "Urban",
+        Metric %in% natural ~ "Natural",
+        TRUE ~ "Overall"
+      ),
+      Metric = fct_reorder(Metric, value)
+    ) %>%
     ggplot() +
-  geom_bar(aes(x = value, y = Metric, fill = Type), color="white", stat = 'identity') +
-  scale_fill_viridis(discrete = T, option = "cividis") +
-  labs(title ="", #"Accuracy Metrics for Test Dataset",
-       subtitle ="", #"Random forest created with 125 trees.",
-       x = "",
-       y = metric_name)+#"Value") +
-    coord_cartesian(xlim=c(0,1))+
-    theme(plot.margin = unit(c(0,0,0,0), "cm"),
-          axis.text = element_text(size=9))
-    
+    geom_bar(aes(x = value, y = Metric, fill = Type),
+             color = "white",
+             stat = 'identity') +
+    scale_fill_viridis(discrete = T, option = "cividis") +
+    labs(
+      title = "",
+      subtitle = "",
+      x = "",
+      y = metric_name
+    ) +
+    coord_cartesian(xlim = c(0, 1)) +
+    theme(plot.margin = unit(c(0, 0, 0, 0), "cm"),
+          axis.text = element_text(size = 9))
+  
 }
 
 oa_plot <- prep_and_plot(oa, "")
-f1_plot <- prep_and_plot(f1, "") + facet_grid(Type~., scales="free")
+f1_plot <- prep_and_plot(f1, "") + facet_grid(Type ~ ., scales = "free")
 placeholder_plot <- ggplot()
 
 # extract the legend from one of the plots
-legend <- get_legend(
-  # create some space to the left of the legend
-  oa_plot + theme(legend.position = "right", legend.box.margin = ggplot2::margin(0, 0, 0, 12))
-)
+legend <- get_legend(# create some space to the left of the legend
+  oa_plot + theme(
+    legend.position = "right",
+    legend.box.margin = ggplot2::margin(0, 0, 0, 12)
+  ))
 oa_just_plot <- oa_plot + theme(legend.position = "none")
-f1_just_plot <- f1_plot + theme(legend.position = "none", strip.text = element_blank())
+f1_just_plot <-
+  f1_plot + theme(legend.position = "none", strip.text = element_blank())
 
-facet_pair <- plot_grid(oa_just_plot, legend, f1_just_plot, placeholder_plot, nrow=2, rel_widths = c(1, 0.2), rel_heights = c(1.7, 3.1))
-annotate_figure(facet_pair, top = text_grob("\nValidation Metrics for Test Dataset", face="bold", size = 14))
-ggsave(here("results/plots", "test_set_validation_metrics_barplot_separated.pdf"))
+facet_pair <-
+  plot_grid(
+    oa_just_plot,
+    legend,
+    f1_just_plot,
+    placeholder_plot,
+    nrow = 2,
+    rel_widths = c(1, 0.2),
+    rel_heights = c(1.7, 3.1)
+  )
+annotate_figure(facet_pair,
+                top = text_grob(
+                  "\nValidation Metrics for Test Dataset",
+                  face = "bold",
+                  size = 14
+                ))
+ggsave(here(
+  "results/plots",
+  "test_set_validation_metrics_barplot_separated.pdf"
+))
 ```
 
 
+Save Random Forest
 
+```{r}
+#saveRDS(rf, here("results", "winning_rf.rds"))
+```
 

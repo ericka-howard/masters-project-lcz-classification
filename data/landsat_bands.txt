@@ -1,0 +1,10 @@
+Band, Description,Wavelength,Resolution
+1,Coastal aerosol,0.43-0.45,30
+2,Blue,0.45-0.51,30
+3,Green,0.53-0.59,30
+4,Red,0.64-0.67,30
+5,Near Infrared,0.85-0.88,30
+6,Short-wave Infrared,1.57-1.65,30
+7,Short-Wave Infrared,2.11-2.29,30
+10,Thermal Infrared,10.6-11.19,100
+11,Thermal Infrared,11.50-12.51,100

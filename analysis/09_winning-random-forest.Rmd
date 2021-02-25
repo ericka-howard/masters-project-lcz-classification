@@ -160,7 +160,7 @@ f1
 
 ```
 
-```{r}
+```{r fig.height=6}
 ordering <-
   c(
     "F1-17",
@@ -218,8 +218,8 @@ prep_and_plot <- function(dat, metric_name){
 }
 
 oa_plot <- prep_and_plot(oa, "")
-f1_plot <- prep_and_plot(f1, "")
-
+f1_plot <- prep_and_plot(f1, "") + facet_grid(Type~., scales="free")
+placeholder_plot <- ggplot()
 
 # extract the legend from one of the plots
 legend <- get_legend(
@@ -227,9 +227,9 @@ legend <- get_legend(
   oa_plot + theme(legend.position = "right", legend.box.margin = ggplot2::margin(0, 0, 0, 12))
 )
 oa_just_plot <- oa_plot + theme(legend.position = "none")
-f1_just_plot <- f1_plot + theme(legend.position = "none")
+f1_just_plot <- f1_plot + theme(legend.position = "none", strip.text = element_blank())
 
-facet_pair <- plot_grid(oa_just_plot, legend, f1_just_plot, nrow=2, rel_widths = c(1, 0.2), rel_heights = c(1.7, 3))
+facet_pair <- plot_grid(oa_just_plot, legend, f1_just_plot, placeholder_plot, nrow=2, rel_widths = c(1, 0.2), rel_heights = c(1.7, 3.1))
 annotate_figure(facet_pair, top = text_grob("\nValidation Metrics for Test Dataset", face="bold", size = 14))
 ggsave(here("results/plots", "test_set_validation_metrics_barplot_separated.pdf"))
 ```

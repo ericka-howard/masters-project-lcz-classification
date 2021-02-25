@@ -46,48 +46,17 @@ Data for this analysis was accessed from the 2017 IEEE GRSS Data Fusion Contest.
 
 The LCZ reference data from the contest set was taken from the WUDAPT database, checked for correctness, and then provided as a 100m resolution raster layer. In this provided layer the LCZ classes are numbered 1-17, rather than 1-10 and A-G, and initial inspection of the data verified that numbers 11-17 directly match classes A-G. In Yoo et al. (2019) the first step they took with the reference data was randomly dividing the polygons of each class into training and testing groups. This required some preprocessing since I only had access to the data in raster form and without any sort of polygon identification. Pixels within the same polygon cannot be put into both training and validation groups because it will artificially increase accuracy metrics (Zhen et al., 2013). 
 
-In Yoo et al. (2019) they downloaded and preprocessed their own Landsat 8 data to facilitate some of their classification schemes, but the contest data was sufficient for the narrower scope of this project. The Landsat 8 data provided by the contest includes four different dates, or “scenes,” each of which were downloaded from the USGS EarthExplorer portal. Then the atmospheric band (band 9) and the panchromatic band (band 8) were left out, and the data were resampled using the area weighted average to 100 m x 100 m grids (Yokoya et al., 2018). To get these data into a usable format they were loaded into R by band (each band is a separate raster layer) and stacked by scene. All the scenes were then stacked with the LCZ reference data and converted to a dataframe, ready to be used as input data.
+In Yoo et al. (2019) they downloaded and preprocessed their own Landsat 8 data to facilitate some of their classification schemes, but the contest data was sufficient for the narrower scope of this project. The Landsat 8 data provided by the contest includes four different dates, or “scenes,” each of which were downloaded from the USGS EarthExplorer portal (Table 1). Then the atmospheric band (band 9) and the panchromatic band (band 8) were left out, and the data were resampled using the area weighted average to 100 m x 100 m grids (Yokoya et al., 2018). To get these data into a usable format they were loaded into R by band (each band is a separate raster layer) and stacked by scene. All the scenes were then stacked with the LCZ reference data and converted to a dataframe, ready to be used as input data.
 
-All 9 available bands of all 4 Landsat scenes amounted to 36 input variables. Each pixel is an observation, with 279,312 pixels total over the almost 2,800 square kilometers that are contained within the area of interest. The LCZ reference data has 179 polygons, which cover 8,846 pixels. This is approximately 88.5 square kilometers and 3% of the total area of interest. The LCZ reference data was randomly split into training and test sets by LCZ class and polygon. The resulting groups are not exactly equal in pixel numbers, but I determined that randomization of polygons takes precedence over equality in pixels due to the potential for artificially high accuracy values, as mentioned before. In order to get as close as possible a barplot was made showing the number of pixels in training and test, by class, so that equality in pixel number could be explored without having knowledge of polygon groupings. Sampling was repeated until these bars looked marginally even. (Table 1).
-
-
-```{r echo=FALSE}
-tibble(lcz = factor(c("7", "7", "9", "9", "15", "15", "16", "16")),#,
-       tt = factor(c("train", "test", "train", "test", "train", "test", "train", "test")), 
-                 total_n_pixels = rep(0, times=8), 
-                 n_polygons = rep(0, times=8)) %>%
-  bind_rows(table_dat) %>%
-  mutate(lcz = fct_relevel(lcz, c("1", "2","3", "4","5", "6","7", "8","9", "10","11", "12","13", "14","15", "16","17"))) %>%
-  arrange(lcz) %>%
-  ungroup() %>%
-  pivot_wider(names_from=tt, values_from=c(total_n_pixels, n_polygons)) %>%
-  unite("Train", c(n_polygons_train, total_n_pixels_train), sep = "        (") %>%
-  unite("Test", c(n_polygons_test, total_n_pixels_test), sep = " (") %>%
-  mutate(Train = paste(Train, ")", sep=""),
-         Test = paste(Test, ")", sep="")) %>%
-  relocate(Test, .after=Train) %>%
-  mutate(lcz = fct_recode(lcz, "Class 1: Compact high-rise" = "1",
-                     "Class 2: Compact mid-rise" = "2",
-                     "Class 3: Compact low-rise" = "3",
-                     "Class 4: Open high-rise" = "4",
-                     "Class 5: Open mid-rise" = "5",
-                     "Class 6: Open low-rise" = "6",
-                     "Class 7: Lightweight low-rise" = "7",
-                     "Class 8: Large low-rise" = "8",
-                     "Class 9: Sparsely built" = "9",
-                     "Class 10: Heavy Industry" = "10",
-                     "Class 11: Dense trees" = "11",
-                     "Class 12: Scattered trees" = "12",
-                     "Class 13: Bush, scrub" = "13",
-                     "Class 14: Low plants" = "14",
-                     "Class 15: Bare rock or paved" = "15",
-                     "Class 16: Bare soil or sand" = "16",
-                     "Class 17: Water" = "17")) %>%
-kable(caption = "Delineation of training and test data by polygon and pixel.", format='latex',linesep='',booktabs=TRUE,escape=FALSE,
-        col.names = linebreak(c("Local Climate Zone", "Train", "Test"))) %>%
-  kable_styling(latex_options = c('striped','HOLD_position'), font_size = 8) %>%
-  add_footnote("Number of polygons is listed first, with number of pixels in parentheses.")
+```{r tbl1, echo = FALSE, message=FALSE, fig.align='center', out.width="75%", fig.pos='H'}
+knitr::include_graphics("../results/plots/ntree_5_to_500_facet_plot.pdf")
 ```
+
+![](../results/tables/table)
+
+All 9 available bands of all 4 Landsat scenes amounted to 36 input variables. Each pixel is an observation, with 279,312 pixels total over the almost 2,800 square kilometers that are contained within the area of interest. The LCZ reference data has 179 polygons, which cover 8,846 pixels. This is approximately 88.5 square kilometers and 3% of the total area of interest. The LCZ reference data was randomly split into training and test sets by LCZ class and polygon. The resulting groups are not exactly equal in pixel numbers, but I determined that randomization of polygons takes precedence over equality in pixels due to the potential for artificially high accuracy values, as mentioned before. In order to get as close as possible a barplot was made showing the number of pixels in training and test, by class, so that equality in pixel number could be explored without having knowledge of polygon groupings. Sampling was repeated until these bars looked marginally even. (Table 2).
+
+![](../results/tables/table_2.jpg)
 
 ## Random Forests
 
@@ -140,22 +109,6 @@ $$
 
 # Results
 
-## Varying the Parameter for Number of Trees (formatting option 1)
-
-The parameter for the number of trees was initially varied between 5 and 500 at intervals of 5. The resulting overall accuracy metrics indicate a leveling off around 125 trees (Figure 2). There's also a clear distinction between accuracy in urban vs. natural classes, with natural classes having a much higher overall accuracy.
-
-```{r image-ref-for-in-text1, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The increase in OA metrics levels off around 125 trees. Urban classes (1-10) have much lower accuracy than natural classes (11-17). These metrics were calculated based on the out-of-bag dataset.', out.width="75%", strip.white=TRUE, fig.pos='H'}
-knitr::include_graphics("../results/plots/ntree_5_to_500_line_plot.pdf")
-```
-
-The plot of F-1 scores (Figure 3) explores each class individually. It's clear that there are three approximate groupings. The dense trees; scattered trees; bush, scrub; low plants; and water classes (11, 12, 13, 14, and 17, respectively) have the highest F-1 scores throughout, staying in the high 0.9 range almost irrespective of number of random forest trees, though scattered trees (12) stands out as a little lower than the others. The open low-rise, large low-rise, and heavy industry classes (6, 8, and 10, respectively) have much lower F-1 scores which are around 0.5 to 0.7. Finally, in the middle are the compact high-rise, compact mid-rise, compact low-rise, open high-rise, and open mid-rise classes (1-5, respectively), with F-1 scores hovering around 0.7 to 0.9.
-
-Almost all of the classes' F-1 scores appear to respond to increased numbers of trees, to an extent. This response seems to stop entirely once the number of trees reaches 100, but to explore it more thoroughly I ran another simulation varying the number of trees between 25 and 2500 at intervals of 25. Increasing the number of trees has little to no effect on the F-1 score by class.
-
-```{r image-ref-for-in-text3, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The number of trees in the random forest does not seem to have a strong effect on the F-1 scores by class. This is based on the out-of-bag dataset and the number of trees was adjusted from 25 to 2500 in intervals of 25', out.width="100%", fig.pos='H'}
-knitr::include_graphics("../results/plots/ntree_5_to_2500_combined_facet_plot.pdf")
-```
-
 ## Varying the Parameter for Number of Trees ( formatting option 2)
 
 The parameter for the number of trees was initially varied between 5 and 500 at intervals of 5. The resulting overall accuracy metrics indicate a leveling off around 125 trees (Figure 2). There's also a clear distinction between accuracy in urban vs. natural classes, with natural classes having a much higher overall accuracy.
@@ -170,12 +123,7 @@ The plot of F-1 scores (Figure 3) explores each class individually. It's clear t
 knitr::include_graphics("../results/plots/ntree_5_to_500_facet_plot.pdf")
 ```
 
-Almost all of the classes' F-1 scores appear to respond to increased numbers of trees, to an extent. This response seems to stop entirely once the number of trees reaches 100, but to explore it more thoroughly I ran another simulation varying the number of trees between 25 and 2500 at intervals of 25. Increasing the number of trees has little to no effect on the F-1 score by class (Figure 4).
-
-```{r opt23, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The number of trees in the random forest does not seem to have a strong effect on the F-1 scores by class. This is based on the out-of-bag dataset and the number of trees was adjusted from 25 to 2500 in intervals of 25', out.width="75%", fig.pos='H'}
-knitr::include_graphics("../results/plots/ntree_25_to_2500_facet_plot.pdf")
-```
-
+Almost all of the classes' F-1 scores appear to respond to increased numbers of trees, to an extent. This response seems to stop entirely once the number of trees reaches 100, but to explore it more thoroughly I ran another simulation varying the number of trees between 25 and 2500 at intervals of 25, but there was little to no effect on the F-1 score by class.
 
 ## Predicting on the Test Dataset
 

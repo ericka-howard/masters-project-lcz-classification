@@ -1,13 +1,21 @@
 ---
-title: "Local Climate Zone classification in mega urban areas using Landsat images and random forests: A case study of Hong Kong"
+title: "Local Climate Zone classification using random forests: A case study of Hong Kong"
 author: "Ericka B. Smith"
 header-includes:
   - \usepackage{setspace}\linespread{2}
   - \usepackage{float}
+  - \makeatletter
+  - \def\maketitle{%
+  - \par\large\textbf{\@title}%
+  - \par\normalsize{\@author}%
+  - \par{\@date}%
+  - \par}
+  - \makeatother
 date: "Winter 2021"
 output: 
   pdf_document:
     number_sections: true
+fontsize: 12pt
 ---
 
 ```{r setup, include=FALSE}
@@ -49,15 +57,15 @@ Data for this analysis was accessed from the 2017 IEEE GRSS Data Fusion Contest.
 The LCZ reference data from the contest set was taken from the WUDAPT database, checked for correctness, and then provided as a 100m resolution raster layer. In this provided layer the LCZ classes are numbered 1-17, rather than 1-10 and A-G, and initial inspection of the data verified that numbers 11-17 directly match classes A-G. In Yoo et al. (2019) the first step they took with the reference data was randomly dividing the polygons of each class into training and testing groups. This required some preprocessing since I only had access to the data in raster form and without any sort of polygon identification. Pixels within the same polygon cannot be put into both training and validation groups because it will artificially increase accuracy metrics (Zhen et al., 2013). 
 
 In Yoo et al. (2019) they downloaded and preprocessed their own Landsat 8 data to facilitate some of their classification schemes, but the contest data was sufficient for the narrower scope of this project. The Landsat 8 data provided by the contest includes four different dates, or “scenes,” each of which were downloaded from the USGS EarthExplorer portal (Table 1). Then the atmospheric band (band 9) and the panchromatic band (band 8) were left out, and the data were resampled using the area weighted average to 100 m x 100 m grids (Yokoya et al., 2018). To get these data into a usable format they were loaded into R by band (each band is a separate raster layer) and stacked by scene. All the scenes were then stacked with the LCZ reference data and converted to a dataframe, ready to be used as input data.
-
+\begin{singlespace}
 ```{r echo=FALSE}
 scene_dat[,2:3] %>%
 kable(caption = "Acquisition Dates of Each Landsat 8 Scene", format='latex',linesep='',booktabs=TRUE,escape=FALSE) %>%
   kable_styling(latex_options = c('striped','HOLD_position'), font_size = 8)
 ```
-
+\end{singlespace}
 All 9 available bands of all 4 Landsat scenes amounted to 36 input variables. Each pixel is an observation, with 279,312 pixels total over the almost 2,800 square kilometers that are contained within the area of interest. The LCZ reference data has 179 polygons, which cover 8,846 pixels. This is approximately 88.5 square kilometers and 3% of the total area of interest. The LCZ reference data was randomly split into training and test sets by LCZ class and polygon. The resulting groups are not exactly equal in pixel numbers, but I determined that randomization of polygons takes precedence over equality in pixels due to the potential for artificially high accuracy values, as mentioned before. In order to get as close as possible a barplot was made showing the number of pixels in training and test, by class, so that equality in pixel number could be explored without having knowledge of polygon groupings. Sampling was repeated until these bars looked marginally even. (Table 2).
-
+\begin{singlespace}
 ```{r echo=FALSE}
 tibble(lcz = factor(c("7", "7", "9", "9", "15", "15", "16", "16")),#,
        tt = factor(c("train", "test", "train", "test", "train", "test", "train", "test")), 
@@ -95,6 +103,7 @@ kable(caption = "Delineation of training and test data by polygon and pixel.", f
   kable_styling(latex_options = c('striped','HOLD_position'), font_size = 8) %>%
   add_footnote("Number of polygons is listed first, with number of pixels in parentheses.")
 ```
+\end{singlespace}
 
 ## Random Forests
 
@@ -129,12 +138,7 @@ In line with the methods used in our reference paper and the remote sensing fiel
 $$
 \text{Overall Accuracy}= OA= \frac{\text{number of correctly classified reference sites}}{\text{total number of reference sites}}
 $$
-$$
-\text{Overall Accuracy in Urban Areas} = OA_{urb}\ = \frac{\text{number of correctly classified urban reference sites}}{\text{total number of urban reference sites}}
-$$
-$$
-\text{Overall Accuracy in Natural Areas}=OA_{nat}\ = \frac{\text{number of correctly classified natural reference sites}}{\text{total number of natural reference sites}}
-$$
+
 $$
 UA(z)\ = \frac{\text{number of correctly identified pixels in class z}}{\text{total number of pixels identified as class z}}
 $$
@@ -144,6 +148,8 @@ $$
 $$
 F_1\text{ Score} = 2*\frac{UA*PA}{UA+PA}
 $$
+
+In addition, $OA_urb$ and $OA_nat$ will be used, which are the same as overall $OA$ but only includes the urban and natural classes, respectively.
 
 # Results
 
@@ -185,12 +191,8 @@ knitr::include_graphics("../results/plots/importance_barplot_ntree125.pdf")
 
 Despite the decreased overall accuracy for the random forest based on the test data, it is the best fitting model based on the training data,  and therefore the one I used for the full prediction of LCZ classes throughout the Hong Kong area of interest (Figure 6).
 
-```{r maps1, echo = FALSE, message=FALSE, fig.show='hold',fig.align='center', out.width="45%", fig.pos='H'}
-knitr::include_graphics(c("../results/map_images/google_satellite.pdf","../results/map_images/one_landsat_scene.pdf"))
-```
-
-```{r maps2, echo = FALSE, message=FALSE,fig.align='center', out.width="60%", fig.pos='H'}
-knitr::include_graphics("../results/map_images/lcz_prediction.pdf")
+```{r maps1, echo = FALSE, message=FALSE, fig.show='hold',fig.align='center', out.width="30%", fig.pos='H'}
+knitr::include_graphics(c("../results/map_images/google_satellite.pdf","../results/map_images/one_landsat_scene.pdf", "../results/map_images/lcz_prediction.pdf"))
 ```
 
 ```{r maps-legend, echo = FALSE, message=FALSE,fig.align='center', fig.cap = 'Imagery of the area of interest. Each has a basemap of satellite reference imagery. Top Left: Only satellite reference. Top Right: One Landsat 8 Scene. Bottom: A fully predicted LCZ map.', out.height="25%", fig.pos='H'}
@@ -206,18 +208,23 @@ That being said, there are a number of other reasons this discrepancy in accurac
 In terms of my results varying the parameters of the random forest, there is an upper limit to how accurate the model can be. That upper limit may be in part due to the appropriateness of the method, but I postulate that the quality and amount of data is the true culprit. I suggest this as an area for future study, as it would be valuable to understand what level of initial classification commitment is necessary for a robust LCZ analysis.
 
 # References
-
-* Bechtel, B., Alexander, P., Böhner, J., Ching, J., Conrad, O., Feddema, J., Mills, G., See, L., & Stewart, I. (2015). Mapping Local Climate Zones for a Worldwide Database of the Form and Function of Cities. ISPRS International Journal of Geo-Information, 4(1), 199–219. https://doi.org/10.3390/ijgi4010199
-* Danylo, O., See, L., Bechtel, B., Schepaschenko, D., & Fritz, S. (2016). Contributing to WUDAPT: A Local Climate Zone Classification of Two Cities in Ukraine. IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing, 9(5), 1841–1853. https://doi.org/10.1109/JSTARS.2016.2539977
-* Demuzere, Matthias; Hankey, Steve; Mills, Gerald; Zhang, Wenwen; Lu, Tianjun; Bechtel, Benjamin (2020): CONUS-wide LCZ map and Training Areas. figshare. Dataset. https://doi.org/10.6084/m9.figshare.11416950.v1 
-* Hibbard, K. A., Hoffman, F. M., Huntzinger, D., West, T. O., Wuebbles, D. J., Fahey, D. W., Hibbard, K. A., Dokken, D. J., Stewart, B. C., & Maycock, T. K. (2017). Ch. 10: Changes in Land Cover and Terrestrial Biogeochemistry. Climate Science Special Report: Fourth National Climate Assessment, Volume I. U.S. Global Change Research Program. https://doi.org/10.7930/J0416V6X
-* Lempert, R. J., Arnold, J. R., Pulwarty, R. S., Gordon, K., Greig, K., Hawkins-Hoffman, C., Sands, D., & Werrell, C. (2018). Chapter 28: Adaptation Response. Impacts, Risks, and Adaptation in the United States: The Fourth National Climate Assessment, Volume II. U.S. Global Change Research Program. https://doi.org/10.7930/NCA4.2018.CH28
-* Santamouris, M. (2020). Recent progress on urban overheating and heat island research. Integrated assessment of the energy, environmental, vulnerability and health impact. Synergies with the global climate change. Energy and Buildings, 207, 109482. https://doi.org/10.1016/j.enbuild.2019.109482
-* Stewart, I. D., & Oke, T. R. (2012). Local Climate Zones for Urban Temperature Studies. Bulletin of the American Meteorological Society, 93(12), 1879–1900. https://doi.org/10.1175/BAMS-D-11-00019.1
-* Tuia, D., Moser, G., Le Saux, B., Bechtel, B., & See, L. (2017). 2017 IEEE GRSS Data Fusion Contest: Open Data for Global Multimodal Land Use Classification [Technical Committees]. IEEE Geoscience and Remote Sensing Magazine, 5(1), 70–73. https://doi.org/10.1109/MGRS.2016.2645380
-* United Nations, Department of Economic and Social Affairs, & Population Division. (2019). World urbanization prospects: The 2018 revision.
-* US EPA, O. (2014, June 17). Heat Island Impacts [Overviews and Factsheets]. US EPA. https://www.epa.gov/heatislands/heat-island-impacts
-* Verdonck, M.-L., Okujeni, A., van der Linden, S., Demuzere, M., De Wulf, R., & Van Coillie, F. (2017). Influence of neighbourhood information on ‘Local Climate Zone’ mapping in heterogeneous cities. International Journal of Applied Earth Observation and Geoinformation, 62, 102–113. https://doi.org/10.1016/j.jag.2017.05.017
-* Yokoya, N., Ghamisi, P., Xia, J., Sukhanov, S., Heremans, R., Tankoyeu, I., Bechtel, B., Saux, B. L., & Moser, G. (2018). Open Data for Global Multimodal Land Use Classification: Outcome of the 2017 IEEE GRSS Data Fusion Contest. IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing, 11(5), 15.
-* Yoo, C., Han, D., Im, J., & Bechtel, B. (2019). Comparison between convolutional neural networks and random forest for local climate zone classification in mega urban areas using Landsat images. ISPRS Journal of Photogrammetry and Remote Sensing, 157, 155–170. https://doi.org/10.1016/j.isprsjprs.2019.09.009
-* Zhen, Z., Quackenbush, L. J., Stehman, S. V., & Zhang, L. (2013). Impact of training and validation sample selection on classification accuracy and accuracy assessment when using reference polygons in object-based classification. International Journal of Remote Sensing, 34(19), 6914–6930. https://doi.org/10.1080/01431161.2013.810822
+\begin{singlespace}
+\begin{footnotesize}
+\begin{itemize}
+  \item Bechtel, B., Alexander, P., Böhner, J., Ching, J., Conrad, O., Feddema, J., Mills, G., See, L., \& Stewart, I. (2015). Mapping Local Climate Zones for a Worldwide Database of the Form and Function of Cities. ISPRS International Journal of Geo-Information, 4(1), 199–219. https://doi.org/10.3390/ijgi4010199
+  \item Danylo, O., See, L., Bechtel, B., Schepaschenko, D., \& Fritz, S. (2016). Contributing to WUDAPT: A Local Climate Zone Classification of Two Cities in Ukraine. IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing, 9(5), 1841–1853. https://doi.org/10.1109/JSTARS.2016.2539977
+  \item Demuzere, Matthias; Hankey, Steve; Mills, Gerald; Zhang, Wenwen; Lu, Tianjun; Bechtel, Benjamin (2020): CONUS-wide LCZ map and Training Areas. figshare. Dataset. https://doi.org/10.6084/m9.figshare.11416950.v1 
+  \item Hibbard, K. A., Hoffman, F. M., Huntzinger, D., West, T. O., Wuebbles, D. J., Fahey, D. W., Hibbard, K. A., Dokken, D. J., Stewart, B. C., \& Maycock, T. K. (2017). Ch. 10: Changes in Land Cover and Terrestrial Biogeochemistry. Climate Science Special Report: Fourth National Climate Assessment, Volume I. U.S. Global Change Research Program. https://doi.org/10.7930/J0416V6X
+  \item Lempert, R. J., Arnold, J. R., Pulwarty, R. S., Gordon, K., Greig, K., Hawkins-Hoffman, C., Sands, D., \& Werrell, C. (2018). Chapter 28: Adaptation Response. Impacts, Risks, and Adaptation in the United States: The Fourth National Climate Assessment, Volume II. U.S. Global Change Research Program. https://doi.org/10.7930/NCA4.2018.CH28
+  \item Santamouris, M. (2020). Recent progress on urban overheating and heat island research. Integrated assessment of the energy, environmental, vulnerability and health impact. Synergies with the global climate change. Energy and Buildings, 207, 109482. https://doi.org/10.1016/j.enbuild.2019.109482
+  \item Stewart, I. D., \& Oke, T. R. (2012). Local Climate Zones for Urban Temperature Studies. Bulletin of the American Meteorological Society, 93(12), 1879–1900. https://doi.org/10.1175/BAMS-D-11-00019.1
+  \item Tuia, D., Moser, G., Le Saux, B., Bechtel, B., \& See, L. (2017). 2017 IEEE GRSS Data Fusion Contest: Open Data for Global Multimodal Land Use Classification [Technical Committees]. IEEE Geoscience and Remote Sensing Magazine, 5(1), 70–73. https://doi.org/10.1109/MGRS.2016.2645380
+  \item United Nations, Department of Economic and Social Affairs, \& Population Division. (2019). World urbanization prospects: The 2018 revision.
+  \item US EPA, O. (2014, June 17). Heat Island Impacts [Overviews and Factsheets]. US EPA. https://www.epa.gov/heatislands/heat-island-impacts
+  \item Verdonck, M.-L., Okujeni, A., van der Linden, S., Demuzere, M., De Wulf, R., \& Van Coillie, F. (2017). Influence of neighbourhood information on ‘Local Climate Zone’ mapping in heterogeneous cities. International Journal of Applied Earth Observation and Geoinformation, 62, 102–113. https://doi.org/10.1016/j.jag.2017.05.017
+  \item Yokoya, N., Ghamisi, P., Xia, J., Sukhanov, S., Heremans, R., Tankoyeu, I., Bechtel, B., Saux, B. L., \& Moser, G. (2018). Open Data for Global Multimodal Land Use Classification: Outcome of the 2017 IEEE GRSS Data Fusion Contest. IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing, 11(5), 15.
+  \item Yoo, C., Han, D., Im, J., \& Bechtel, B. (2019). Comparison between convolutional neural networks and random forest for local climate zone classification in mega urban areas using Landsat images. ISPRS Journal of Photogrammetry and Remote Sensing, 157, 155–170. https://doi.org/10.1016/j.isprsjprs.2019.09.009
+  \item Zhen, Z., Quackenbush, L. J., Stehman, S. V., \& Zhang, L. (2013). Impact of training and validation sample selection on classification accuracy and accuracy assessment when using reference polygons in object-based classification. International Journal of Remote Sensing, 34(19), 6914–6930. https://doi.org/10.1080/01431161.2013.810822
+\end{itemize}
+\end{footnotesize}
+\end{singlespace}

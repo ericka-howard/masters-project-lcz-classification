@@ -138,6 +138,7 @@ In line with the methods used in our reference paper and the remote sensing fiel
 $$
 \text{Overall Accuracy}= OA= \frac{\text{number of correctly classified reference sites}}{\text{total number of reference sites}}
 $$
+$OA_{urb}$ and $OA_{nat}$ will be used, which are the same as overall $OA$ but only includes the urban and natural classes, respectively.
 
 $$
 UA(z)\ = \frac{\text{number of correctly identified pixels in class z}}{\text{total number of pixels identified as class z}}
@@ -145,11 +146,10 @@ $$
 $$
 PA(z) = \frac{\text{number of correctly identified pixels in class z}}{\text{number of pixels truly in class z}}
 $$
+The harmonic mean of $UA$ and $PA$ gives the $F_1$ score, which is a measure of the model's accuracy. An $F_1$ Score closer to 1 indicates a model that has both low false positives and low false negatives.
 $$
 F_1\text{ Score} = 2*\frac{UA*PA}{UA+PA}
 $$
-
-In addition, $OA_urb$ and $OA_nat$ will be used, which are the same as overall $OA$ but only includes the urban and natural classes, respectively.
 
 # Results
 

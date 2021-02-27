@@ -62,51 +62,52 @@ oa <- get_oa_metrics(predicted)
 f1 <- get_f1_score(predicted, lcz, lcz_predicted)
 ```
 
-Make Plots
+
+# Make Plots
 
 ```{r fig.height=6}
-imp_plot <- varImpPlot(rf)
-class(imp_plot)
-
-get_date <- function(scene_num){
-  date <- scene_dat$Date[which(scene_dat$Scene==scene_num)]
-}
-
-rf$importance %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Predictor Variable") %>%
-  separate(
-    col = `Predictor Variable`,
-    into = c("Band", "Scene"),
-    sep = -1,
-    remove = F
-  ) %>%
-  mutate(Band = parse_number(Band),
-         Band = factor(Band),
-         Scene = as.double(Scene)) %>%
-  left_join(scene_dat, by="Scene") %>%
-  left_join(band_info, by="Band") %>%
-  mutate(Scenes = paste("Scene", Scene, ":\n", Date),
-         Band = paste("Band", Band, ":\n", Description)) %>%
-  ggplot() +
-  geom_bar(aes(x = MeanDecreaseGini, y = Band, fill = Scenes),
-           stat = 'identity',
-           position = "dodge",
-           color="black") +
-  facet_grid(Band~., scales="free")+
-  scale_fill_viridis(discrete = T) +
-  theme(legend.position = "bottom",
-        legend.title = element_blank(),
-        strip.text=element_blank()) +
-  labs(title = "Importance Measures for Each Predictor Variable",
-       x = "Mean Decrease in Gini Impurity",
-       y="")
-
-ggsave(here("results/plots", "importance_barplot_ntree125.pdf"))
+# imp_plot <- varImpPlot(rf)
+# class(imp_plot)
+# 
+# get_date <- function(scene_num){
+#   date <- scene_dat$Date[which(scene_dat$Scene==scene_num)]
+# }
+# 
+# rf$importance %>%
+#   as.data.frame() %>%
+#   rownames_to_column(var = "Predictor Variable") %>%
+#   separate(
+#     col = `Predictor Variable`,
+#     into = c("Band", "Scene"),
+#     sep = -1,
+#     remove = F
+#   ) %>%
+#   mutate(Band = parse_number(Band),
+#          Band = factor(Band),
+#          Scene = as.double(Scene)) %>%
+#   left_join(scene_dat, by="Scene") %>%
+#   left_join(band_info, by="Band") %>%
+#   mutate(Scenes = paste("Scene", Scene, ":\n", Date),
+#          Band = paste("Band", Band, ":\n", Description)) %>%
+#   ggplot() +
+#   geom_bar(aes(x = MeanDecreaseGini, y = Band, fill = Scenes),
+#            stat = 'identity',
+#            position = "dodge",
+#            color="black") +
+#   facet_grid(Band~., scales="free")+
+#   scale_fill_viridis(discrete = T) +
+#   theme(legend.position = "bottom",
+#         legend.title = element_blank(),
+#         strip.text=element_blank()) +
+#   labs(title = "Importance Measures for Each Predictor Variable",
+#        x = "Mean Decrease in Gini Impurity",
+#        y="")
+# 
+# ggsave(here("results/plots", "importance_barplot_ntree125.pdf"))
 ```
 
 
-```{r fig.height=6}
+```{r fig.height=4}
 urban <-
   c("F1-10",
     "F1-8",
@@ -136,45 +137,47 @@ prep_and_plot <- function(dat, metric_name) {
              color = "white",
              stat = 'identity') +
     scale_fill_viridis(discrete = T, option = "cividis") +
-    labs(
-      title = "",
-      subtitle = "",
-      x = "",
-      y = metric_name
-    ) +
+    theme_pubr()+
+    # labs(
+    #   title = "",
+    #   subtitle = "",
+    #   x = "",
+    #   y = metric_name
+    # ) +
     coord_cartesian(xlim = c(0, 1)) +
-    theme(plot.margin = unit(c(0, 0, 0, 0), "cm"),
-          axis.text = element_text(size = 9))
+    theme(plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), "cm"),
+          axis.text = element_text(size = 9),
+          axis.title = element_blank())
   
 }
 
 oa_plot <- prep_and_plot(oa, "")
 f1_plot <- prep_and_plot(f1, "") + facet_grid(Type ~ ., scales = "free")
-placeholder_plot <- ggplot()
 
 # extract the legend from one of the plots
-legend <- get_legend(# create some space to the left of the legend
+legend <- get_legend(
   oa_plot + theme(
-    legend.position = "right",
-    legend.box.margin = ggplot2::margin(0, 0, 0, 12)
+    legend.position = "top",
+    legend.box.margin = ggplot2::margin(0, 0, 0, 0)
   ))
 oa_just_plot <- oa_plot + theme(legend.position = "none")
 f1_just_plot <-
   f1_plot + theme(legend.position = "none", strip.text = element_blank())
 
+left_side <- plot_grid(legend, oa_just_plot, rel_heights = c(0.1, 1), nrow=2)
+left_side
+
 facet_pair <-
   plot_grid(
-    oa_just_plot,
-    legend,
+    left_side,
     f1_just_plot,
-    placeholder_plot,
-    nrow = 2,
-    rel_widths = c(1, 0.2),
-    rel_heights = c(1.7, 3.1)
+    ncol = 2,
+    rel_widths = c(0.75, 1)
+    
   )
 annotate_figure(facet_pair,
                 top = text_grob(
-                  "\nValidation Metrics for Test Dataset",
+                  "\nValidation Metrics for Test Dataset\n",
                   face = "bold",
                   size = 14
                 ))

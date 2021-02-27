@@ -12,6 +12,7 @@ library(forcats)
 library(reshape2)
 library(viridis)
 library(ggpubr)
+library(cowplot)
 theme_set(theme_pubr())
 ```
 
@@ -32,7 +33,7 @@ current_heatmap_name <- "ntree_5_to_500_heatmap.pdf"
 f1_facet_plot_name <- "ntree_5_to_500_facet_plot.pdf"
 ```
 
-```{r}
+```{r fig.height=3, fig.width=5}
 param_dat %>%
   dplyr::select(ntree, oa, oa_urb, oa_nat) %>%
   melt(
@@ -68,68 +69,102 @@ dat <- param_dat %>%
        value.name = "F1",
        variable.name = "Class") %>%
   mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural"))
+```
 
-ggplot(dat) +
-  geom_raster(aes(x = ntree, y = Class, fill = F1)) +
-  scale_fill_viridis(option = "magma") +
-  labs(title = "F-1 Score by Class for 25 to 2500 Trees",
-       x = "\nNumber of Trees",
-       y = "Class\n") +
-  theme(legend.position = "right")
-
-ggsave(here("results/plots", current_heatmap_name))
+```{r}
+# ggplot(dat) +
+#   geom_raster(aes(x = ntree, y = Class, fill = F1)) +
+#   scale_fill_viridis(option = "magma") +
+#   labs(title = "F-1 Score by Class for 25 to 2500 Trees",
+#        x = "\nNumber of Trees",
+#        y = "Class\n") +
+#   theme(legend.position = "right")
+# 
+# ggsave(here("results/plots", current_heatmap_name))
 ```
 
 
-```{r fig.height=7.5, fig.width=5}
-ggplot(dat, aes(x = ntree, y = F1, color = Type)) +
+```{r fig.height=5, fig.width=7}
+make_plot <- function(the_dat, which_type){
+  the_dat %>%
+  ggplot(aes(x = ntree, y = F1, color = Type)) +
   geom_smooth(se = F, size=0.5) +
   geom_point(size = 0.25)+
-labs(title ="F-1 Score by Class for 5 to 500 Trees",
-     x ="\nNumber of Trees",
-     y =  "F-1 Score\n") +
+labs(title ="",
+     x ="") +
   facet_grid(Class ~ ., scales = "free") +
   scale_color_manual(values = c("Urban" = "#1F968BFF", "Natural" = "#440154FF")) +
   theme(
-    axis.text = element_text(size = 6),
+    axis.text = element_text(size = 8),
     strip.text.y = element_text(angle = 0),
-    legend.position = "right"
+    legend.position = "none"
   )
+}
+urb_dat <- dat %>%
+  filter(Type == "Urban")
+urb <- make_plot(urb_dat) + theme(legend.position="none") + labs(y = "\nF-1 Score\n")
+nat_dat <- dat %>%
+  filter(Type == "Natural")
+nat <- make_plot(nat_dat) + theme(legend.position = "none")+ labs(y = "")
+
+all <- make_plot(dat)
+
+# extract the legend from one of the plots
+legend <- get_legend(# create some space to the left of the legend
+  all + theme(
+    legend.position = "left",
+    legend.box.margin = ggplot2::margin(0, 12, 0, 0)
+  ))
+
+
+facet_pair <-
+  plot_grid(legend, urb, nat,
+    nrow = 1, rel_widths = c(0.3,1,0.9)
+  )
+annotate_figure(facet_pair,
+                top = text_grob(
+                  "\nF-1 Score by Class for 5 to 500 Trees",
+                  face = "bold",
+                  size = 14
+                ),
+                bottom = text_grob("Number of Trees"))#,
+                #left = text_grob("F-1 Score", rot=90))
+
 ggsave(here("results/plots", f1_facet_plot_name))
 ```
 
 Try putting them together
 
 ```{r}
-param_higher_ntree_dat <-
-  read_csv(here("results/run_output_tables", "ntree_25_to_2500_data.rds"))
-param_higher_ntree_dat <- param_higher_ntree_dat[, 2:18]
-
-dat_25_2500 <- param_higher_ntree_dat %>%
-  dplyr::select(all_of(f1_list)) %>%
-  rename_at(vars(contains("f1_")), funs(str_replace(., "f1_", ""))) %>%
-  melt(id.vars = "ntree",
-       value.name = "F1",
-       variable.name = "Class") %>%
-  mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural"))
+# param_higher_ntree_dat <-
+#   read_csv(here("results/run_output_tables", "ntree_25_to_2500_data.rds"))
+# param_higher_ntree_dat <- param_higher_ntree_dat[, 2:18]
+# 
+# dat_25_2500 <- param_higher_ntree_dat %>%
+#   dplyr::select(all_of(f1_list)) %>%
+#   rename_at(vars(contains("f1_")), funs(str_replace(., "f1_", ""))) %>%
+#   melt(id.vars = "ntree",
+#        value.name = "F1",
+#        variable.name = "Class") %>%
+#   mutate(Type = ifelse(Class %in% urban_classes, "Urban", "Natural"))
 ```
 
 
 ```{r fig.height=7, fig.width=5}
-p2 <- ggplot(dat_25_2500, aes(x = ntree, y = F1, color = Type)) +
-  geom_smooth(se = F, size=0.5) +
-  geom_point(size = 0.25) +
-  labs(title ="F-1 Score by Class for 25 to 2500 Trees",
-       x =  "\nNumber of Trees",
-       y = "F-1 Score") +
-  facet_grid(Class ~ ., scales = "free") +
-  scale_color_manual(values = c("Urban" = "#1F968BFF", "Natural" = "#440154FF")) +
-  theme(
-    axis.text = element_text(size = 8),
-    strip.text.y = element_text(angle = 0),
-    legend.position = "right"
-  )
-ggsave(here("results/plots", "ntree_25_to_2500_facet_plot.pdf"))
+# p2 <- ggplot(dat_25_2500, aes(x = ntree, y = F1, color = Type)) +
+#   geom_smooth(se = F, size=0.5) +
+#   geom_point(size = 0.25) +
+#   labs(title ="F-1 Score by Class for 25 to 2500 Trees",
+#        x =  "\nNumber of Trees",
+#        y = "F-1 Score") +
+#   facet_grid(Class ~ ., scales = "free") +
+#   scale_color_manual(values = c("Urban" = "#1F968BFF", "Natural" = "#440154FF")) +
+#   theme(
+#     axis.text = element_text(size = 8),
+#     strip.text.y = element_text(angle = 0),
+#     legend.position = "right"
+#   )
+# ggsave(here("results/plots", "ntree_25_to_2500_facet_plot.pdf"))
 
 # facet_pair <- ggarrange(p1, p2, common.legend = F, legend = "bottom")
 # annotate_figure(facet_pair, top = text_grob("\nF-1 Score by Class for Two Scales of Numbers of Trees", face="bold", size = 14))

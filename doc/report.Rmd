@@ -11,6 +11,8 @@ header-includes:
   - \par{\@date}%
   - \par}
   - \makeatother
+  - \usepackage{caption}
+  - \captionsetup{font=small, skip=0pt}
 date: "Winter 2021"
 output: 
   pdf_document:
@@ -39,11 +41,11 @@ The population worldwide is increasing and urbanizing (United Nations et al., 20
 Urban Heat Islands, where urban areas are warmer than the neighboring rural areas, are of particular concern. This is for four primary reasons: increased energy consumption, elevated emissions of air pollutants and greenhouse gasses, compromised human health and comfort, and impaired water quality (US EPA, 2014). A multitude of processes combine to cause Urban Heat Islands. Broadly speaking, urban built structures hold more heat than the structures and vegetation in surrounding areas (Hibbard et al., 2017). In particular, cities have an overabundance of impervious surfaces, along with a lack of vegetation (Hibbard et al., 2017). Knowledge about microclimates within cities, especially in the context of prospective sites for climate risk adaptation efforts, has the potential to ease some of these disturbances (Lempert et al., 2018) .
 
 Unfortunately, information on these sites can be difficult to obtain. Though there is a plethora of satellite imagery, the current methods to classify this imagery are not always accurate. (Yokoya et al., 2018). Historically the focus was on the broad categories of urban vs. rural, which does not give enough information about the nuanced climate within a large urban area (Stewart & Oke, 2012). Local Climate Zone (LCZ) classification was created by Stewart and Oke (2012) (Figure 1) to alleviate this problem, but it often requires a significant investment from individuals with specialist knowledge to successfully classify a city (Bechtel et al., 2015). Even the best models have low accuracy outside of their training city (Verdonck et al., 2017) (Yokoya et al., 2018). Therefore, this issue with generalizing a model to other cities, transferability, is a topic of great interest in current Urban Heat Island research (Tuia et al., 2017) (Yokoya et al., 2018).
-
+\begin{singlespace}
 ```{r image-ref-for-in-text0, echo = FALSE, message=FALSE, fig.align='center', fig.cap='Local Climate Zone classes. Originally from Stewart and Oke (2012) and remade by Bechtel et al. (2017). Copyright CC-BY 4.0', out.width="100%", fig.pos='H'}
 knitr::include_graphics("figure_from_Bechtel_et_al_Stewart_Oke_cc-by4.png")
 ```
-
+\end{singlespace}
 ## Objective
 
 The goal of this project is to recreate aspects of the article Comparison between convolutional neural networks and random forest for local climate zone classification in mega urban areas using Landsat images (Yoo et al., 2019), where methods for predicting LCZ classes for four large cities throughout the world were compared. To do so, a small training dataset from the 2017 Institute of Electrical and Electronics Engineers (IEEE) Geoscience and Remote Sensing Society (GRSS) Data Fusion Contest (Tuia et al., 2017) was used as ground truth for LCZ classes. This was combined with satellite input data to create a series of models, which were then compared to a larger, full LCZ layer for each city and assessed for accuracy. The primary types of models considered in the Yoo et al. (2019) work were random forests and convolutional neural networks. However, for this project the focus will be only on random forests. In addition, rather than four cities, this investigation will focus on just Hong Kong. This city was chosen due to its lack of "red-star classes" (LCZ classes with 3 or fewer polygons) in the study area. The red-star classes add complexity to the splitting up of the data into training and test sets. Since they by nature address only rare classes, this complexity was deemed unnecessary for this project. Finally, here;, a classification scheme like the one used by the World Urban Database and Access Portal Tools (WUDAPT) project, denoted as Scheme 1 (S1) in Yoo et al. (2019) will be the focus, with comparisons between accuracy using a variety of tuning parameters.
@@ -114,12 +116,14 @@ Random forests consist of many decision trees. A decision tree can be used for c
 Each point in which the data could potentially be split into two groups is called a node. The first split is called the root node. Nodes are selected such that each one uses the conditional statement which subsets the data into the best possible split. When any more subsetting does not increase accuracy, the path ends, and this is called a leaf node. Any nodes between the root node and leaf nodes are called internal nodes.
 
 Splits are typically evaluated by Gini impurity or entropy.
+\begin{singlespace}
 $$
 \text{Gini Impurity} =\ I_G(t)\  = 1 - \sum_{i=1}^{C}p(i|t)^2
 $$
 $$
 \text{Entropy} =\ I_H(t)\ = -\sum_{i=1}^{C}p(i|t)\log_2p(i|t)
 $$
+\end{singlespace}
 Where $i$ is a class in the predictor variable, ranging from 1 to $C$. $C$ is the total number of classes represented for a particular node, $t$. $p(i|t)$ is the proportion of samples that belong to each $i$, for a particular node $t$.
 
 A Gini Impurity, or entropy, of 0 indicates a completely homogeneous group, which cannot be improved upon. These metrics are used for comparison: all possible variables and thresholds within those variables are tried and their Gini impurity or entropy calculated, the variable and threshold with the best (lowest) value selected for the node. This is done recursively at each node until no split offers a decrease in the metric of choice. The resulting collection of nodes is a decision tree. 
@@ -141,38 +145,42 @@ For this work, random forests were created in R using the `randomForest` functio
 ## Accuracy Assessment
 
 In line with the methods used in our reference paper and the remote sensing field, accuracy metrics will be based on predictions for the test dataset and will include the following:
+\begin{singlespace}
 $$
 \text{Overall Accuracy}= OA= \frac{\text{number of correctly classified reference sites}}{\text{total number of reference sites}}
 $$
+\end{singlespace}
 $OA_{urb}$ and $OA_{nat}$ will be used, which are the same as overall $OA$ but only includes the urban and natural classes, respectively.
-
+\begin{singlespace}
 $$
 UA(z)\ = \frac{\text{number of correctly identified pixels in class z}}{\text{total number of pixels identified as class z}}
 $$
 $$
 PA(z) = \frac{\text{number of correctly identified pixels in class z}}{\text{number of pixels truly in class z}}
 $$
+\end{singlespace}
 $UA$ is a measure of user's accuracy, which is also called precision or positive predictive value. $PA$ is the measure of producer's accuracy, also known as recall or sensitivity. The harmonic mean of $UA$ and $PA$ gives the $F_1$ score, which is a measure of the model's accuracy. An $F_1$ Score closer to 1 indicates a model that has both low false positives and low false negatives.
+\begin{singlespace}
 $$
 F_1\text{ Score} = 2*\frac{UA*PA}{UA+PA}
 $$
-
+\end{singlespace}
 # Results
 
 ## Varying the Parameter for Number of Trees
 
 The parameter for the number of trees was initially varied between 5 and 500 at intervals of 5. The resulting overall accuracy metrics indicate a leveling off around 125 trees (Figure 2). There's also a clear distinction between accuracy in urban vs. natural classes, with natural classes having a much higher overall accuracy.
-
+\begin{singlespace}
 ```{r opt21, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The increase in OA metrics levels off around 125 trees. Urban classes (1-10) have much lower accuracy than natural classes (11-17). These metrics were calculated based on the out-of-bag dataset.', out.width="75%", strip.white=TRUE, fig.pos='H'}
 knitr::include_graphics("../results/plots/ntree_5_to_500_line_plot.pdf")
 ```
-
+\end{singlespace}
 The plot of F-1 scores (Figure 3) explores each class individually. It's clear that there are three approximate groupings. The dense trees; scattered trees; bush, scrub; low plants; and water classes (11, 12, 13, 14, and 17, respectively) have the highest F-1 scores throughout, staying in the high 0.9 range almost irrespective of number of random forest trees, though scattered trees (12) stands out as a little lower than the others. The open low-rise, large low-rise, and heavy industry classes (6, 8, and 10, respectively) have much lower F-1 scores which are around 0.5 to 0.7. Finally, in the middle are the compact high-rise, compact mid-rise, compact low-rise, open high-rise, and open mid-rise classes (1-5, respectively), with F-1 scores hovering around 0.7 to 0.9.
-
-```{r opt22, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The variation between LCZ classes in F-1 score can be seen. As the number of trees in the random forest increases, F-1 score also increases, until around 100 trees. These metrics were calculated based on the out-of-bag dataset.', out.width="70%", fig.pos='H'}
+\begin{singlespace}
+```{r opt22, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The variation between LCZ classes in F-1 score can be seen. As the number of trees in the random forest increases, F-1 score also increases, until around 100 trees. These metrics were calculated based on the out-of-bag dataset.', out.width="100%", fig.pos='H'}
 knitr::include_graphics("../results/plots/ntree_5_to_500_facet_plot.pdf")
 ```
-
+\end{singlespace}
 Almost all of the classes' F-1 scores appear to respond to increased numbers of trees, to an extent. This response seems to stop entirely once the number of trees reaches 100, but to explore it more thoroughly I ran another simulation varying the number of trees between 25 and 2500 at intervals of 25, but there was little to no effect on the F-1 score by class.
 
 ## Predicting on the Test Dataset
@@ -180,33 +188,28 @@ Almost all of the classes' F-1 scores appear to respond to increased numbers of 
 ### Validation Metrics
 
 OA and F-1 metrics dropped dramatically upon applying the random forest to the test data (Figure 4). The F-1 Score for class 17, Water, remained high, but since water has a very characteristic signature this is not surprising. Classification for classes 2 (compact midrise), 5 (open midrise), 8 (large low-rise), and 14 (low plants) performed especially poorly.
-
+\begin{singlespace}
 ```{r image-ref-for-in-text4, echo = FALSE, message=FALSE, fig.align='center', fig.cap='Accuracy among random forest predictions for the test dataset varied widely, but was lower than expected for F-1 scores, which do not seem to agree with the OA metrics. Classes 2, 5, 8, and 14 have particularly low F-1 Scores', out.width="75%", fig.pos='H'}
 knitr::include_graphics("../results/plots/test_set_validation_metrics_barplot_separated.pdf")
 ```
-
+\end{singlespace}
 ### Importance Measures
 
 In general there is not a clear pattern in which bands or scenes proved to be the best predictors based on mean decrease in Gini Impurity (Figure 5). However, bands 7, 10, and 11 in Scene 4 were particularly useful. Scene 4 overall seems to contribute the most effectively to the model, surpassing the other scenes in each of the bads except for 4,5, and 6. 
-
+\begin{singlespace}
 ```{r image-ref-for-in-text5, echo = FALSE, message=FALSE, fig.align='center', fig.cap='There is not a clear pattern in Mean Decrease for Gini Impurity between the different bands and scenes, though there is some indication that bands in scene 4 were particularly effective as predictors.', out.width="75%", fig.pos='H'}
 knitr::include_graphics("../results/plots/importance_barplot_ntree125.pdf")
 ```
-
+\end{singlespace}
 ## A Full Prediction
 
 Despite the decreased overall accuracy for the random forest based on the test data, it is the best fitting model based on the training data,  and therefore the one I used for the full prediction of LCZ classes throughout the Hong Kong area of interest (Figure 6).
-
-```{r maps1, echo = FALSE, message=FALSE, fig.show='hold',fig.align='center', out.width="30%", fig.pos='H'}
-knitr::include_graphics(c("../results/map_images/google_satellite.pdf","../results/map_images/one_landsat_scene.pdf", "../results/map_images/lcz_prediction.pdf"))
+\begin{singlespace}
+```{r maps1, echo = FALSE, message=FALSE, fig.show='hold', fig.cap = 'Imagery of the area of interest. Each has a basemap of satellite reference imagery. Top Left: Only satellite reference. Top Right: One Landsat 8 Scene. Bottom: A fully predicted LCZ map.', fig.align='center', out.height="25%", fig.pos='H', fig.ncol=2}
+knitr::include_graphics(c("../results/map_images/one_landsat_scene.pdf", "../results/map_images/lcz_prediction.pdf", "../results/map_images/class_legend_horizontal.pdf"))
 ```
-
-```{r maps-legend, echo = FALSE, message=FALSE,fig.align='center', fig.cap = 'Imagery of the area of interest. Each has a basemap of satellite reference imagery. Top Left: Only satellite reference. Top Right: One Landsat 8 Scene. Bottom: A fully predicted LCZ map.', out.height="25%", fig.pos='H'}
-knitr::include_graphics("../results/map_images/class_legend_horizontal.pdf")
-```
-
+\end{singlespace}
 # Discussion
-
 The results of this analysis point to two primary issues in the current method for using random forests to classify LCZ classes. The first is the large decrease in accuracy between prediction for the OOB sample as compared to the that for the test dataset. This is not necessarily surprising considering the spatial autocorrelation inherently present in data like these, but it is concerning. OOB error is often used to tune the model parameters and these results suggest that it causes overconfidence in model success. Even when using the $OA$ and $F_1$ metrics on the OOB sample there were much higher accuracy estimates than I saw with the test dataset. This points to a clear solution, which is that there should be an independent set of data used for building the model that is separate from both the testing and training data. This solution is not particularly practical due to the already low availability of ground truth data.
 
 The second issue I observed is that use of an aggregate measure like $OA$ can mask very low accuracy in specific LCZ class categories, which were seen in the $F_1$ by class scores. For example, water has an accuracy of almost 100% by every metric tested. It also takes up a large proportion of the training and test data, as well as the overall area of interest. As has been mentioned, the signature for water is quite distinctive (CITE). Therefore it is reasonable to suggest that the high rate of correct predictions is not due to the suitability of random forest classification for LCZ classes, but rather it may be due to the general ease of classifying water with Landsat 8 imagery, despite method used. I don't think this is unique to the Hong Kong area as it's possible that any dominant class could monopolize the predictions.

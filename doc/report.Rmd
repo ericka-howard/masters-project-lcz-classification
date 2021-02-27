@@ -48,6 +48,8 @@ knitr::include_graphics("figure_from_Bechtel_et_al_Stewart_Oke_cc-by4.png")
 
 The goal of this project is to recreate aspects of the article Comparison between convolutional neural networks and random forest for local climate zone classification in mega urban areas using Landsat images (Yoo et al., 2019), where methods for predicting LCZ classes for four large cities throughout the world were compared. To do so, a small training dataset from the 2017 Institute of Electrical and Electronics Engineers (IEEE) Geoscience and Remote Sensing Society (GRSS) Data Fusion Contest (Tuia et al., 2017) was used as ground truth for LCZ classes. This was combined with satellite input data to create a series of models, which were then compared to a larger, full LCZ layer for each city and assessed for accuracy. The primary types of models considered in the Yoo et al. (2019) work were random forests and convolutional neural networks. However, for this project the focus will be only on random forests. In addition, rather than four cities, this investigation will focus on just Hong Kong. This city was chosen due to its lack of "red-star classes" (LCZ classes with 3 or fewer polygons) in the study area. The red-star classes add complexity to the splitting up of the data into training and test sets. Since they by nature address only rare classes, this complexity was deemed unnecessary for this project. Finally, here;, a classification scheme like the one used by the World Urban Database and Access Portal Tools (WUDAPT) project, denoted as Scheme 1 (S1) in Yoo et al. (2019) will be the focus, with comparisons between accuracy using a variety of tuning parameters.
 
+All code and higher resolution images for this project can be found on GitHub at [https://github.com/erickabsmith/masters-project-lcz-classification](https://github.com/erickabsmith/masters-project-lcz-classification).
+
 # Methods
 
 ## Data
@@ -134,6 +136,8 @@ Tuning parameters are usually adjusted based off of OOB error rates. Thiuse the 
 
 Similarly, to use a random forest to make predictions for a new set of input values, the observations are fed into each decision tree individually and tallied up. Since there isn't a known ground truth value for each observation and each observation was not included in the creation of the model, all trees are used. The final voted upon predictions are the predictions of the random forest. This overall process is called bagging, because it is the action of bootstrapping the data to create each tree and using the aggregate to make a decision. Bagging is useful because it reduces variance without introducing bias. For this analysis,the number of trees parameter was varied individually. This is limited in that it does not explore any potential interactions, but beneficial in that it is more clear the individual contribution of this parameter. I chose it as parameter of interest because reducing it as much as possible can have a large impact on time and computational resources required.
 
+For this work, random forests were created in R using the `randomForest` function, within the randomForest package (Liaw & Wiener, 2002).
+
 ## Accuracy Assessment
 
 In line with the methods used in our reference paper and the remote sensing field, accuracy metrics will be based on predictions for the test dataset and will include the following:
@@ -215,6 +219,7 @@ In terms of my results varying the number of trees the random forest, there is a
 \begin{singlespace}
 \begin{footnotesize}
 \begin{itemize}
+  \item A. Liaw and M. Wiener (2002). Classification and Regression by randomForest. R News 2(3), 18--22.
   \item Bechtel, B., Alexander, P., Böhner, J., Ching, J., Conrad, O., Feddema, J., Mills, G., See, L., \& Stewart, I. (2015). Mapping Local Climate Zones for a Worldwide Database of the Form and Function of Cities. ISPRS International Journal of Geo-Information, 4(1), 199–219. https://doi.org/10.3390/ijgi4010199
   \item Danylo, O., See, L., Bechtel, B., Schepaschenko, D., \& Fritz, S. (2016). Contributing to WUDAPT: A Local Climate Zone Classification of Two Cities in Ukraine. IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing, 9(5), 1841–1853. https://doi.org/10.1109/JSTARS.2016.2539977
   \item Demuzere, Matthias; Hankey, Steve; Mills, Gerald; Zhang, Wenwen; Lu, Tianjun; Bechtel, Benjamin (2020): CONUS-wide LCZ map and Training Areas. figshare. Dataset. https://doi.org/10.6084/m9.figshare.11416950.v1 

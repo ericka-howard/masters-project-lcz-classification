@@ -65,45 +65,45 @@ f1 <- get_f1_score(predicted, lcz, lcz_predicted)
 
 # Make Plots
 
-```{r fig.height=6}
-# imp_plot <- varImpPlot(rf)
-# class(imp_plot)
-# 
-# get_date <- function(scene_num){
-#   date <- scene_dat$Date[which(scene_dat$Scene==scene_num)]
-# }
-# 
-# rf$importance %>%
-#   as.data.frame() %>%
-#   rownames_to_column(var = "Predictor Variable") %>%
-#   separate(
-#     col = `Predictor Variable`,
-#     into = c("Band", "Scene"),
-#     sep = -1,
-#     remove = F
-#   ) %>%
-#   mutate(Band = parse_number(Band),
-#          Band = factor(Band),
-#          Scene = as.double(Scene)) %>%
-#   left_join(scene_dat, by="Scene") %>%
-#   left_join(band_info, by="Band") %>%
-#   mutate(Scenes = paste("Scene", Scene, ":\n", Date),
-#          Band = paste("Band", Band, ":\n", Description)) %>%
-#   ggplot() +
-#   geom_bar(aes(x = MeanDecreaseGini, y = Band, fill = Scenes),
-#            stat = 'identity',
-#            position = "dodge",
-#            color="black") +
-#   facet_grid(Band~., scales="free")+
-#   scale_fill_viridis(discrete = T) +
-#   theme(legend.position = "bottom",
-#         legend.title = element_blank(),
-#         strip.text=element_blank()) +
-#   labs(title = "Importance Measures for Each Predictor Variable",
-#        x = "Mean Decrease in Gini Impurity",
-#        y="")
-# 
-# ggsave(here("results/plots", "importance_barplot_ntree125.pdf"))
+```{r fig.height=5}
+imp_plot <- varImpPlot(rf)
+class(imp_plot)
+
+get_date <- function(scene_num){
+  date <- scene_dat$Date[which(scene_dat$Scene==scene_num)]
+}
+
+rf$importance %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Predictor Variable") %>%
+  separate(
+    col = `Predictor Variable`,
+    into = c("Band", "Scene"),
+    sep = -1,
+    remove = F
+  ) %>%
+  mutate(Band = parse_number(Band),
+         Band = factor(Band),
+         Scene = as.double(Scene)) %>%
+  left_join(scene_dat, by="Scene") %>%
+  left_join(band_info, by="Band") %>%
+  mutate(Scenes = paste("Scene", Scene, ":\n", Date),
+         Band = paste("Band", Band, ":\n", Description)) %>%
+  ggplot() +
+  geom_bar(aes(x = MeanDecreaseGini, y = Band, fill = Scenes),
+           stat = 'identity',
+           position = "dodge",
+           color="black") +
+  facet_grid(Band~., scales="free")+
+  scale_fill_viridis(discrete = T) +
+  theme(legend.position = "right",
+        legend.title = element_blank(),
+        strip.text=element_blank()) +
+  labs(title = "Importance Measures for Each Predictor Variable",
+       x = "Mean Decrease in Gini Impurity",
+       y="")
+
+ggsave(here("results/plots", "importance_barplot_ntree125.pdf"))
 ```
 
 

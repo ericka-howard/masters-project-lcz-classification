@@ -1,14 +1,11 @@
 ---
 title: "Local Climate Zone Classification Using Random Forests"
 author: "Ericka B. Smith"
-date: "2/27/2021"
-header-includes:
-  - \usepackage{booktabs}
-output: 
-  beamer_presentation:
-    theme: "Rochester"
-    colortheme: "wolverine"
-    fonttheme: "serif"
+date: "3/9/2021"
+output:
+  slidy_presentation:
+    theme: "yeti"
+header-includes: \usepackage{booktabs}
 ---
 
 ```{r setup, include=FALSE}
@@ -23,13 +20,21 @@ table_dat <- readRDS("../results/table_3_equivalent.rds")
 scene_dat <- read_csv(here("data", "scene_info.csv"))
 ```
 
-## Introduction
+## Introduce Self + GitHub site
+
+All code and higher resolution images for this project can be found on GitHub at <https://github.com/erickabsmith/masters-project-lcz-classification>.
+
+<div class="notes">
+This is my *note*.
+
+- It can contain markdown
+- like this list
+
+</div>
 
 ## Background
 
-Urban Heat Islands, 
-
-## plott 
+## LCZ
 
 ```{r image-ref-for-in-text0, echo = FALSE, message=FALSE, fig.align='center', fig.cap='Local Climate Zone classes. Originally from Stewart and Oke (2012) and remade by Bechtel et al. (2017). Copyright CC-BY 4.0', out.width="100%", fig.pos='H'}
 knitr::include_graphics("figure_from_Bechtel_et_al_Stewart_Oke_cc-by4.png")
@@ -37,19 +42,15 @@ knitr::include_graphics("figure_from_Bechtel_et_al_Stewart_Oke_cc-by4.png")
 
 ## Objective
 
-The goal of this 
+Yoo
 
-All code and higher resolution images for this project can be found on GitHub at [https://github.com/erickabsmith/masters-project-lcz-classification](https://github.com/erickabsmith/masters-project-lcz-classification).
+## Methods - Data - LCZ
 
-## Methods
+The LCZ reference data
 
-## Data
+## Methods - Data - Landsat
 
-The LCZ reference data 
-
-The Landsat 8 data 
-
-## plot
+The Landsat 8 data
 
 ```{r echo=FALSE}
 scene_dat[,2:3] %>%
@@ -58,11 +59,9 @@ kable(caption = "Acquisition Dates of Each Landsat 8 Scene", format='latex',line
                                   'HOLD_position'), font_size = 8)
 ```
 
-## dat
-
 All 9 available bands of all 4 Landsat scenes amounted to 36 input variables. Each pixel is an observation,
 
-## table
+## Methods - data - Step 1 - train vs test (CHALLENGE)
 
 ```{r echo=FALSE}
 tibble(lcz = factor(c("7", "7", "9", "9", "15", "15", "16", "16")),#,
@@ -103,24 +102,23 @@ kable(caption = "Delineation of training and test data by polygon and pixel.", f
   add_footnote("Number of polygons is listed first, with number of pixels in parentheses.")
 ```
 
+## Random Forests - decision tree
 
-## Random Forests
-
-Random forests consist of many decision trees. 
-
-## Evaluate 
+## Random forest - impurity
 
 Splits are typically evaluated by Gini impurity or entropy:
 
 $$
 \text{Gini Impurity} =\ I_G(t)\  = 1 - \sum_{i=1}^{C}p(i|t)^2
-$$
-$$
+$$ $$
 \text{Entropy} =\ I_H(t)\ = -\sum_{i=1}^{C}p(i|t)\log_2p(i|t)
 $$
 
 Where $i$ is a class in the predictor variable, ranging from 1 to $C$. $C$ is the total number of classes represented for a particular node, $t$. $p(i|t)$ is the proportion of samples that belong to each $i$, for a particular node $t$.
 
+## Random Forest - How random forests differ from decision trees (+ prediction)
+
+## Tuning parameters and OOB error (maybe two slides)
 
 ## Accuracy Assessment
 
@@ -134,8 +132,7 @@ $OA_{urb}$ and $OA_{nat}$ will be used, which are the same as overall $OA$ but o
 
 $$
 UA(z)\ = \frac{\text{number of correctly identified pixels in class z}}{\text{total number of pixels identified as class z}}
-$$
-$$
+$$ $$
 PA(z) = \frac{\text{number of correctly identified pixels in class z}}{\text{number of pixels truly in class z}}
 $$
 
@@ -145,46 +142,50 @@ $$
 F_1\text{ Score} = 2*\frac{UA*PA}{UA+PA}
 $$
 
-## Results
-
-## Varying the Parameter for Number of Trees
+## Results - Varying the Parameter for Number of Trees - 5 to 500 - OA
 
 The parameter for the number of trees was initially varied between 5 and 500 at intervals of 5. The resulting overall accuracy metrics indicate a leveling off around 125 trees (Figure 2). There's also a clear distinction between accuracy in urban vs. natural classes, with natural classes having a much higher overall accuracy.
-
-## plottin
 
 ```{r opt21, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The increase in OA metrics levels off around 125 trees. Urban classes (1-10) have much lower accuracy than natural classes (11-17). These metrics were calculated based on the out-of-bag dataset.', out.width="75%", strip.white=TRUE, fig.pos='H'}
 knitr::include_graphics("../results/plots/ntree_5_to_500_line_plot.pdf")
 ```
 
-## another plot
+## Results - Varying the Parameter for Number of Trees - 5 to 500 - F1
 
 ```{r opt22, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The variation between LCZ classes in F-1 score can be seen. As the number of trees in the random forest increases, F-1 score also increases, until around 100 trees. These metrics were calculated based on the out-of-bag dataset.'}
 knitr::include_graphics("../results/plots/ntree_5_to_500_facet_plot.pdf")
 ```
 
-## Predicting on the Test Dataset
+## Results - include larger plots for 500-2500 or just mention? Probably just mention
 
-## Validation Metrics
+## Predicting on the Test Dataset - Validation Metrics Plot
 
-OA and F-1 metrics dropped dramatically upon applying the random forest to the test data (Figure 4). 
+OA and F-1 metrics dropped dramatically upon applying the random forest to the test data (Figure 4).
 
 ```{r image-ref-for-in-text4, echo = FALSE, message=FALSE, fig.align='center', fig.cap='Accuracy among random forest predictions for the test dataset varied widely, but was lower than expected for F-1 scores, which do not seem to agree with the OA metrics. Classes 2, 5, 8, and 14 have particularly low F-1 Scores', out.width="75%", fig.pos='H'}
 knitr::include_graphics("../results/plots/test_set_validation_metrics_barplot_separated.pdf")
 ```
 
-## Importance Measures
+## Predicting on the Test Dataset - Importance Measures
 
 ```{r image-ref-for-in-text5, echo = FALSE, message=FALSE, fig.align='center', fig.cap='There is not a clear pattern in Mean Decrease for Gini Impurity between the different bands and scenes, though there is some indication that bands in scene 4 were particularly effective as predictors.', out.width="75%", fig.pos='H'}
 knitr::include_graphics("../results/plots/importance_barplot_ntree125.pdf")
 ```
 
-## A Full Prediction
+## A Full Prediction - 1 just landsat
 
+## A Full Prediciton -2 just lcz
 
 ```{r maps1, echo = FALSE, message=FALSE, fig.show='hold', fig.cap = 'Imagery of the area of interest. Each has a basemap of satellite reference imagery. Top Left: Only satellite reference. Top Right: One Landsat 8 Scene. Bottom: A fully predicted LCZ map.', fig.align='center', out.height="25%", fig.pos='H', fig.ncol=2}
 knitr::include_graphics(c("../results/map_images/one_landsat_scene.pdf", "../results/map_images/lcz_prediction.pdf", "../results/map_images/class_legend_horizontal.pdf"))
 ```
 
-## Discussion
-The results of these analyses point to two primary issues
+## Discussion - large decrease b/wn oob and test data accuracy
+
+## Discussion - aggregate like OA can mask low f1 by class
+
+## Discussion interpretation? maybe these could all be one slide.
+
+## Conclusion - limitations, future work, etc
+
+## Questions + me + gitHub again

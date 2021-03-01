@@ -42,9 +42,9 @@ scene_dat <- read_csv(here("data", "scene_info.csv"))
 
 Urban Heat Islands, where urban areas are warmer than the neighboring rural areas, are a major concern as the population worldwide increases and urbanizes (United Nations et al., 2019). This is for four primary reasons: increased energy consumption, elevated emissions of air pollutants and greenhouse gasses, compromised human health and comfort, and impaired water quality (US EPA, 2014). They are caused because urban built structures hold more heat than the structures and vegetation in surrounding areas (Hibbard et al., 2017). In particular, cities have an overabundance of impervious surfaces, along with a lack of vegetation (Hibbard et al., 2017). Knowledge about microclimates within cities, especially in the context of prospective sites for climate risk adaptation efforts, has the potential to ease some of these disturbances (Lempert et al., 2018) .
 
-Unfortunately, information on these sites can be difficult to obtain. Despite ample satellite imagery, the current methods to classify this imagery are not always accurate. (Yokoya et al., 2018). The historic focus on broad categories of urban vs. rural does not give enough information about the nuanced climate within a large urban area (Stewart & Oke, 2012). Local Climate Zone (LCZ) classification was created by Stewart and Oke (2012) (Figure 1) to alleviate this problem, but it often requires a significant investment from individuals with specialist knowledge to successfully classify a city (Bechtel et al., 2015). Therefore, machine learning methods that can classify LCZ efficiently and accurately are of great interest right now.
+Unfortunately, information on these sites can be difficult to obtain. Despite ample satellite imagery, the current methods to classify this imagery are not always accurate (Yokoya et al., 2018). The historic focus on broad categories of urban vs. rural does not give enough information about the nuanced climate within a large urban area (Stewart & Oke, 2012). Local Climate Zone (LCZ) classification was created by Stewart and Oke (2012) (Figure 1) to alleviate this problem, but it often requires a significant investment from individuals with specialist knowledge to successfully classify a city (Bechtel et al., 2015). Therefore, machine learning methods that can classify LCZ efficiently and accurately are of great interest right now.
 \begin{singlespace}
-```{r image-ref-for-in-text0, echo = FALSE, message=FALSE, fig.align='center', fig.cap='Local Climate Zone classes. Originally from Stewart and Oke (2012) and remade by Bechtel et al. (2017). Copyright CC-BY 4.0', out.width="100%", fig.pos='H'}
+```{r image-ref-for-in-text0, echo = FALSE, message=FALSE, fig.align='center', fig.cap='Local Climate Zone classes. Originally from Stewart and Oke (2012) and remade by Bechtel et al. (2017), licensed under CC-BY 4.0', out.width="100%", fig.pos='H'}
 knitr::include_graphics("figure_from_Bechtel_et_al_Stewart_Oke_cc-by4.png")
 ```
 \end{singlespace}
@@ -58,7 +58,7 @@ All code and higher resolution images for this project can be found on GitHub at
 
 ## Data
 
-The LCZ reference data from the contest set was taken from the WUDAPT database, checked for correctness, and then provided as a 100m resolution raster layer. The classes are numbered 1-17, rather than 1-10 and A-G, and I keep this structure throughout the analysis. The first step I took was dividing the polygons of each class in this reference data into training and testing groups. This required some preprocessing since the data did not have any sort of polygon identification, and pixels within the same polygon cannot be put into both training and validation groups because it can artificially increase accuracy metrics (Zhen et al., 2013). The resulting groups are not exactly equal in pixel numbers, but I determined that some aspect of randomization of polygons takes precedence over equality in pixels due to this concern accuracy metrics. In order to get as close as possible a barplot was made showing the number of pixels in training and test, by class, so that equality in pixel number could be explored without having knowledge of polygon groupings. Sampling was repeated until these bars looked marginally even (Table 1).
+The LCZ reference data from the contest set was taken from the WUDAPT database, checked for correctness, and then provided as a 100m resolution raster layer. The classes are numbered 1-17, rather than 1-10 and A-G, and I keep this structure throughout the analysis. The first step I took was dividing the polygons of each class in this reference data into training and testing groups. This required some preprocessing since the data did not have any sort of polygon identification, and pixels within the same polygon should not be put into both training and validation groups because it can artificially increase accuracy metrics (Zhen et al., 2013). The resulting groups are not exactly equal in pixel numbers, but I determined that some aspect of randomization of polygons takes precedence over equality in pixels due to this concern accuracy metrics. In order to get as close as possible a barplot was made showing the number of pixels in training and test, by class, so that equality in pixel number could be explored without having knowledge of polygon groupings. Sampling was repeated until these bars looked marginally even (Table 1).
 \begin{singlespace}
 ```{r echo=FALSE}
 tibble(lcz = factor(c("7", "7", "9", "9", "15", "15", "16", "16")),#,
@@ -111,35 +111,39 @@ kable(caption = "Acquisition Dates of Each Landsat 8 Scene", format='latex',line
 
 Random forests consist of many decision trees. A decision tree can be used for classification or regression, but here I will focus on classification since my goal is to predict LCZ class, a categorical variable. Decision trees put each observation through a series of conditional statements, or splits, in order to group it with other observations that are similar. The similar groups are expected to have similar values for the predictor variable. Since the true value of the predictor variable is known for the observations in the training dataset, it is possible to measure the accuracy of each prospective split while building the tree.
 
-Each point in which the data could potentially be split into two groups is called a node. Nodes are selected such that each one uses the conditional statement which subsets the data into the best possible split. When any more subsetting does not increase accuracy, the path ends, and this is called a leaf node. The initial node is called the root node, and any nodes between the root node and leaf nodes are called internal nodes. Splits are typically evaluated by Gini impurity or entropy. Since I use the `randomForest` function, which is within the randomForest package (Liaw & Wiener, 2002) in R, I will describe everything in terms of Gini impurity to remain consistent with the function methods.
+Each point in which the data could potentially be split into two groups is called a node. Nodes are selected such that each one uses the conditional statement which subsets the data into the best possible split. When any more subsetting does not increase accuracy, the path ends, and this is called a leaf node. The initial node is called the root node, and any nodes between the root node and leaf nodes are called internal nodes. Splits are typically evaluated by Gini impurity or entropy. Since I use the `randomForest()` function, which is within the randomForest package (Liaw & Wiener, 2002) in R, I will describe everything in terms of its default, Gini impurity:
 \begin{singlespace}
 \begin{equation}
 \label{eq:1}
   \text{Gini Impurity} =\ I_G(t)\  = 1 - \sum_{i=1}^{C}p(i|t)^2
 \end{equation}
-\begin{small}
-Where: $i$ is a class in the predictor variable, ranging from 1 to $C$; $C$ is the total number of classes represented for a particular node, $t$; $p(i|t)$ is the proportion of samples that belong to each $i$, for a particular node $t$.
-\end{small}
 \end{singlespace}
+Where $i$ is a class in the predictor variable, ranging from 1 to $C$; $C$ is the total number of classes; and $p(i|t)$ is the proportion of samples that belong to each $i$, for a particular node $t$.
+
 A Gini Impurity of 0 indicates a completely homogeneous group, which cannot be improved upon. This metric is used for comparison, where all possible variables and thresholds within those variables are tested. Then the variable and threshold with the best (lowest) value is selected for the node. This is done recursively at each node until no split offers a decrease in the metric of choice. The resulting collection of nodes is a decision tree. Decision trees perform poorly with new samples. Including a threshold value for the accuracy metric can help, as it keeps trees more simple, but they are still prone to overfitting. Collecting them into a random forest addresses this issue, in addition to adding a component of randomness. The predictive aspect of a random forest is determined by totaling up the decisions, or “votes,” that all the decision trees within the forest make.
 
 Each tree is created individually and starts with bootstrapping the training dataset, with replacement. This results in about 1/3 of the observations being excluded from each tree's sample, called the "out-of-bag" (OOB) data (Breiman, 2001). The observations included in the sample are "inbag." These groupings allow for validation of the model without use of an external dataset. Then the process is similar to the one described above for decision trees, except that, for each node only a subset of the variables are randomly selected and used as candidates to split up the bootstrapped data. This is advantageous due to both the randomness introduced and due to a reduction in correlation. Whichever variable best splits the data will be the one kept at that node in that specific tree. This is either done recursively until no more splits are beneficial (just as in a regular decision tree), or until minimum size of the node is reached. To create the next tree the process is the same, but with a new bootstrap sample. This is repeated for a chosen number of trees.
 
 The choice of the number of trees to create is a tuning parameter. Too many trees can be computationally expensive, but too few can create a model that is poor at prediction. Tuning parameters are usually adjusted based on OOB error rates, which is the overall proportion of incorrect predictions based on the OOB data. It is calculated by putting each observation through each decision tree in the random forest for which it is OOB. The predictions from each tree are then combined by direct vote (for categorical variables) and this becomes the final predicted result for that observation. This result is compared with the true value and counted as either correct or incorrect. This is repeated for each observation in the dataset. In this analysis I use both OOB error and the metrics listed in the Accuracy Assessment section for evaluation. 
 
-To use a random forest to make predictions for a new set of input values, the observations are fed into each decision tree individually and the predictions are tallied up. Since there is not a known ground truth value for each observation and each observation was not included in the creation of the model, all trees are used. This overall process is called bagging, because it is the action of bootstrapping the data to create each tree and using the aggregate to make a decision. Bagging is useful because it reduces variance without introducing bias. For this analysis, the number of trees parameter was varied individually. I chose it as parameter of interest because reducing it as much as possible can have a large impact on time and computational resources required.
+To use a random forest to make predictions for a new set of input values, the observations are fed into each decision tree individually and the predictions are tallied up. Since there is not a known ground truth value for each observation and each observation was not included in the creation of the model, all trees are used. This overall process is called bagging, because it is the action of **b**ootstrapping the data to create each tree and using the **agg**regate to make a decision. Bagging is useful because it reduces variance without introducing bias. For this analysis, the number of trees parameter was varied individually. I chose it as parameter of interest because reducing it as much as possible can have a large impact on time and computational resources required.
 
 ## Accuracy Assessment
 
-In line with the methods used in our reference paper and the remote sensing field, accuracy metrics will include the following:
+Following Yoo et al. (2019) and the remote sensing field, overall accuracy will be used as one metric:
 \begin{singlespace}
 \begin{equation}
 \label{eq:2}
   \text{Overall Accuracy}= OA= \frac{\text{number of correctly classified reference sites}}{\text{total number of reference sites}}
 \end{equation}
 \end{singlespace}
-$OA_{urb}$ and $OA_{nat}$ will also be used, which are the same as OA but only include the urban or natural classes, respectively.
+$OA_{\textit{urb}}$ and $OA_{\textit{nat}}$ will also be used, which are the same as OA but only include the urban or natural classes, respectively.  In addition, the F1 score will be used as a class level metric:
 \begin{singlespace}
+\begin{equation}
+\label{eq:5}
+  F_1\text{ Score} = 2*\frac{UA*PA}{UA+PA}
+\end{equation}
+where,
 \begin{equation}
 \label{eq:3}
   UA(z)\ = \frac{\text{number of correctly identified pixels in class z}}{\text{total number of pixels identified as class z}}
@@ -148,12 +152,8 @@ $OA_{urb}$ and $OA_{nat}$ will also be used, which are the same as OA but only i
 \label{eq:4}
   PA(z) = \frac{\text{number of correctly identified pixels in class z}}{\text{number of pixels truly in class z}}
 \end{equation}
-\begin{equation}
-\label{eq:5}
-  F_1\text{ Score} = 2*\frac{UA*PA}{UA+PA}
-\end{equation}
 \end{singlespace}
-UA is a measure of user's accuracy, which is also called precision or positive predictive value. PA is the measure of producer's accuracy, also known as recall or sensitivity. The harmonic mean of UA and PA gives the $F_1$ score, which is a measure of the model's accuracy. An $F_1$ Score closer to 1 indicates a model that has both low false positives and low false negatives.
+UA is a measure of user's accuracy, which is also called precision or positive predictive value. PA is the measure of producer's accuracy, also known as recall or sensitivity. The $F_1$ score is the harmonic mean of UA and PA. An $F_1$ score closer to 1 indicates a model that has both low false positives and low false negatives.
 
 # Results
 ## Varying the Parameter for Number of Trees
@@ -164,7 +164,7 @@ The parameter for the number of trees was initially varied between 5 and 500 at 
 knitr::include_graphics("../results/plots/ntree_5_to_500_line_plot.pdf")
 ```
 \end{singlespace}
-The plot of $F_1$ scores (Figure 3) explores each class individually. It's clear that there are three approximate groupings: classes 11, 12, 13, 14, and 17 have the highest $F_1$ scores, staying in the high 0.9 range; classes 6, 8, and 10, which are around 0.5 to 0.7; and classes 1-5 with $F_1$ scores hovering around 0.7 to 0.9. Almost all of the classes' $F_1$ scores appear to respond to increased numbers of trees, to an extent. This response seems to stop entirely once the number of trees reaches 100. To explore it more thoroughly I ran another simulation varying the number of trees between 25 and 2500 at intervals of 25, but there was little to no effect on the $F_1$ score by class.
+The plot of $F_1$ scores (Figure 3) explores each class individually. It's clear that there are three approximate groupings: classes 11, 12, 13, 14, and 17 have the highest $F_1$ scores, staying in the high 0.9 range; classes 6, 8, and 10, which are around 0.5 to 0.7; and classes 1-5 with $F_1$ scores hovering around 0.7 to 0.9. Almost all of the classes' $F_1$ scores appear to respond to increased numbers of trees, to an extent. This response seems to stop entirely once the number of trees reaches 100. To explore it more thoroughly I ran another simulation varying the number of trees between 25 and 2500 at intervals of 25, but there was little to no additional effect on the $F_1$ score by class.
 \begin{singlespace}
 ```{r opt22, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The variation between LCZ classes in F-1 score can be seen. As the number of trees in the random forest increases, F-1 score also increases, until around 100 trees. These metrics were calculated based on the out-of-bag dataset.', out.width="100%", fig.pos='H'}
 knitr::include_graphics("../results/plots/ntree_5_to_500_facet_plot.pdf")
@@ -182,7 +182,7 @@ knitr::include_graphics("../results/plots/test_set_validation_metrics_barplot_se
 \end{singlespace}
 ### Importance Measures
 
-In general there is not a clear pattern in which bands or scenes proved to be the best predictors based on mean decrease in Gini Impurity (Figure 5). However, bands 7, 10, and 11 in Scene 4 were particularly useful. Scene 4 overall seems to contribute the most effectively to the model, surpassing the other scenes in all of the bands except for 4,5, and 6. 
+In general there is not a clear pattern in which bands or scenes proved to be the best predictors based on mean decrease in Gini Impurity (Figure 5). However, bands 7, 10, and 11 in Scene 4 were particularly useful. Scene 4 overall seems to contribute the most effectively to the model, surpassing the other scenes in all of the bands except for 4, 5, and 6. 
 \begin{singlespace}
 ```{r image-ref-for-in-text5, echo = FALSE, message=FALSE, fig.align='center', fig.cap='There is not a clear pattern in Mean Decrease for Gini Impurity between the different bands and scenes, though there is some indication that bands in scene 4 were particularly effective as predictors.', out.width="75%", fig.pos='H'}
 knitr::include_graphics("../results/plots/importance_barplot_ntree125.pdf")

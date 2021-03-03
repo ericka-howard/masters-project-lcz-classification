@@ -103,7 +103,7 @@ rf$importance %>%
        x = "Mean Decrease in Gini Impurity",
        y="")
 
-ggsave(here("results/plots", "importance_barplot_ntree125.pdf"))
+ggsave(here("results/plots", "png_importance_barplot_ntree125.png"))
 ```
 
 
@@ -183,7 +183,7 @@ annotate_figure(facet_pair,
                 ))
 ggsave(here(
   "results/plots",
-  "test_set_validation_metrics_barplot_separated.pdf"
+  "png_test_set_validation_metrics_barplot_separated.png"
 ))
 ```
 

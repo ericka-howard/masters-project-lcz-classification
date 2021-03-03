@@ -4,7 +4,13 @@
 
 Local Climate Zone (LCZ) classification can be useful in identifying microclimates within cities that may be useful for targeting climate risk adaptation efforts, which can help alleviate the issues created by the Urban Heat Island Effect.
 
-In this work the focus was on random forest without inclusion of convolutional neural networks. Rather than four cities, this investigation will focus on just Hong Kong. This city was chosen because each LCZ class has at least four polygons. The data used was accessed from the [2017 IEEE GRSS Data Fusion Contest](http://www.grss-ieee.org/2017-ieee-grss-data-fusion-contest/) anc includes both Landsat 8 imagery and LCZ reference data. The classification scheme used by the [World Urban Database and Access Portal Tools project](http://www.wudapt.org/) (S1 in the paper) will be recreated, with varying numbers of the tuning parameter ntree, which controls the number of trees in the random forest. Accuracy with out-of-bag data will be compared to that with the test dataset. 
+In this work the focus was on random forest without inclusion of convolutional neural networks. Rather than four cities, this investigation will focus on just Hong Kong. This city was chosen because each LCZ class has at least four polygons. The data used was accessed from the [2017 IEEE GRSS Data Fusion Contest](http://www.grss-ieee.org/2017-ieee-grss-data-fusion-contest/) anc includes both Landsat 8 imagery and LCZ reference data. The classification scheme used by the [World Urban Database and Access Portal Tools project](http://www.wudapt.org/) (S1 in the paper) will be recreated, with varying numbers of the tuning parameter ntree, which controls the number of trees in the random forest. Accuracy with out-of-bag data will be compared to that with the test dataset.
+
+Here's the inital LCZ data and one Landsat scene, both with a Google Maps satellite baselayer:
+
+![LCZ Reference Data]("results/map_images/png_starting_polygons.png")
+
+![Landsat Scene]("results/map_images/png_bands.png")
 
 Accuracy Metrics fall in line with the remote sensing field and include the following:
 
@@ -19,18 +25,18 @@ UA is a measure of user's accuracy, which is also called precision or positive p
 
 The results from varying the tuning parameter indicate that there is an upper limit to how much the number of trees can affect the accuracy of the prediction, and it lies around 125 trees for OA metrics, and around 100 trees for $F_1$ scores.
 
-![]("results/plots/ntree_5_to_500_line_plot.pdf")
+![OA Metrics when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset.]("results/plots/png_ntree_5_to_500_line_plot.png")
 
-![]("results/plots/ntree_5_to_500_facet_plot.pdf")
+![F1 Scores when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset.]("results/plots/png_ntree_5_to_500_facet_plot.png")
 
 Results also indicate a lack of transferability between accuracy of predictions for the out-of-bag data as compared to that of the test dataset. This makes sense considering the spatial autocorrelation present in data such as these, but is concerning nonetheless. Additionally, OA metrics seem to mask low $F_1$ scores in individual classes.
 
-![]("results/plots/test_set_validation_metrics_barplot_separated.pdf")
+![Validation metrics based on test dataset.]("results/plots/test_set_validation_metrics_barplot_separated.pdf")
 
 Finally, here is an example of a full prediction from the best random forest:
 
-![]("results/map_images/lcz_prediction.pdf")
+![Full Prediction]("results/map_images/lcz_prediction.pdf")
 
-![]("results/map_images/class_legend_horizontal.pdf")
+![Legend]("results/map_images/png_class_legend_horizontal.png")
 
 If you have any comments or questions feel free to contact me @erickabsmith

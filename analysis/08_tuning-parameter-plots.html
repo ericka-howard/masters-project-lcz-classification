@@ -198,9 +198,9 @@ param_dat &lt;-
 ## )</code></pre>
 <pre class="r"><code>param_dat &lt;- param_dat[, 2:18]</code></pre>
 <p>Name output plots</p>
-<pre class="r"><code>current_line_plot_name &lt;- &quot;ntree_5_to_500_line_plot.pdf&quot;
-current_heatmap_name &lt;- &quot;ntree_5_to_500_heatmap.pdf&quot;
-f1_facet_plot_name &lt;- &quot;ntree_5_to_500_facet_plot.pdf&quot;</code></pre>
+<pre class="r"><code>current_line_plot_name &lt;- &quot;png_ntree_5_to_500_line_plot.png&quot;
+#current_heatmap_name &lt;- &quot;ntree_5_to_500_heatmap.pdf&quot;
+f1_facet_plot_name &lt;- &quot;png_ntree_5_to_500_facet_plot.png&quot;</code></pre>
 <pre class="r"><code>param_dat %&gt;%
   dplyr::select(ntree, oa, oa_urb, oa_nat) %&gt;%
   melt(

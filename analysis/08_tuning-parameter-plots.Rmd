@@ -28,9 +28,9 @@ param_dat <- param_dat[, 2:18]
 Name output plots
 
 ```{r}
-current_line_plot_name <- "ntree_5_to_500_line_plot.pdf"
-current_heatmap_name <- "ntree_5_to_500_heatmap.pdf"
-f1_facet_plot_name <- "ntree_5_to_500_facet_plot.pdf"
+current_line_plot_name <- "png_ntree_5_to_500_line_plot.png"
+#current_heatmap_name <- "ntree_5_to_500_heatmap.pdf"
+f1_facet_plot_name <- "png_ntree_5_to_500_facet_plot.png"
 ```
 
 ```{r fig.height=3, fig.width=5}

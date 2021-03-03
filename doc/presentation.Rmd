@@ -34,6 +34,8 @@ This is my *note*.
 
 ## Background
 
+Urban Heat
+
 ## LCZ
 
 ```{r image-ref-for-in-text0, echo = FALSE, message=FALSE, fig.align='center', fig.cap='Local Climate Zone classes. Originally from Stewart and Oke (2012) and remade by Bechtel et al. (2017). Copyright CC-BY 4.0', out.width="100%", fig.pos='H'}

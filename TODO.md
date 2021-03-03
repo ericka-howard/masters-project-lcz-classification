@@ -59,32 +59,32 @@
 
 ### Week 6 (Feb. 8-12)
 
-* [ ] Finish Methods Section
-    * [ ] Description of data (actual volume of data involved + how this data relates to the model)
-    * [ ] Explanation of how a typical decision tree is built
-    * [ ] Explain Gini Impurity & Information Gain. What "best" means
-* [ ] Start preparing results figures
-    * [ ] Table/Plot that shows the OA over the tuning parameters tried
-    * [ ] Variable importance plot
-    * [ ] One complete map of predictions
-* [ ] Which models look the best? Why?
-* [ ] Create F1 metric function
+* [x] Finish Methods Section
+    * [x] Description of data (actual volume of data involved + how this data relates to the model)
+    * [x] Explanation of how a typical decision tree is built
+    * [x] Explain Gini Impurity & Information Gain. What "best" means
+* [x] Start preparing results figures
+    * [x] Table/Plot that shows the OA over the tuning parameters tried
+    * [x] Variable importance plot
+    * [x] One complete map of predictions
+* [x] Which models look the best? Why?
+* [x] Create F1 metric function
 
 ### Week 7 (Feb. 15-19)
 
-* [ ] Write Results
-* [ ] Write conclusion
-* [ ] Final Evaluation of where things are at and setting what "finished" means **by Thursday Meeting (18)**
+* [x] Write Results
+* [x] Write conclusion
+* [x] Final Evaluation of where things are at and setting what "finished" means **by Thursday Meeting (18)**
 
 ### Week 8 (Feb. 22-26)
 
-* [ ] Finish writing **by Thursday Meeting (25th)**
-* [ ] Finish polishing figures
+* [x] Finish writing **by Thursday Meeting (25th)**
+* [x] Finish polishing figures
 
 ### Week 9 (Mar. 1-5)
 
 * [ ] Prepare Presentation
-* [ ] Submit paper **March 2**
+* [x] Submit paper **March 2**
 
 ### Week 10 (Mar. 8-12)
 

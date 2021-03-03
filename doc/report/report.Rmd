@@ -32,7 +32,7 @@ library(forcats)
 library(kableExtra)
 library(tidyr)
 library(readr)
-table_dat <- readRDS("../results/table_3_equivalent.rds") 
+table_dat <- readRDS(here("results", "table_3_equivalent.rds"))
 scene_dat <- read_csv(here("data", "scene_info.csv"))
 ```
 
@@ -45,7 +45,7 @@ Urban Heat Islands, where urban areas are warmer than the neighboring rural area
 Unfortunately, information on these sites can be difficult to obtain. Despite ample satellite imagery, the current methods to classify this imagery are not always accurate (Yokoya et al., 2018). The historic focus on broad categories of urban vs. rural does not give enough information about the nuanced climate within a large urban area (Stewart & Oke, 2012). Local Climate Zone (LCZ) classification was created by Stewart and Oke (2012) (Figure 1) to alleviate this problem, but it often requires a significant investment from individuals with specialist knowledge to successfully classify a city (Bechtel et al., 2015). Therefore, machine learning methods that can classify LCZ efficiently and accurately are of great interest right now.
 \begin{singlespace}
 ```{r image-ref-for-in-text0, echo = FALSE, message=FALSE, fig.align='center', fig.cap='Local Climate Zone classes. Originally from Stewart and Oke (2012) and remade by Bechtel et al. (2017), licensed under CC-BY 4.0', out.width="100%", fig.pos='H'}
-knitr::include_graphics("figure_from_Bechtel_et_al_Stewart_Oke_cc-by4.png")
+knitr::include_graphics(here("doc", "figure_from_Bechtel_et_al_Stewart_Oke_cc-by4.png"))
 ```
 \end{singlespace}
 ## Objective
@@ -161,13 +161,13 @@ UA is a measure of user's accuracy, which is also called precision or positive p
 The parameter for the number of trees was initially varied between 5 and 500 at intervals of 5. The resulting overall accuracy metrics indicate a leveling off around 125 trees (Figure 2). There's also a clear distinction between accuracy in urban vs. natural classes, with natural classes having a much higher overall accuracy.
 \begin{singlespace}
 ```{r opt21, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The increase in OA metrics levels off around 125 trees. Urban classes (1-10) have much lower accuracy than natural classes (11-17). These metrics were calculated based on the out-of-bag dataset.', out.width="75%", strip.white=TRUE, fig.pos='H'}
-knitr::include_graphics("../results/plots/ntree_5_to_500_line_plot.pdf")
+knitr::include_graphics(here("results", "plots/ntree_5_to_500_line_plot.pdf"))
 ```
 \end{singlespace}
 The plot of $F_1$ scores (Figure 3) explores each class individually. It's clear that there are three approximate groupings: classes 11, 12, 13, 14, and 17 have the highest $F_1$ scores, staying in the high 0.9 range; classes 6, 8, and 10, which are around 0.5 to 0.7; and classes 1-5 with $F_1$ scores hovering around 0.7 to 0.9. Almost all of the classes' $F_1$ scores appear to respond to increased numbers of trees, to an extent. This response seems to stop entirely once the number of trees reaches 100. To explore it more thoroughly I ran another simulation varying the number of trees between 25 and 2500 at intervals of 25, but there was little to no additional effect on the $F_1$ score by class.
 \begin{singlespace}
 ```{r opt22, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The variation between LCZ classes in F-1 score can be seen. As the number of trees in the random forest increases, F-1 score also increases, until around 100 trees. These metrics were calculated based on the out-of-bag dataset.', out.width="100%", fig.pos='H'}
-knitr::include_graphics("../results/plots/ntree_5_to_500_facet_plot.pdf")
+knitr::include_graphics(here("results", "plots/ntree_5_to_500_facet_plot.pdf"))
 ```
 \end{singlespace}
 ## Predicting on the Test Dataset
@@ -177,7 +177,7 @@ knitr::include_graphics("../results/plots/ntree_5_to_500_facet_plot.pdf")
 OA and $F_1$ metrics dropped dramatically upon applying the random forest to the test data (Figure 4). The $F_1$ Score for class 17, Water, remained high, but since water has a very characteristic signature this is not surprising (Xie et al., 2016). Classification for classes 2, 5, 8, and 14 performed especially poorly.
 \begin{singlespace}
 ```{r image-ref-for-in-text4, echo = FALSE, message=FALSE, fig.align='center', fig.cap='Accuracy among random forest predictions for the test dataset varied widely, but was lower than expected for F-1 scores, which do not seem to to be consistent with the OA metrics. Classes 2, 5, 8, and 14 have particularly low F-1 Scores', out.width="75%", fig.pos='H'}
-knitr::include_graphics("../results/plots/test_set_validation_metrics_barplot_separated.pdf")
+knitr::include_graphics(here("results","plots/test_set_validation_metrics_barplot_separated.pdf"))
 ```
 \end{singlespace}
 ### Importance Measures
@@ -185,7 +185,7 @@ knitr::include_graphics("../results/plots/test_set_validation_metrics_barplot_se
 In general there is not a clear pattern in which bands or scenes proved to be the best predictors based on mean decrease in Gini Impurity (Figure 5). However, bands 7, 10, and 11 in Scene 4 were particularly useful. Scene 4 overall seems to contribute the most effectively to the model, surpassing the other scenes in all of the bands except for 4, 5, and 6. 
 \begin{singlespace}
 ```{r image-ref-for-in-text5, echo = FALSE, message=FALSE, fig.align='center', fig.cap='There is not a clear pattern in Mean Decrease for Gini Impurity between the different bands and scenes, though there is some indication that bands in scene 4 were particularly effective as predictors.', out.width="75%", fig.pos='H'}
-knitr::include_graphics("../results/plots/importance_barplot_ntree125.pdf")
+knitr::include_graphics(here("results", "plots/importance_barplot_ntree125.pdf"))
 ```
 \end{singlespace}
 ## A Full Prediction
@@ -193,11 +193,11 @@ knitr::include_graphics("../results/plots/importance_barplot_ntree125.pdf")
 Despite the decreased overall accuracy for the random forest based on the test data, it is the best fitting model based on the training data,  and therefore the one I used for the full prediction of LCZ classes throughout the Hong Kong area of interest (Figure 6).
 \begin{singlespace}
 ```{r maps1, echo = FALSE, message=FALSE, fig.show='hold', fig.align='center', out.height="25%", fig.pos='H', fig.ncol=2}
-knitr::include_graphics(c("../results/map_images/one_landsat_scene.pdf", "../results/map_images/lcz_prediction.pdf"))
+knitr::include_graphics(c(here("results", "map_images/one_landsat_scene.pdf"), here("results", "map_images/lcz_prediction.pdf")))
 ```
 
 ```{r maps2, echo = FALSE, message=FALSE, fig.show='hold', fig.cap = 'Imagery of the area of interest. Each has a basemap of satellite reference imagery. Top Left: One Landsat 8 Scene with a map baselayer. Top Right: A fully predicted LCZ map with a map baselayer. Bottom: LCZ legend.', fig.align='center', out.height="25%", fig.pos='H'}
-knitr::include_graphics("../results/map_images/class_legend_horizontal.pdf")
+knitr::include_graphics(here("results", "map_images/class_legend_horizontal.pdf"))
 ```
 \end{singlespace}
 # Discussion

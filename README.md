@@ -8,9 +8,7 @@ In this work the focus was on random forest without inclusion of convolutional n
 
 Here's the inital LCZ data and one Landsat scene, both with a Google Maps satellite baselayer:
 
-<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/map_images/png_starting_polygons.png" alt="LCZ Reference Data" width="500" height="500">
-
-<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/map_images/png_bands.png" alt="Landsat Scene" width="500" height="500">
+<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/map_images/png_starting_polygons.png" alt="LCZ Reference Data" width="400" height="400"><img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/map_images/png_bands.png" alt="Landsat Scene" width="400" height="400">
 
 Accuracy Metrics fall in line with the remote sensing field and include the following:
 

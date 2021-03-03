@@ -28,5 +28,5 @@ Finally, here is an example of a full prediction from the best random forest:
 
 <img src="./results/map_images/png_lcz_with_satellite.png" alt="Fully Predicted LCZ Map" width="500" height="500">
 
-<img src=".results/map_images/png_class_legend_horizontal.png" alt="Legend" width="700" height="100">
+<img src="./results/map_images/png_class_legend_horizontal.png" alt="Legend" width="700" height="100">
 

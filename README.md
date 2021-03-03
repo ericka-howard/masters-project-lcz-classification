@@ -10,7 +10,7 @@ In this work the focus was on random forest without inclusion of convolutional n
 
 <img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/map_images/png_starting_polygons.png" alt="LCZ Reference Data" width="400" height="400"><img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/map_images/png_bands.png" alt="Landsat Scene" width="400" height="400">
 
-### Accuracy Metrics 
+## Accuracy Metrics 
 
 Accuracy metrics fall in line with the remote sensing field and include the following:
 
@@ -27,19 +27,19 @@ where,
 
 UA is a measure of user's accuracy, which is also called precision or positive predictive value. PA is the measure of producer's accuracy, also known as recall or sensitivity. The F1 score is the harmonic mean of UA and PA. An F1 score closer to 1 indicates a model that has both low false positives and low false negatives.
 
-### Results
+## Results
 
 The results from varying the tuning parameter indicate that there is an upper limit to how much the number of trees can affect the accuracy of the prediction, and it lies around 125 trees for OA metrics, and around 100 trees for F1 scores.
 
 <img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/plots/png_ntree_5_to_500_line_plot.png" alt="OA Metrics when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset." width="500" height="400">
 
-<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/plots/png_ntree_5_to_500_facet_plot.png" alt="F1 Scores when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset" width="575" height="600">
+<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/plots/png_ntree_5_to_500_facet_plot.png" alt="F1 Scores when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset" width="600" height="550">
 
 Results also indicate a lack of transferability between accuracy of predictions for the out-of-bag data as compared to that of the test dataset. This makes sense considering the spatial autocorrelation present in data such as these, but is concerning nonetheless. Additionally, OA metrics seem to mask low F1 scores in individual classes.
 
 <img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/plots/png_test_set_validation_metrics_barplot_separated.png" alt="Validation metrics based on test dataset." width="500" height="350">
 
-### A Full Prediction
+## A Full Prediction
 
 Finally, here is an example of a full prediction from the best random forest:
 

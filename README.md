@@ -8,9 +8,9 @@ In this work the focus was on random forest without inclusion of convolutional n
 
 Here's the inital LCZ data and one Landsat scene, both with a Google Maps satellite baselayer:
 
-![LCZ Reference Data]("results/map_images/png_starting_polygons.png")
+![LCZ Reference Data](/results/map_images/png_starting_polygons.png)
 
-![Landsat Scene]("results/map_images/png_bands.png")
+![Landsat Scene](results/map_images/png_bands.png)
 
 Accuracy Metrics fall in line with the remote sensing field and include the following:
 

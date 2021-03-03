@@ -8,35 +8,39 @@ In this work the focus was on random forest without inclusion of convolutional n
 
 Here's the inital LCZ data and one Landsat scene, both with a Google Maps satellite baselayer:
 
-![LCZ Reference Data](/results/map_images/png_starting_polygons.png)
+<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/map_images/png_starting_polygons.png" alt="LCZ Reference Data" width="500" height="500">
 
-![Landsat Scene](results/map_images/png_bands.png)
+<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/map_images/png_bands.png" alt="Landsat Scene" width="500" height="500">
 
 Accuracy Metrics fall in line with the remote sensing field and include the following:
 
-$$\text{Overall Accuracy}= OA= \frac{\text{number of correctly classified reference sites}}{\text{total number of reference sites}}$$
-For overall comparisons. $OA_{\textit{urb}}$ and $OA_{\textit{nat}}$ will also be used, which are the same as OA but only include the urban or natural classes, respectively. For by class comparisons $F_1$ score will be used.
-$$F_1\text{ Score} = 2*\frac{UA*PA}{UA+PA}$$
+<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/doc/equation_images/OA.png" alt="OA equation" width="350" height="50">
+
+For overall comparisons. OA_urb and OA_nat will also be used, which are the same as OA but only include the urban or natural classes, respectively. For by class comparisons F1 score will be used.
+
+<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/doc/equation_images/F1.png" alt="F1 equation" width="200" height="75">
+
 where,
-$$UA(z)\ = \frac{\text{number of correctly identified pixels in class z}}{\text{total number of pixels identified as class z}}$$
-$$PA(z) = \frac{\text{number of correctly identified pixels in class z}}{\text{number of pixels truly in class z}}$$
 
-UA is a measure of user's accuracy, which is also called precision or positive predictive value. PA is the measure of producer's accuracy, also known as recall or sensitivity. The $F_1$ score is the harmonic mean of UA and PA. An $F_1$ score closer to 1 indicates a model that has both low false positives and low false negatives.
+<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/doc/equation_images/PA.png" alt="PA equation" width="300" height="40">
+<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/doc/equation_images/UA.png" alt="UA equation" width="300" height="40">
 
-The results from varying the tuning parameter indicate that there is an upper limit to how much the number of trees can affect the accuracy of the prediction, and it lies around 125 trees for OA metrics, and around 100 trees for $F_1$ scores.
+UA is a measure of user's accuracy, which is also called precision or positive predictive value. PA is the measure of producer's accuracy, also known as recall or sensitivity. The F1 score is the harmonic mean of UA and PA. An F1 score closer to 1 indicates a model that has both low false positives and low false negatives.
 
-![OA Metrics when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset.]("results/plots/png_ntree_5_to_500_line_plot.png")
+The results from varying the tuning parameter indicate that there is an upper limit to how much the number of trees can affect the accuracy of the prediction, and it lies around 125 trees for OA metrics, and around 100 trees for F1 scores.
 
-![F1 Scores when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset.]("results/plots/png_ntree_5_to_500_facet_plot.png")
+<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/plots/png_ntree_5_to_500_line_plot.png" alt="OA Metrics when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset." width="500" height="400">
 
-Results also indicate a lack of transferability between accuracy of predictions for the out-of-bag data as compared to that of the test dataset. This makes sense considering the spatial autocorrelation present in data such as these, but is concerning nonetheless. Additionally, OA metrics seem to mask low $F_1$ scores in individual classes.
+<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/plots/png_ntree_5_to_500_facet_plot.png" alt="F1 Scores when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset" width="575" height="600">
 
-![Validation metrics based on test dataset.]("results/plots/test_set_validation_metrics_barplot_separated.pdf")
+Results also indicate a lack of transferability between accuracy of predictions for the out-of-bag data as compared to that of the test dataset. This makes sense considering the spatial autocorrelation present in data such as these, but is concerning nonetheless. Additionally, OA metrics seem to mask low F1 scores in individual classes.
+
+<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/map_images//test_set_validation_metrics_barplot_separated.png" alt="Validation metrics based on test dataset." width="500" height="500">
 
 Finally, here is an example of a full prediction from the best random forest:
 
-![Full Prediction]("results/map_images/lcz_prediction.pdf")
+<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/map_images/png_lcz_with_satellite.png" alt="Fully Predicted LCZ Map" width="500" height="500">
 
-![Legend]("results/map_images/png_class_legend_horizontal.png")
+<img src="https://github.com/erickabsmith/masters-project-lcz-classification/blob/main/results/map_images/png_class_legend_horizontal.png" alt="Legend" width="700" height="100">
 
 If you have any comments or questions feel free to contact me @erickabsmith

@@ -3,7 +3,12 @@ title: "Local Climate Zone Classification Using Random Forests"
 author: "Ericka B. Smith"
 date: "3/9/2021"
 output:
-  ioslides_presentation
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
 header-includes: \usepackage{booktabs}
 ---
 
@@ -15,187 +20,255 @@ library(forcats)
 library(kableExtra)
 library(tidyr)
 library(readr)
-table_dat <- readRDS("../results/table_3_equivalent.rds") 
+table_dat <- readRDS(here("results", "table_3_equivalent.rds"))
 scene_dat <- read_csv(here("data", "scene_info.csv"))
+#xaringan::inf_mr()
+#servr::daemon_stop(1)
 ```
 
-## Introduction | About Me
+# Background
 
-All code and higher resolution images for this project can be found on GitHub at <https://github.com/erickabsmith/masters-project-lcz-classification>.
+<img src="UHI_index.png">
 
-## Introduction | Test
-
-## Introduction | Urban Heat Islands
-
-<div class="notes">
+???
 
 - The Urban Heat Island effect is where urbanized areas are warmer than neighboring rural areas
-- As the population worldwide increases and urbanizes this is a major concern
-- They are caused because urban built structures hold more heat than the structures and vegetation in surrounding areas
-- Knowledge about microclimates within cities can be incredibly useful in mitigating this issue because it can give information about prospective sites for climate risk adaptation, but it can be difficult to obtain
 
-</div>
+- As the population worldwide increases and urbanizes this is a major concern,
+because these heat islands cause increased energy consumption, elevated emissions of air pollutants
+and greenhouse gasses, compromised human health and comfort, and impaired water quality.
 
-## Local Climate Zones
+- That's what you can see here in this generalized profile. Notice that our y-axis is degrees celsius, so these changes can be quite large.
 
-```{r image-ref-for-in-text0, echo = FALSE, message=FALSE, fig.align='center', fig.cap='Local Climate Zone classes. Originally from Stewart and Oke (2012) and remade by Bechtel et al. (2017). Copyright CC-BY 4.0', out.width="100%", fig.pos='H'}
-knitr::include_graphics("figure_from_Bechtel_et_al_Stewart_Oke_cc-by4.png")
-```
+- So, what can be done about them?
+- Well we know that they are caused because urban built structures hold more heat than the structures and vegetation in surrounding areas.  You can see this in the profile. 
 
-<div class="notes">
+- Knowledge about microclimates within cities can be incredibly useful in mitigating this issue because it can give information about prospective sites for climate risk adaptation. 
 
-- A primary way of defining these microclimates is 
+- Unfortuately this information can be difficult to obtain.
 
-</div>
+- One way to find these microclimates is by classification of satellite imagery
 
-## Objective
+---
 
-Yoo
+<center>
+<img src="lcz.png" width="600">
+</center>
 
-## Methods - Data - LCZ
+Originally created by Stewart and Oke (2012) and then reproduced by Bechtel et al. (2017), licensed under CC-BY 4.0
+
+???
+
+Here you can see one of the predominant classification schemes for urban areas.
+
+- On the outside circle are the urban classes, they range from 1 to 10 and include varying levels of built structures. It's roughly grouped into high-rises, mid-rises, low-rises, sparsely built, and heavy industry.
+
+- On the inside circle are the natural classes, which range from A to G and include trees, bushes and low plants, bare soil rock or sand, and water.
+
+- Moving forward I'll talk about the natural classes as classes 11-17 rather than A-G.
+
+---
+
+# Objective
+
+* Hong Kong
+* Yoo
+* WUDAPT
+* ntree
+
+???
+
+---
+
+# Methods - Data - LCZ
 
 The LCZ reference data
 
-## Methods - Data - Landsat
+<img src="../.././results/map_images/png_starting_polygons.png" alt="LCZ Reference Data" width="400" height="400">
+
+???
+
+---
+
+# Methods - Data - Landsat
 
 The Landsat 8 data
 
-```{r echo=FALSE}
-scene_dat[,2:3] %>%
-kable(caption = "Acquisition Dates of Each Landsat 8 Scene", format='latex',linesep='',booktabs=TRUE,escape=FALSE) %>%
-  kable_styling(latex_options = c(#'striped',
-                                  'HOLD_position'), font_size = 8)
-```
+<table>
+<tr><td><img src="../../results/tables/scenes.png"></td> <td>
+<img src="../../results/map_images/png_bands.png" alt="Landsat Scene" width="400" height="400"></td></tr>
+</table>
+
+???
 
 All 9 available bands of all 4 Landsat scenes amounted to 36 input variables. Each pixel is an observation,
 
-## Methods - data - Step 1 - train vs test (CHALLENGE)
+---
 
-```{r echo=FALSE}
-tibble(lcz = factor(c("7", "7", "9", "9", "15", "15", "16", "16")),#,
-       tt = factor(c("train", "test", "train", "test", "train", "test", "train", "test")), 
-                 total_n_pixels = rep(0, times=8), 
-                 n_polygons = rep(0, times=8)) %>%
-  bind_rows(table_dat) %>%
-  mutate(lcz = fct_relevel(lcz, c("1", "2","3", "4","5", "6","7", "8","9", "10","11", "12","13", "14","15", "16","17"))) %>%
-  arrange(lcz) %>%
-  ungroup() %>%
-  pivot_wider(names_from=tt, values_from=c(total_n_pixels, n_polygons)) %>%
-  unite("Train", c(n_polygons_train, total_n_pixels_train), sep = "        (") %>%
-  unite("Test", c(n_polygons_test, total_n_pixels_test), sep = " (") %>%
-  mutate(Train = paste(Train, ")", sep=""),
-         Test = paste(Test, ")", sep="")) %>%
-  relocate(Test, .after=Train) %>%
-  mutate(lcz = fct_recode(lcz, "Class 1: Compact high-rise" = "1",
-                     "Class 2: Compact mid-rise" = "2",
-                     "Class 3: Compact low-rise" = "3",
-                     "Class 4: Open high-rise" = "4",
-                     "Class 5: Open mid-rise" = "5",
-                     "Class 6: Open low-rise" = "6",
-                     "Class 7: Lightweight low-rise" = "7",
-                     "Class 8: Large low-rise" = "8",
-                     "Class 9: Sparsely built" = "9",
-                     "Class 10: Heavy Industry" = "10",
-                     "Class 11: Dense trees" = "11",
-                     "Class 12: Scattered trees" = "12",
-                     "Class 13: Bush, scrub" = "13",
-                     "Class 14: Low plants" = "14",
-                     "Class 15: Bare rock or paved" = "15",
-                     "Class 16: Bare soil or sand" = "16",
-                     "Class 17: Water" = "17")) %>%
-kable(caption = "Delineation of training and test data by polygon and pixel.", format='latex',linesep='',booktabs=TRUE,escape=FALSE,
-        col.names = linebreak(c("Local Climate Zone", "Train", "Test"))) %>%
-  kable_styling(latex_options = c(#'striped',
-                                  'HOLD_position'), font_size = 8) %>%
-  add_footnote("Number of polygons is listed first, with number of pixels in parentheses.")
-```
+# Methods - data - Step 1 - train vs test (CHALLENGE)
 
-## Random Forests - decision tree
+<img src="../../results/tables/polygons.png">
 
-## Random forest - impurity
+???
+
+---
+
+# Random Forests - decision tree
+
+???
+
+---
+
+# Random forest - impurity
 
 Splits are typically evaluated by Gini impurity or entropy:
 
 $$
 \text{Gini Impurity} =\ I_G(t)\  = 1 - \sum_{i=1}^{C}p(i|t)^2
-$$ $$
-\text{Entropy} =\ I_H(t)\ = -\sum_{i=1}^{C}p(i|t)\log_2p(i|t)
 $$
+
 
 Where $i$ is a class in the predictor variable, ranging from 1 to $C$. $C$ is the total number of classes represented for a particular node, $t$. $p(i|t)$ is the proportion of samples that belong to each $i$, for a particular node $t$.
 
-## Random Forest - How random forests differ from decision trees (+ prediction)
+???
 
-## Tuning parameters and OOB error (maybe two slides)
+---
 
-## Accuracy Assessment
+# Random Forest - How random forests differ from decision trees (+ prediction)
+
+???
+
+---
+
+# Tuning parameters and OOB error (maybe two slides)
+
+???
+
+---
+
+# Accuracy Assessment
+
+<br>
+$$\text{Overall Accuracy}= \text{OA}= \frac{\text{number of correctly classified reference sites}}{\text{total number of reference sites}}$$
+--
+
+<br>
+$$F_1\text{ Score} = 2*\frac{UA*PA}{UA+PA}$$
+--
+
+<br>
+$$UA(z)\ = \frac{\text{number of correctly identified pixels in class z}}{\text{total number of pixels identified as class z}}$$ 
+--
+
+<br>
+$$PA(z) = \frac{\text{number of correctly identified pixels in class z}}{\text{number of pixels truly in class z}}$$
+
+???
 
 In line with the methods used in our reference paper and the remote sensing field, accuracy metrics will include the following:
 
-$$
-\text{Overall Accuracy}= OA= \frac{\text{number of correctly classified reference sites}}{\text{total number of reference sites}}
-$$
-
 $OA_{urb}$ and $OA_{nat}$ will be used, which are the same as overall $OA$ but only includes the urban and natural classes, respectively.
-
-$$
-UA(z)\ = \frac{\text{number of correctly identified pixels in class z}}{\text{total number of pixels identified as class z}}
-$$ $$
-PA(z) = \frac{\text{number of correctly identified pixels in class z}}{\text{number of pixels truly in class z}}
-$$
 
 $UA$ is a measure of user's accuracy, which is also called precision or positive predictive value. $PA$ is the measure of producer's accuracy, also known as recall or sensitivity. The harmonic mean of $UA$ and $PA$ gives the $F_1$ score, which is a measure of the model's accuracy. An $F_1$ Score closer to 1 indicates a model that has both low false positives and low false negatives.
 
-$$
-F_1\text{ Score} = 2*\frac{UA*PA}{UA+PA}
-$$
+---
 
-## Results - Varying the Parameter for Number of Trees - 5 to 500 - OA
+## Predicting on the Out-of-Bag Data
+<img src="../../results/plots/png_ntree_5_to_500_line_plot.png" alt="OA Metrics when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset.">
+
+???
+# Results: OA for 5 to 500
 
 The parameter for the number of trees was initially varied between 5 and 500 at intervals of 5. The resulting overall accuracy metrics indicate a leveling off around 125 trees (Figure 2). There's also a clear distinction between accuracy in urban vs. natural classes, with natural classes having a much higher overall accuracy.
 
-```{r opt21, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The increase in OA metrics levels off around 125 trees. Urban classes (1-10) have much lower accuracy than natural classes (11-17). These metrics were calculated based on the out-of-bag dataset.', out.width="75%", strip.white=TRUE, fig.pos='H'}
-knitr::include_graphics("../results/plots/ntree_5_to_500_line_plot.pdf")
-```
+---
 
-## Results - Varying the Parameter for Number of Trees - 5 to 500 - F1
+## Predicting on the Out-of-Bag Data
+<img src="../../results/plots/png_ntree_5_to_500_facet_plot.png" height="525">
 
-```{r opt22, echo = FALSE, message=FALSE, fig.align='center', fig.cap='The variation between LCZ classes in F-1 score can be seen. As the number of trees in the random forest increases, F-1 score also increases, until around 100 trees. These metrics were calculated based on the out-of-bag dataset.'}
-knitr::include_graphics("../results/plots/ntree_5_to_500_facet_plot.pdf")
-```
+???
 
-## Results - include larger plots for 500-2500 or just mention? Probably just mention
+# Results: F-1 by Class 5 to 500
 
-## Predicting on the Test Dataset - Validation Metrics Plot
+The variation between LCZ classes in F-1 score can be seen. As the number of trees in the random forest increases, F-1 score also increases, until around 100 trees. These metrics were calculated based on the out-of-bag dataset.
+
+include larger plots for 500-2500 or just mention? Probably just mentio
+
+---
+
+## Predicting on the Test Dataset
+
+<img src="../../results/plots/png_test_set_validation_metrics_barplot_separated.png">
+
+???
 
 OA and F-1 metrics dropped dramatically upon applying the random forest to the test data (Figure 4).
 
-```{r image-ref-for-in-text4, echo = FALSE, message=FALSE, fig.align='center', fig.cap='Accuracy among random forest predictions for the test dataset varied widely, but was lower than expected for F-1 scores, which do not seem to agree with the OA metrics. Classes 2, 5, 8, and 14 have particularly low F-1 Scores', out.width="75%", fig.pos='H'}
-knitr::include_graphics("../results/plots/test_set_validation_metrics_barplot_separated.pdf")
-```
+Accuracy among random forest predictions for the test dataset varied widely, but was lower than expected for F-1 scores, which do not seem to agree with the OA metrics. Classes 2, 5, 8, and 14 have particularly low F-1 Scores
 
-## Predicting on the Test Dataset - Importance Measures
+---
 
-```{r image-ref-for-in-text5, echo = FALSE, message=FALSE, fig.align='center', fig.cap='There is not a clear pattern in Mean Decrease for Gini Impurity between the different bands and scenes, though there is some indication that bands in scene 4 were particularly effective as predictors.', out.width="75%", fig.pos='H'}
-knitr::include_graphics("../results/plots/importance_barplot_ntree125.pdf")
-```
+## Predicting on the Test Dataset
 
-## A Full Prediction - 1 just landsat
+<img src="../../results/plots/png_importance_barplot_ntree125.png">
 
-## A Full Prediciton -2 just lcz
+???
 
-```{r maps1, echo = FALSE, message=FALSE, fig.show='hold', fig.cap = 'Imagery of the area of interest. Each has a basemap of satellite reference imagery. Top Left: Only satellite reference. Top Right: One Landsat 8 Scene. Bottom: A fully predicted LCZ map.', fig.align='center', out.height="25%", fig.pos='H', fig.ncol=2}
-knitr::include_graphics(c("../results/map_images/one_landsat_scene.pdf", "../results/map_images/lcz_prediction.pdf", "../results/map_images/class_legend_horizontal.pdf"))
-```
+There is not a clear pattern in Mean Decrease for Gini Impurity between the different bands and scenes, though there is some indication that bands in scene 4 were particularly effective as predictors.
 
-## Discussion - large decrease b/wn oob and test data accuracy
+---
 
-## Discussion - aggregate like OA can mask low f1 by class
+## Creating the Full Prediction
 
-## Discussion interpretation? maybe these could all be one slide.
+<table>
+<tr><td><img src="../../results/map_images/png_satellite_baselayer.png" height=350></td> <td><img src="../../results/map_images/png_bands.png" height=350></td></tr>
+<th>Google Maps Satellite Imagery</th><th>Landsat 8 Scene</th>
+</table>
 
-## Conclusion - limitations, future work, etc
+???
+On the left is a google maps baselayer of the area of interest
+On the right is the same baselayer with one Landsat 8 scene overlayed.
 
-## Acknowledgements
+---
 
-## Questions + me + gitHub again
+## Creating the Full Prediction
+<center>
+<img src="../../results/map_images/png_lcz_with_satellite.png" height=425><img src="../../results/map_images/png_class_legend_vertical.png" width=205>
+</center>
+???
+
+Here is the entire area of interest classified into local climate zones. 
+
+---
+
+# Conclusion
+--
+
+Overall Results:
+* Low accuracy for prediction on the test data, in comparison to the out-of-bag data
+* High OA values can mask low F1 scores within classes
+
+--
+
+<br>
+Limitations:
+* Reference polygons on account for ~3% of the Area of Interest
+* Time constraints
+--
+
+<br>
+Future Work:
+* Multiple tuning parameters & Interactions between them
+* Quantifying "how much" ground truth data is enough
+
+???
+
+---
+
+# Questions?
+ 
+All code and higher resolution images for this project can be found on GitHub at <https://github.com/erickabsmith/masters-project-lcz-classification>.
+
+
+???
+

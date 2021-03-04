@@ -20,14 +20,16 @@ table_dat <- readRDS(here("results", "table_3_equivalent.rds"))
 scene_dat <- read_csv(here("data", "scene_info.csv"))
 ```
 
-```{r}
+```{r fig.width = 4}
 scene_dat[,2:3] %>%
-kable(caption = "Acquisition Dates of Each Landsat 8 Scene", format='latex',linesep='',booktabs=TRUE,escape=FALSE) %>%
-  kable_styling(latex_options = c('striped','HOLD_position'), font_size = 8)
+kbl(caption = "Acquisition Dates of Each Landsat 8 Scene", linesep='',booktabs=TRUE,escape=FALSE) %>%
+  #kable_material_dark(full_width=F) %>%
+  kable_styling(full_width = F, font_size = 14) %>%
+   save_kable(file ="../results/tables/scenes.png")
 ```
 
 
-```{r}
+```{r fig.width=6}
 tibble(lcz = factor(c("7", "7", "9", "9", "15", "15", "16", "16")),#,
        tt = factor(c("train", "test", "train", "test", "train", "test", "train", "test")), 
                  total_n_pixels = rep(0, times=8), 
@@ -59,9 +61,12 @@ tibble(lcz = factor(c("7", "7", "9", "9", "15", "15", "16", "16")),#,
                      "Class 15: Bare rock or paved" = "15",
                      "Class 16: Bare soil or sand" = "16",
                      "Class 17: Water" = "17")) %>%
-kable(caption = "Delineation of training and test data by polygon and pixel.", format='latex',linesep='',booktabs=TRUE,escape=FALSE,
+kbl(caption = "\nDelineation of training and test data by polygon and pixel.",linesep='',booktabs=TRUE,escape=FALSE,
         col.names = linebreak(c("Local Climate Zone", "Train", "Test"))) %>%
-  kable_styling(latex_options = c('striped','HOLD_position'), font_size = 8) %>%
-  add_footnote("Number of polygons is listed first, with number of pixels in parentheses.")
+  kable_styling(full_width = F, font_size = 14) %>%
+  add_footnote("Number of polygons is listed first, with number of pixels in parentheses.") %>%
+  
+  #kable_material_dark(full_width=F) %>%
+  save_kable(file = "../results/tables/polygons.png")
 ```
 

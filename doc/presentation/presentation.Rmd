@@ -74,13 +74,14 @@ Here you can see one of the predominant classification schemes for urban areas.
 
 # Objective
 
-* Hong Kong
-* Yoo
-* WUDAPT
+* mention motivation is to replicate Yoo + brief description [[building models to predict lcz based on satellite data]]
+* do this for HK
+* use RFs
 * ntree
 
 
 ???
+maybe mention that this method is how WUDAPT does it
 
 ---
 
@@ -92,11 +93,16 @@ Here you can see one of the predominant classification schemes for urban areas.
 
 
 ???
-
+emphasize that this is response
+mention that the gmap is for context and I wasn't using it
 
 ---
 
 # The Landsat 8 data
+
+#### switch to just one landsat band & keep track of what one it is
+
+look at bands list of what they are, and mention what bands are available (red, green , swir etc)
 
 <table>
 <tr><td><img src="../../results/tables/scenes.png"></td> <td>
@@ -108,48 +114,47 @@ Here you can see one of the predominant classification schemes for urban areas.
 <!-- </p> -->
 
 ???
-
+emphasize that this is predictor
 All 9 available bands of all 4 Landsat scenes amounted to 36 input variables. Each pixel is an observation,
+mention google map layer
 
 ---
 
-<!-- <img src="../../results/tables/polygons.png" width=350> -->
-<img src="../../results/plots/traintest.png" width = 700>
+<img src="../../results/tables/polygons.png" width=350>
+<!-- <img src="../../results/plots/traintest.png" width = 700> -->
 
 ???
 
-test is purple
-train is yellow
+pixels vs polygons, split by polygons
+kind of gloss over diff # of pixels and randomization
+
 ---
 
 # Decision Trees
 
+very simple decision tree
+
 ???
 think flow chart
 
----
+talk about structure and how data gets fed through it 
+mention that to build one it's a matter of deciding which variables to split on & there are metrics on
 
-# Impurity
-
-Splits are typically evaluated by Gini impurity or entropy:
-
-$$\text{Gini Impurity} =\ I_G(t)\  = 1 - \sum_{i=1}^{C}p(i|t)^2$$
-
-
-Where: 
-* $i$ is a class in the predictor variable, ranging from 1 to $C$.
-* $C$ is the total number of classes represented for a particular node, $t$. 
-* $p(i|t)$ is the proportion of samples that belong to each $i$, for a particular node $t$.
-
-???
+talk about prediction here
 
 ---
 
-# Random Forests vs. Decision Trees
+Random forest as a collection of decision trees
 
-???
+---
 
-talk about prediction some ?
+Randomness
+
+Bootstrap resampling
+
+random set of vars @each split
+
+Think about hwo you have two audiences
 
 ---
 
@@ -162,6 +167,10 @@ talk about prediction some ?
 # Tuning Parameters
 
 ???
+maybe mention more than ntree briefly
+get list of default values of other params
+
+to see how the forests perform using these metrics so you can understand the plots.......
 
 ---
 
@@ -185,6 +194,8 @@ $$PA(z) = \frac{\text{number of correctly identified pixels in class z}}{\text{n
 
 ???
 
+make sure to iterate how people should interpret F1 (close to 1 is good)
+
 In line with the methods used in our reference paper and the remote sensing field, accuracy metrics will include the following:
 
 $OA_{urb}$ and $OA_{nat}$ will be used, which are the same as overall $OA$ but only includes the urban and natural classes, respectively.
@@ -192,6 +203,7 @@ $OA_{urb}$ and $OA_{nat}$ will be used, which are the same as overall $OA$ but o
 $UA$ is a measure of user's accuracy, which is also called precision or positive predictive value. $PA$ is the measure of producer's accuracy, also known as recall or sensitivity. The harmonic mean of $UA$ and $PA$ gives the $F_1$ score, which is a measure of the model's accuracy. An $F_1$ Score closer to 1 indicates a model that has both low false positives and low false negatives.
 
 ---
+make title fit conclusion (accuracy improves with ntree up to 125) 
 <br>
 <br>
 <br>
@@ -199,12 +211,20 @@ $UA$ is a measure of user's accuracy, which is also called precision or positive
 <img src="../../results/plots/png_ntree_5_to_500_line_plot.png" alt="OA Metrics when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset.">
 
 ???
+start with x axis is
+y axis is
+colors mean
+THEN takeaway
+visual phenomenon of leveling off, this means the accuracy is improving but only to a point
+
 # Results: OA for 5 to 500
 
 The parameter for the number of trees was initially varied between 5 and 500 at intervals of 5. The resulting overall accuracy metrics indicate a leveling off around 125 trees (Figure 2). There's also a clear distinction between accuracy in urban vs. natural classes, with natural classes having a much higher overall accuracy.
 
----
+transition to it beeing same structure but f1 score and classes
 
+---
+add takeaway for title instead
 <img src="../../results/plots/png_ntree_5_to_500_facet_plot.png" height="625">
 
 ???
@@ -215,14 +235,18 @@ The variation between LCZ classes in F-1 score can be seen. As the number of tre
 
 include larger plots for 500-2500 or just mention? Probably just mentio
 
----
+give some accuracy numbers for test accuracy plot comparison later
 
+---
+add takeaway
 <br>
 <br>
 
 <img src="../../results/plots/png_test_set_validation_metrics_barplot_separated.png">
 
 ???
+
+these are all lower than the out of bag estimate, "remember what it was before that I mentioned"
 
 ## Predicting on the Test Dataset
 
@@ -231,6 +255,7 @@ OA and F-1 metrics dropped dramatically upon applying the random forest to the t
 Accuracy among random forest predictions for the test dataset varied widely, but was lower than expected for F-1 scores, which do not seem to agree with the OA metrics. Classes 2, 5, 8, and 14 have particularly low F-1 Scores
 
 ---
+<!-- ## fix band order -->
 <br>
 <br>
 <img src="../../results/plots/png_importance_barplot_ntree125.png">

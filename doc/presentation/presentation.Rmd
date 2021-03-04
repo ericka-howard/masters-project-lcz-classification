@@ -26,10 +26,11 @@ scene_dat <- read_csv(here("data", "scene_info.csv"))
 #servr::daemon_stop(1)
 ```
 
-# Background
-
+<br>
+<br>
+<center>
 <img src="UHI_index.png">
-
+</center>
 ???
 
 - The Urban Heat Island effect is where urbanized areas are warmer than neighboring rural areas
@@ -53,9 +54,11 @@ and greenhouse gasses, compromised human health and comfort, and impaired water 
 
 <center>
 <img src="lcz.png" width="600">
+<br>
+<font size = 2>
+Originally created by Stewart and Oke (2012), reproduced by Bechtel et al. (2017), licensed under CC-BY 4.0
+</font>
 </center>
-
-Originally created by Stewart and Oke (2012) and then reproduced by Bechtel et al. (2017), licensed under CC-BY 4.0
 
 ???
 
@@ -76,28 +79,33 @@ Here you can see one of the predominant classification schemes for urban areas.
 * WUDAPT
 * ntree
 
+
 ???
 
 ---
 
-# Methods - Data - LCZ
+# The LCZ reference data
 
-The LCZ reference data
-
+<center>
 <img src="../.././results/map_images/png_starting_polygons.png" alt="LCZ Reference Data" width="400" height="400">
+</center>
+
 
 ???
 
+
 ---
 
-# Methods - Data - Landsat
-
-The Landsat 8 data
+# The Landsat 8 data
 
 <table>
 <tr><td><img src="../../results/tables/scenes.png"></td> <td>
 <img src="../../results/map_images/png_bands.png" alt="Landsat Scene" width="400" height="400"></td></tr>
 </table>
+
+<!-- <p style="text-align:right;"> -->
+<!-- Methods -->
+<!-- </p> -->
 
 ???
 
@@ -105,46 +113,58 @@ All 9 available bands of all 4 Landsat scenes amounted to 36 input variables. Ea
 
 ---
 
-# Methods - data - Step 1 - train vs test (CHALLENGE)
-
-<img src="../../results/tables/polygons.png">
-
-???
-
----
-
-# Random Forests - decision tree
+<!-- <img src="../../results/tables/polygons.png" width=350> -->
+<img src="../../results/plots/traintest.png" width = 700>
 
 ???
 
+test is purple
+train is yellow
 ---
 
-# Random forest - impurity
+# Decision Trees
+
+???
+think flow chart
+
+---
+
+# Impurity
 
 Splits are typically evaluated by Gini impurity or entropy:
 
-$$
-\text{Gini Impurity} =\ I_G(t)\  = 1 - \sum_{i=1}^{C}p(i|t)^2
-$$
+$$\text{Gini Impurity} =\ I_G(t)\  = 1 - \sum_{i=1}^{C}p(i|t)^2$$
 
 
-Where $i$ is a class in the predictor variable, ranging from 1 to $C$. $C$ is the total number of classes represented for a particular node, $t$. $p(i|t)$ is the proportion of samples that belong to each $i$, for a particular node $t$.
-
-???
-
----
-
-# Random Forest - How random forests differ from decision trees (+ prediction)
+Where: 
+* $i$ is a class in the predictor variable, ranging from 1 to $C$.
+* $C$ is the total number of classes represented for a particular node, $t$. 
+* $p(i|t)$ is the proportion of samples that belong to each $i$, for a particular node $t$.
 
 ???
 
 ---
 
-# Tuning parameters and OOB error (maybe two slides)
+# Random Forests vs. Decision Trees
+
+???
+
+talk about prediction some ?
+
+---
+
+# Out-of-Bag Error
 
 ???
 
 ---
+
+# Tuning Parameters
+
+???
+
+---
+
 
 # Accuracy Assessment
 
@@ -172,8 +192,10 @@ $OA_{urb}$ and $OA_{nat}$ will be used, which are the same as overall $OA$ but o
 $UA$ is a measure of user's accuracy, which is also called precision or positive predictive value. $PA$ is the measure of producer's accuracy, also known as recall or sensitivity. The harmonic mean of $UA$ and $PA$ gives the $F_1$ score, which is a measure of the model's accuracy. An $F_1$ Score closer to 1 indicates a model that has both low false positives and low false negatives.
 
 ---
-
-## Predicting on the Out-of-Bag Data
+<br>
+<br>
+<br>
+<br>
 <img src="../../results/plots/png_ntree_5_to_500_line_plot.png" alt="OA Metrics when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset.">
 
 ???
@@ -183,8 +205,7 @@ The parameter for the number of trees was initially varied between 5 and 500 at 
 
 ---
 
-## Predicting on the Out-of-Bag Data
-<img src="../../results/plots/png_ntree_5_to_500_facet_plot.png" height="525">
+<img src="../../results/plots/png_ntree_5_to_500_facet_plot.png" height="625">
 
 ???
 
@@ -196,20 +217,22 @@ include larger plots for 500-2500 or just mention? Probably just mentio
 
 ---
 
-## Predicting on the Test Dataset
+<br>
+<br>
 
 <img src="../../results/plots/png_test_set_validation_metrics_barplot_separated.png">
 
 ???
+
+## Predicting on the Test Dataset
 
 OA and F-1 metrics dropped dramatically upon applying the random forest to the test data (Figure 4).
 
 Accuracy among random forest predictions for the test dataset varied widely, but was lower than expected for F-1 scores, which do not seem to agree with the OA metrics. Classes 2, 5, 8, and 14 have particularly low F-1 Scores
 
 ---
-
-## Predicting on the Test Dataset
-
+<br>
+<br>
 <img src="../../results/plots/png_importance_barplot_ntree125.png">
 
 ???
@@ -242,7 +265,6 @@ Here is the entire area of interest classified into local climate zones.
 ---
 
 # Conclusion
---
 
 Overall Results:
 * Low accuracy for prediction on the test data, in comparison to the out-of-bag data

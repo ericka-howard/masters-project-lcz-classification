@@ -100,7 +100,7 @@ My Focus:
 # The LCZ reference data
 
 <center>
-<img src="../.././results/map_images/png_starting_polygons.png" alt="LCZ Reference Data" width="500" height="500">
+<img src="images/png_starting_polygons.png" alt="LCZ Reference Data" width="500" height="500">
 </center>
 
 
@@ -125,13 +125,9 @@ Now, let me tell you about the data. You're seeing two things depicted here.
 look at bands list of what they are, and mention what bands are available (red, green , swir etc)
 
 <table>
-<tr><td><img src="../../results/tables/scenes.png"></td> <td>
-<img src="../../results/map_images/png_bands.png" alt="Landsat Scene" width="400" height="400"></td></tr>
+<tr><td><img src="images/scenes.png"></td> <td>
+<img src="images/png_bands.png" alt="Landsat Scene" width="400" height="400"></td></tr>
 </table>
-
-<!-- <p style="text-align:right;"> -->
-<!-- Methods -->
-<!-- </p> -->
 
 ???
 
@@ -154,7 +150,7 @@ Okay, so that's the gist of the Landsat data.
 
 ---
 <center>
-<img src="../../results/tables/polygons.png" height=625>
+<img src="images/polygons.png" height=625>
 <!-- <img src="../../results/plots/traintest.png" width = 700> -->
 </center>
 
@@ -202,38 +198,87 @@ When the tree is being built every possible band and threshold for that band is 
 - At this point the node becomes a leaf node and the majority vote of that leaf node is that class decision that will be applied to pixels being predicted on.
 - For the stop sign, or leaf node, on the left the winner is clearly Class 11 dense trees.
 - The middle leaf node would class new pixels as class 17, water.
-- The leaf node on the right is a lot closer, but it would classify all of those pixels as class 11, dense trees, because that's the majority vote.
+- The leaf node on the right is a lot closer, but it would classify all of those pixels as class 11, dense trees, because that's the majority.
 
 ---
 
-Random forest are a collection of decision trees
+## Random Forests: a collection of decision trees
+<center>
+<img src="images/dec_v_rf.png" width=850>
+<br>
+<br>
+<font size = 2>
+Created by Venkata Jagannath, licensed under CC BY-SA 4.0
+</font>
+</center>
+
+???
+For a random forest, a pixel is put through a collection of decision trees. The classifications are tallied up as votes, with majority takes all giving a final classification for a given pixel.
 
 ---
+<br>
+<br>
+<br>
+<br>
+<br>
+## Why is it a [**Random**] Forest?
+* Randomizing variables tried at each node
+<br>
 
-Randomness
+* Bootstrapping samples for each tree 
 
-Bootstrap resampling
-
-random set of vars @each split
-
-Think about hwo you have two audiences
+???
+Why is a random forest better than a decision tree? Decision trees are prone to overfitting, they're too good at predicting their own set of data and too poor at prediction novel data.
+Random forests solve this problem with their component of randomness.
+This randomness is introduced in the two ways listed here. 
+The first is randomizing variables at each node. Since each node cannot try all of the variables, trees are created differently.
+The second is bootstrapping samples for each tree. This way an individual tree is only created based on a random portion of the data. This brings me to the next concept;
 
 ---
 
 # Out-of-Bag Error
 
+<img src="images/oob.png" width=850>
+
 ???
+Out-of-bag error.
+For each tree the bootstrapping creates two sets of data. This is the first step in the graphic, depicted by the number 1 in red. You can see that some of the data, highlighted yellow, was sampled by bootstrapping
+This is the in-bag data.
+Bootstrap resampling leaves out about 1/3 of the data, and that is the data that goes to the right, called the out of bag sample
+The inbag data is used to create the tree, step 2, and then the out of bag data is put through the tree to test it, receive a classification vote, step 3.
+
+To calculate the overall out-of-bag error each observation is put through every tree for which it is out-of-bag, and the votes are tallied up. The majority vote classification is determined and this is checked against the true LCZ value for that pixel and marked as true or false. 
+This is done for every pixel and the proportion of incorrect classifications is called the out of bag error. 
+
+For most use cases this metric can be used to tune the random forest and create a better model.
 
 ---
 
 # Tuning Parameters
+<br>
+$$\text{ntree = varied}$$
+<br>
+<br>
+
+$$\text{mtry} =\sqrt{\#\text{ of parameters}}=\sqrt{36} = 6$$
+<br>
+<br>
+$$\text{nodesize}=1$$
+<br>
+<br>
+$$\text{maxnodes = maximum possible}$$
 
 ???
-maybe mention more than ntree briefly
-get list of default values of other params
 
-to see how the forests perform using these metrics so you can understand the plots.......
+- There are a number of different important tuning parameters. Due to time constraints, only the number of trees were varied in this analysis.
+- All others were given default values, some of which are listed here. 
+- mtry is the number of variables randomly sampled to be tried at each node
+- node size is the minimum number of pixels that need to be in each terminal node
+- max nodes is the maximum number of leaf nodes a tree is allowed to have. This is constrained by nodesize but here trees were grown as large as possible.
 
+- As I mentioned, these can be changed to create a better model, and typically "better" is determined by the Out-of-bag error. 
+- However in remote sensing there are other metrics that are also used.
+- In order for you to understand the plots following in my results section, I'd like to briefly introduce these metrics.
 ---
 
 
@@ -256,13 +301,16 @@ $$PA(z) = \frac{\text{number of correctly identified pixels in class z}}{\text{n
 
 ???
 
-make sure to iterate how people should interpret F1 (close to 1 is good)
+Overall accuracy, or OA, is just the proportion of correctly classified sites. An OA of 1 is the best possible, because it means all sites were correctly classified.
 
-In line with the methods used in our reference paper and the remote sensing field, accuracy metrics will include the following:
+There is also OA-urban and OA-natural, which are the same concept but with only subsets of the data. OA-urban only includes the urban classes, 1-10, and OA-natural only includes the natural classes, 11-17.
 
-$OA_{urb}$ and $OA_{nat}$ will be used, which are the same as overall $OA$ but only includes the urban and natural classes, respectively.
+Next, F1 is the harmonic mean of UA and PA, which I'll explain in a second. The important thing to know about F1 is that a value close to 1 is good. It indicates a model that has both low false positives and low false negatives.
 
-$UA$ is a measure of user's accuracy, which is also called precision or positive predictive value. $PA$ is the measure of producer's accuracy, also known as recall or sensitivity. The harmonic mean of $UA$ and $PA$ gives the $F_1$ score, which is a measure of the model's accuracy. An $F_1$ Score closer to 1 indicates a model that has both low false positives and low false negatives.
+UA is a measure of user's accuracy, which is also called precision or positive predictive value. 
+PA is the measure of producer's accuracy, also known as recall or sensitivity.
+
+Now let's get into results
 
 ---
 make title fit conclusion (accuracy improves with ntree up to 125) 
@@ -270,84 +318,102 @@ make title fit conclusion (accuracy improves with ntree up to 125)
 <br>
 <br>
 <br>
-<img src="../../results/plots/png_ntree_5_to_500_line_plot.png" alt="OA Metrics when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset.">
+<img src="images/png_ntree_5_to_500_line_plot.png" alt="OA Metrics when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset.">
 
 ???
-start with x axis is
-y axis is
-colors mean
-THEN takeaway
-visual phenomenon of leveling off, this means the accuracy is improving but only to a point
+Here in the plot we're looking at the performance of random forests with varying numbers of trees when predicting on the out-of-bag dataset.
 
-# Results: OA for 5 to 500
+the y-axis is overall accuracy, with the lowest values being around 0.75 and the highest values approaching 1 
+- The x axis is the parameter number of trees, which I varied from 0 to 500 in intervals of 5. The default value is 500 and I was interested to see if a lower number would be possible, due to the high impact number of trees has on the computational resources required.
 
-The parameter for the number of trees was initially varied between 5 and 500 at intervals of 5. The resulting overall accuracy metrics indicate a leveling off around 125 trees (Figure 2). There's also a clear distinction between accuracy in urban vs. natural classes, with natural classes having a much higher overall accuracy.
+The colors in this plot denote the different OA metrics, with yellow being overall, teal being urban, and purple being natural
 
-transition to it beeing same structure but f1 score and classes
+The takeaway here is that we can see a visual phenomenon of leveling off around 125 trees. This means the accuracy is improving with increased trees, but only to a point.
+
+I'd also like to point out that the natural classes score much higher for accuracy metrics, leveling off around 1 where the urban classes only reach an accuracy of approximately 0.875
+ having a much higher overall accuracy.
+
+Moving on to the next plot, 
 
 ---
 add takeaway for title instead
-<img src="../../results/plots/png_ntree_5_to_500_facet_plot.png" height="625">
+<img src="images/png_ntree_5_to_500_facet_plot.png" height="625">
 
 ???
 
-# Results: F-1 by Class 5 to 500
+- we see similar shapes. This plot is also based on the Out of bag data with varying numbers of trees.
+- This plot has number of trees on the x axis, again varying from 0 to 500 in intervals of 5
+- On the y-axis however, is F-1 score. It's different for each plot because the goal here is to look at the shape.
+- The colors indicate Natural vs. Urban classes, with purple again being natural and teal again being urban
+- The classes are individually shown, with the specific class listed to the right of it's plot, in the gray boxes here [[show with mouse]]
 
-The variation between LCZ classes in F-1 score can be seen. As the number of trees in the random forest increases, F-1 score also increases, until around 100 trees. These metrics were calculated based on the out-of-bag dataset.
+Now with the exception of class 17, which only appears to have more variation than the others due to it's consistently high scores, they all have very similar shapes. We see this leveling off of F1 score, though here I'd say it happens closer to 100 trees.
 
-include larger plots for 500-2500 or just mention? Probably just mentio
+Just so that we have some context moving forward I'd like to point out some of the F1 scores here. The absolute lowest are for classes 6 and 10, which start out around 0.5 but level off around 0.7. The highest F1 scores primarily happen for the natural classes and range from 0.75 to 0.9985.
 
-give some accuracy numbers for test accuracy plot comparison later
-
+The takeaway from this plot, combined with the prior one, is that there's no accuracy benefit to creating random forests with these data that have more than 125 trees. Moving forward with that information I created a random forest with 125 trees to use with the test dataset.
 ---
 add takeaway
 <br>
 <br>
 
-<img src="../../results/plots/png_test_set_validation_metrics_barplot_separated.png">
+<img src="images/png_test_set_validation_metrics_barplot_separated.png">
 
 ???
+Here's a visualization of how that random forest performed on the test dataset. It's broken into two plots, with the left plot showing OA metrics and the right plot showing F1 scores. 
+The y-axes are the specific metrics, and the x-axes are the values for those metrics.
+Natural classes are dark blue, urban classes are yellow, and the overall OA is in grey.
+The F1 scores are split by urban vs natural, and then ordered based on highest to lowest F1 scores.
 
-these are all lower than the out of bag estimate, "remember what it was before that I mentioned"
+Now if you recall the OA metrics for the Out-of-bag data had leveled of between 0.875 and 1. Here we see OA only reaching around 0.75, even for the natural classes. This is not as good but not terrible.
 
-## Predicting on the Test Dataset
+The F1 scores split up by class tell a different story. Recall that they leveled off anywhere between 0.7 and 1 for the Out-of-bag dataset. Here, classes 2, 5, and 14 don't even reach a score of 0.25. 
+Only class 11, which is dense trees, and class 17, which is water, go higher than 0.75
 
-OA and F-1 metrics dropped dramatically upon applying the random forest to the test data (Figure 4).
+The takeaway here is that OA and F-1 metrics dropped dramatically upon applying the random forest to the test data, with F1 scores for certain classes being incredibly low.
 
-Accuracy among random forest predictions for the test dataset varied widely, but was lower than expected for F-1 scores, which do not seem to agree with the OA metrics. Classes 2, 5, 8, and 14 have particularly low F-1 Scores
-
+Moving forward I'd like to talk about the predictors a bit more.
 ---
-<!-- ## fix band order -->
+fix band order
 <br>
 <br>
-<img src="../../results/plots/png_importance_barplot_ntree125.png">
+<img src="images/png_importance_barplot_ntree125.png">
 
 ???
 
-There is not a clear pattern in Mean Decrease for Gini Impurity between the different bands and scenes, though there is some indication that bands in scene 4 were particularly effective as predictors.
+Here is a plot of Importance measures for each predictor variable. On the y axis is the Band type, of which there are 9. The colors indicate which scene each band is from, of which there are 4, so all 36 predictor variables are shown here.
+
+On the x axis is mean decrease in JEANNIE impurity. This value can be used for variable selection as it's an indication of how good a particular variable is at splitting the data. 
+
+What I'd like you to notice here is that there isn't a clear pattern as to which variables might be most useful. Scene 4 does have some bands that dominate, with both thermal infrared and one short wave infrared band being the highest.
+
+Despite low accuracy metrics and unclear information on the best predictors, the goal of a model like this is to predict LCZ class for the entire city, which was my next and final goal.
 
 ---
 
 ## Creating the Full Prediction
 
 <table>
-<tr><td><img src="../../results/map_images/png_satellite_baselayer.png" height=350></td> <td><img src="../../results/map_images/png_bands.png" height=350></td></tr>
+<tr><td><img src="images/png_satellite_baselayer.png" height=350></td> <td><img src="images/png_bands.png" height=350></td></tr>
 <th>Google Maps Satellite Imagery</th><th>Landsat 8 Scene</th>
 </table>
 
 ???
-On the left is a google maps baselayer of the area of interest
-On the right is the same baselayer with one Landsat 8 scene overlayed.
+Just as a reminder,
+on the left is a google maps baselayer of the area of interest, Hong Kong.
+On the right is the same baselayer overlayed by one predictor variable, scene x band y
+
+Then the full prediction was done by creating a random forest with all 36 predictor variables and 125 trees. I used that random forest to predict LCZ class for each pixel in the area of interest.
 
 ---
 
 ## Creating the Full Prediction
 <center>
-<img src="../../results/map_images/png_lcz_with_satellite.png" height=425><img src="../../results/map_images/png_class_legend_vertical.png" width=205>
+<img src="images/png_lcz_with_satellite.png" height=425><img src="images/png_class_legend_vertical.png" width=205>
 </center>
 ???
 
-Here is the entire area of interest classified into local climate zones. 
+Here is a graphic of that final prediction, with an LCZ class legend on the right. You can see that there's a lot of water and greenery, which fits with the image of Hong Kong that we just saw.
 
 ---
 
@@ -363,21 +429,66 @@ Overall Results:
 Limitations:
 * Reference polygons on account for ~3% of the Area of Interest
 * Time constraints
+
 --
 
 <br>
+
 Future Work:
-* Multiple tuning parameters & Interactions between them
+* Multiple tuning parameters & the interactions between them
 * Quantifying "how much" ground truth data is enough
 
 ???
 
+Finally, conclusions for this project.
+Accuracy is much lower for test data than out-of-bag data. This is expected in general due to high spatial autocorrelation present in data such as these, but the difference was still quite large.
+I also saw that OA values do not match up with F1 scores by class for predicting on the test data. This is particularly concerning because these models need to work well for all of the classes in order to be useful. For example, Hong Kong could be classed entirely as class 17, water, and earn a somewhat high OA score. That is not a useful model when the goal is to identify small places within these cities for climate risk adaptation.
+
+The results should be taken with a grain of salt though, since our reference polygons don't account for a large proportion of the area of interest. Despite the high time investment in classifying ground truth polygons, it may be necessary to classify more to create a useful model.
+Time constraints are also a limitation here, this project has a lot of space for more exploration
+
+Which brings me to my final point, future work.
+Clear next steps for this project would be varying multiple tuning parameters and evaluating any interactions. Using the default values may not be adequate in this use case. 
+It would also be good to do testing to determine just how much ground truth is truly necessary, since it's a limiting factor in these efforts.
+
 ---
 
+<center>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+# Acknowledgements
+
+???
+And last, I'd like to acknowledge some of the people who have helped me get here.
+
+My advisor, Dr. Charlotte Wickham
+
+My committee members, Dr. James Molyneux and Dr. Lisa Ganio.
+
+And of course, my fiance Rebecca
+
+Thank you all SO MUCH.
+
+---
+<br>
+<br>
+<br>
+<br>
+
 # Questions?
+
+<br>
  
 All code and higher resolution images for this project can be found on GitHub at <https://github.com/erickabsmith/masters-project-lcz-classification>.
 
 
 ???
 
+Now I'll take any questions if you have them

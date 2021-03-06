@@ -24,7 +24,7 @@ class: center, middle, inverse, title-slide
 &lt;br&gt;
 &lt;br&gt;
 &lt;center&gt;
-&lt;img src="UHI_index.png"&gt;
+&lt;img src="images/UHI_index.png"&gt;
 &lt;/center&gt;
 ???
 
@@ -48,7 +48,7 @@ and greenhouse gasses, compromised human health and comfort, and impaired water 
 ---
 
 &lt;center&gt;
-&lt;img src="lcz.png" width="600"&gt;
+&lt;img src="images/lcz.png" width="600"&gt;
 &lt;br&gt;
 &lt;font size = 2&gt;
 Originally created by Stewart and Oke (2012), reproduced by Bechtel et al. (2017), licensed under CC-BY 4.0
@@ -69,29 +69,55 @@ Here you can see one of the predominant classification schemes for urban areas.
 
 # Objective
 
+&lt;br&gt;
+
+Inspiration:
+* *Comparison between convolutional neural networks and random forest for local climate zone classification in mega urban areas using Landsat Images* (Yoo et al., 2019)
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+My Focus: 
 * Hong Kong
-* Yoo
-* WUDAPT
-* ntree
+* Random Forests
+* Varying the Number of Trees
 
 
 ???
+- The motivation for this project started with the journal article listed here, by Yoo et al. 
+- Essentially they were building models to predict LCZ class based on satellite data.
 
+- I chose to focus my analysis on Hong Kong, since the reference data has at least four classified polygons for each LCZ class present. 
+- I also chose to stick with using just one method, random forests.
+- By paring down the scope of this project I was able to focus more on the algorithm itself. Specifically, I chose to vary the number of trees in the forest, a parameter of the model. 
 ---
 
 # The LCZ reference data
 
 &lt;center&gt;
-&lt;img src="../.././results/map_images/png_starting_polygons.png" alt="LCZ Reference Data" width="400" height="400"&gt;
+&lt;img src="../.././results/map_images/png_starting_polygons.png" alt="LCZ Reference Data" width="500" height="500"&gt;
 &lt;/center&gt;
 
 
 ???
+Now, let me tell you about the data. You're seeing two things depicted here. 
 
+- On the bottom is a Google maps satellite layer. I've just included this for context and it is not a part of the analysis in any way.
+
+- The other thing you can see is a bunch of polygons of various colors spread around the area.
+- Each of these polygons represents a space where an LCZ class has been classified by an individual with specialist knowledge, also known as "ground truth", and is the response variable for my analysis. 
+
+- I don't want to focus too much on individual classes or polygons here, but just to give a clearer picture I'd like to point out what some of the polygons mean,  
+  - [[pick a blue polygon and put mouse on it]] here you can see a blue polygon covering an area that is water, LCZ class 17. 
+  - [[pick dark green polygons in middle and put mouse on them]] here you can see a green polygon covering a space with dense trees, which is class 11. 
 
 ---
 
 # The Landsat 8 data
+
+#### switch to just one landsat band &amp; keep track of what one it is
+
+look at bands list of what they are, and mention what bands are available (red, green , swir etc)
 
 &lt;table&gt;
 &lt;tr&gt;&lt;td&gt;&lt;img src="../../results/tables/scenes.png"&gt;&lt;/td&gt; &lt;td&gt;
@@ -104,47 +130,88 @@ Here you can see one of the predominant classification schemes for urban areas.
 
 ???
 
-All 9 available bands of all 4 Landsat scenes amounted to 36 input variables. Each pixel is an observation,
+Now let's talk about the predictor, the Landsat 8 data.
+Again, you're seeing two things in this image.
+- A google maps baselayer, and one band of Landsat 8 imagery.
+
+- If you're not familiar with satellite imagery there are a couple things that will help your understanding of this project. 
+
+At it's most basic, satellite imagery is just a collection of bands. If you recall way back to whenever you first learned about rainbows, and how they're light split up into different lines, you can think of the satellite bands like those lines. 
+
+For my imagery there are the typical visible light bands you've heard of, blue, green, and red. There's also thermal, near, and short-wave infrared bands. 
+
+Overall a Landsat 8 image has 11 bands, and I used 9 of those bands for each image. As you can see here there are four different Landsat images, which are also known as "scenes."
+This amounted to 36 input variables. 
+
+In these data a pixel is an observation, so each pixel in these images has 36 variables associated with it.
+
+Okay, so that's the gist of the Landsat data.
 
 ---
-
-&lt;!-- &lt;img src="../../results/tables/polygons.png" width=350&gt; --&gt;
-&lt;img src="../../results/plots/traintest.png" width = 700&gt;
+&lt;center&gt;
+&lt;img src="../../results/tables/polygons.png" height=625&gt;
+&lt;!-- &lt;img src="../../results/plots/traintest.png" width = 700&gt; --&gt;
+&lt;/center&gt;
 
 ???
 
-test is purple
-train is yellow
+Let's move back to the polygons for a second so that I can start talking about the methods more in depth. 
+
+The first thing that needed to be done with these data, aside from some preprocessing, was to split them into training and testing datasets. 
+
+For those unfamiliar you train, or create, the model based on one portion of your data. You then can check how good it is by testing it on the other portion of your data and seeing if it gets the correct LCZ class. 
+
+So, splitting the data. 
+- I did the split based on polygons rather than pixels. 
+- This is because having pixels from the same polygon in both training and test data can artificially inflate your accuracy numbers, it's sort of cheating. 
+- I did try to keep the numbers of pixels somewhat close between training and test datasets for each class, while still having a component of randomness.
+- This table is the final split. In both train and test columns you can see the number of polygons listed, with the total number of pixels listed in parentheses. 
+- There aren't any huge differences, except perhaps for class 13 and class 5.
+
+Okay, now that we have somewhat of an understanding of how the data fits into this project, I'd like to talk about random forests.
+
 ---
 
 # Decision Trees
+&lt;center&gt;
+&lt;img src="images/dec_tree.png" width=850&gt;
+&lt;/center&gt;
 
 ???
-think flow chart
+To talk about them we have to first gain an understanding of decision trees. 
+
+You can almost think about a decision tree as a flow chart.
+
+I've put one here as an example. 
+
+- The main thing to understand is that they are used to make a decision, in this case, a classification. 
+- A pixel starts at the top where it says "START", and then it's asked a series of questions.
+- Is your scene 1 green band value greater than 100? If true, go down the left path. If false, go down the right path. 
+- For those that went down the right path, is your scene 3 blue band value greater than 150? If yes, go down the left path. If no, go down the right path. This is done until the pixel reaches an end point (the stop signs here, called leaf nodes)
+
+Now for prediction that's the end of it. Each leaf node has a class associated with it and the pixel is assigned to that class.
+
+For the actual building of the tree it's a bit more complicated. Each of these questions, or nodes, has to be created. The goal is to create the set of nodes that best splits up the data. 
+There are metrics to do this, which I won't get into too deeply except to tell you all that I used JEANNIE impurity as my metric. 
+When the tree is being built every possible band and threshold for that band is tried to determine the one that creates the best split, and the one that does is the question for that node. This continues at each node until there isn't a question that splits the data up any better than it's already been split.
+- At this point the node becomes a leaf node and the majority vote of that leaf node is that class decision that will be applied to pixels being predicted on.
+- For the stop sign, or leaf node, on the left the winner is clearly Class 11 dense trees.
+- The middle leaf node would class new pixels as class 17, water.
+- The leaf node on the right is a lot closer, but it would classify all of those pixels as class 11, dense trees, because that's the majority vote.
 
 ---
 
-# Impurity
-
-Splits are typically evaluated by Gini impurity or entropy:
-
-`$$\text{Gini Impurity} =\ I_G(t)\  = 1 - \sum_{i=1}^{C}p(i|t)^2$$`
-
-
-Where: 
-* `\(i\)` is a class in the predictor variable, ranging from 1 to `\(C\)`.
-* `\(C\)` is the total number of classes represented for a particular node, `\(t\)`. 
-* `\(p(i|t)\)` is the proportion of samples that belong to each `\(i\)`, for a particular node `\(t\)`.
-
-???
+Random forest are a collection of decision trees
 
 ---
 
-# Random Forests vs. Decision Trees
+Randomness
 
-???
+Bootstrap resampling
 
-talk about prediction some ?
+random set of vars @each split
+
+Think about hwo you have two audiences
 
 ---
 
@@ -157,6 +224,10 @@ talk about prediction some ?
 # Tuning Parameters
 
 ???
+maybe mention more than ntree briefly
+get list of default values of other params
+
+to see how the forests perform using these metrics so you can understand the plots.......
 
 ---
 
@@ -180,6 +251,8 @@ talk about prediction some ?
 
 ???
 
+make sure to iterate how people should interpret F1 (close to 1 is good)
+
 In line with the methods used in our reference paper and the remote sensing field, accuracy metrics will include the following:
 
 `\(OA_{urb}\)` and `\(OA_{nat}\)` will be used, which are the same as overall `\(OA\)` but only includes the urban and natural classes, respectively.
@@ -187,6 +260,7 @@ In line with the methods used in our reference paper and the remote sensing fiel
 `\(UA\)` is a measure of user's accuracy, which is also called precision or positive predictive value. `\(PA\)` is the measure of producer's accuracy, also known as recall or sensitivity. The harmonic mean of `\(UA\)` and `\(PA\)` gives the `\(F_1\)` score, which is a measure of the model's accuracy. An `\(F_1\)` Score closer to 1 indicates a model that has both low false positives and low false negatives.
 
 ---
+make title fit conclusion (accuracy improves with ntree up to 125) 
 &lt;br&gt;
 &lt;br&gt;
 &lt;br&gt;
@@ -194,12 +268,20 @@ In line with the methods used in our reference paper and the remote sensing fiel
 &lt;img src="../../results/plots/png_ntree_5_to_500_line_plot.png" alt="OA Metrics when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset."&gt;
 
 ???
+start with x axis is
+y axis is
+colors mean
+THEN takeaway
+visual phenomenon of leveling off, this means the accuracy is improving but only to a point
+
 # Results: OA for 5 to 500
 
 The parameter for the number of trees was initially varied between 5 and 500 at intervals of 5. The resulting overall accuracy metrics indicate a leveling off around 125 trees (Figure 2). There's also a clear distinction between accuracy in urban vs. natural classes, with natural classes having a much higher overall accuracy.
 
----
+transition to it beeing same structure but f1 score and classes
 
+---
+add takeaway for title instead
 &lt;img src="../../results/plots/png_ntree_5_to_500_facet_plot.png" height="625"&gt;
 
 ???
@@ -210,14 +292,18 @@ The variation between LCZ classes in F-1 score can be seen. As the number of tre
 
 include larger plots for 500-2500 or just mention? Probably just mentio
 
----
+give some accuracy numbers for test accuracy plot comparison later
 
+---
+add takeaway
 &lt;br&gt;
 &lt;br&gt;
 
 &lt;img src="../../results/plots/png_test_set_validation_metrics_barplot_separated.png"&gt;
 
 ???
+
+these are all lower than the out of bag estimate, "remember what it was before that I mentioned"
 
 ## Predicting on the Test Dataset
 
@@ -226,6 +312,7 @@ OA and F-1 metrics dropped dramatically upon applying the random forest to the t
 Accuracy among random forest predictions for the test dataset varied widely, but was lower than expected for F-1 scores, which do not seem to agree with the OA metrics. Classes 2, 5, 8, and 14 have particularly low F-1 Scores
 
 ---
+&lt;!-- ## fix band order --&gt;
 &lt;br&gt;
 &lt;br&gt;
 &lt;img src="../../results/plots/png_importance_barplot_ntree125.png"&gt;

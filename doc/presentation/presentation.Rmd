@@ -120,56 +120,54 @@ Now, let me tell you about the data. You're seeing two things depicted here.
 
 # The Landsat 8 data
 
-#### switch to just one landsat band & keep track of what one it is
-
-look at bands list of what they are, and mention what bands are available (red, green , swir etc)
-
 <table>
 <tr><td><img src="images/scenes.png"></td> <td>
-<img src="images/png_bands.png" alt="Landsat Scene" width="400" height="400"></td></tr>
+<img src="images/png_s1_b4.png" alt="Landsat Scene" width="400" height="400"></td></tr>
 </table>
 
 ???
 
-Now let's talk about the predictor, the Landsat 8 data.
-Again, you're seeing two things in this image.
-- A google maps baselayer, and one band of Landsat 8 imagery.
+- Now let's talk about the predictor, the Landsat 8 data.
+- Again, you're seeing two things in this image.
+- A google maps baselayer, and one band of Landsat 8 imagery, specifically it is the red band of scene 1.
 
 - If you're not familiar with satellite imagery there are a couple things that will help your understanding of this project. 
 
-At it's most basic, satellite imagery is just a collection of bands. If you recall way back to whenever you first learned about rainbows, and how they're light split up into different lines, you can think of the satellite bands like those lines. 
+- At it's most basic, satellite imagery is just a collection of bands. 
+- If you recall way back to whenever you first learned about rainbows, and how they're light split up into different lines, you can think of the satellite bands like those lines. 
 
-For my imagery there are the typical visible light bands you've heard of, blue, green, and red. There's also thermal, near, and short-wave infrared bands. 
+- For my imagery there are the typical visible light bands you've heard of, blue, green, and red. 
+- There's also thermal, near, and short-wave infrared bands. 
 
-Overall a Landsat 8 image has 11 bands, and I used 9 of those bands for each image. As you can see here there are four different Landsat images, which are also known as "scenes."
-This amounted to 36 input variables. 
+- Overall a Landsat 8 image has 11 bands, and I used 9 of those bands for each image. 
+- As you can see here there are four different Landsat images, which are also known as "scenes."
+- This amounted to 36 input variables. 
 
-In these data a pixel is an observation, so each pixel in these images has 36 variables associated with it.
+- In these data a pixel is an observation, so each pixel in these images has 36 variables associated with it.
 
-Okay, so that's the gist of the Landsat data.
+- Okay, so that's the gist of the Landsat data.
 
 ---
 <center>
 <img src="images/polygons.png" height=625>
-<!-- <img src="../../results/plots/traintest.png" width = 700> -->
 </center>
 
 ???
 
-Let's move back to the polygons for a second so that I can start talking about the methods more in depth. 
+- Let's move back to the polygons for a second so that I can start talking about the methods more in depth. 
 
-The first thing that needed to be done with these data, aside from some preprocessing, was to split them into training and testing datasets. 
+- The first thing that needed to be done with these data, aside from some preprocessing, was to split them into training and testing datasets. 
 
-For those unfamiliar you train, or create, the model based on one portion of your data. You then can check how good it is by testing it on the other portion of your data and seeing if it gets the correct LCZ class. 
+- For those unfamiliar you train, or create, the model based on one portion of your data. You then can check how good it is by testing it on the other portion of your data and seeing if it gets the correct LCZ class. 
 
-So, splitting the data. 
+- So, splitting the data. 
 - I did the split based on polygons rather than pixels. 
 - This is because having pixels from the same polygon in both training and test data can artificially inflate your accuracy numbers, it's sort of cheating. 
 - I did try to keep the numbers of pixels somewhat close between training and test datasets for each class, while still having a component of randomness.
 - This table is the final split. In both train and test columns you can see the number of polygons listed, with the total number of pixels listed in parentheses. 
 - There aren't any huge differences, except perhaps for class 13 and class 5.
 
-Okay, now that we have somewhat of an understanding of how the data fits into this project, I'd like to talk about random forests.
+- Okay, now that we have somewhat of an understanding of how the data fits into this project, I'd like to talk about random forests.
 
 ---
 
@@ -179,11 +177,11 @@ Okay, now that we have somewhat of an understanding of how the data fits into th
 </center>
 
 ???
-To talk about them we have to first gain an understanding of decision trees. 
+- To talk about them we have to first gain an understanding of decision trees. 
 
-You can almost think about a decision tree as a flow chart.
+- You can almost think about a decision tree as a flow chart.
 
-I've put one here as an example. 
+- I've put one here as an example. 
 
 - The main thing to understand is that they are used to make a decision, in this case, a classification. 
 - A pixel starts at the top where it says "START", and then it's asked a series of questions.
@@ -192,9 +190,11 @@ I've put one here as an example.
 
 Now for prediction that's the end of it. Each leaf node has a class associated with it and the pixel is assigned to that class.
 
-For the actual building of the tree it's a bit more complicated. Each of these questions, or nodes, has to be created. The goal is to create the set of nodes that best splits up the data. 
-There are metrics to do this, which I won't get into too deeply except to tell you all that I used JEANNIE impurity as my metric. 
-When the tree is being built every possible band and threshold for that band is tried to determine the one that creates the best split, and the one that does is the question for that node. This continues at each node until there isn't a question that splits the data up any better than it's already been split.
+- For the actual building of the tree it's a bit more complicated. 
+- Each of these questions, or nodes, has to be created. The goal is to create the set of nodes that best splits up the data. 
+- There are metrics to do this, which I won't get into too deeply except to tell you all that I used JEANNIE impurity as my metric. 
+- When the tree is being built every possible band and threshold for that band is tried to determine the one that creates the best split, and the one that does is the question for that node. 
+- This continues at each node until there isn't a question that splits the data up any better than it's already been split.
 - At this point the node becomes a leaf node and the majority vote of that leaf node is that class decision that will be applied to pixels being predicted on.
 - For the stop sign, or leaf node, on the left the winner is clearly Class 11 dense trees.
 - The middle leaf node would class new pixels as class 17, water.
@@ -213,7 +213,9 @@ Created by Venkata Jagannath, licensed under CC BY-SA 4.0
 </center>
 
 ???
-For a random forest, a pixel is put through a collection of decision trees. The classifications are tallied up as votes, with majority takes all giving a final classification for a given pixel.
+For a random forest, a pixel is put through a collection of decision trees. 
+
+The classifications are tallied up as votes, with majority takes all giving a final classification for a given pixel.
 
 ---
 <br>
@@ -228,11 +230,17 @@ For a random forest, a pixel is put through a collection of decision trees. The 
 * Bootstrapping samples for each tree 
 
 ???
-Why is a random forest better than a decision tree? Decision trees are prone to overfitting, they're too good at predicting their own set of data and too poor at prediction novel data.
-Random forests solve this problem with their component of randomness.
-This randomness is introduced in the two ways listed here. 
-The first is randomizing variables at each node. Since each node cannot try all of the variables, trees are created differently.
-The second is bootstrapping samples for each tree. This way an individual tree is only created based on a random portion of the data. This brings me to the next concept;
+
+- Why is a random forest better than a decision tree? 
+- Decision trees are prone to overfitting, they're too good at predicting their own set of data and too poor at prediction novel data.
+- Random forests solve this problem with their component of randomness.
+- This randomness is introduced in the two ways listed here. 
+- The first is randomizing variables at each node. 
+- Since each node cannot try all of the variables, trees are created differently.
+- The second is bootstrapping samples for each tree. 
+- This way an individual tree is only created based on a random portion of the data.
+
+- This brings me to the next concept;
 
 ---
 
@@ -241,16 +249,23 @@ The second is bootstrapping samples for each tree. This way an individual tree i
 <img src="images/oob.png" width=850>
 
 ???
-Out-of-bag error.
-For each tree the bootstrapping creates two sets of data. This is the first step in the graphic, depicted by the number 1 in red. You can see that some of the data, highlighted yellow, was sampled by bootstrapping
-This is the in-bag data.
-Bootstrap resampling leaves out about 1/3 of the data, and that is the data that goes to the right, called the out of bag sample
-The inbag data is used to create the tree, step 2, and then the out of bag data is put through the tree to test it, receive a classification vote, step 3.
 
-To calculate the overall out-of-bag error each observation is put through every tree for which it is out-of-bag, and the votes are tallied up. The majority vote classification is determined and this is checked against the true LCZ value for that pixel and marked as true or false. 
-This is done for every pixel and the proportion of incorrect classifications is called the out of bag error. 
+**Out-of-bag error.**
 
-For most use cases this metric can be used to tune the random forest and create a better model.
+- For each tree the bootstrapping creates two sets of data. 
+- This is the first step in the graphic, depicted by the number 1 in red. 
+- You can see that some of the data, highlighted yellow, was sampled by bootstrapping
+- This is the in-bag data.
+- Bootstrap resampling leaves out about 1/3 of the data, and that is the data that goes to the right, called the out of bag sample
+- The inbag data is used to create the tree, step 2, 
+- and then the out of bag data is put through the tree to test it, and receive a classification vote, step 3.
+
+- To calculate the overall out-of-bag error each observation is put through every tree for which it is out-of-bag, 
+- and the votes are tallied up. 
+- The majority vote classification is determined and this is checked against the true LCZ value for that pixel and marked as true or false. 
+- This is done for every pixel and the proportion of incorrect classifications is called the out of bag error. 
+
+- For most use cases this metric can be used to tune the random forest and create a better model.
 
 ---
 
@@ -301,43 +316,44 @@ $$PA(z) = \frac{\text{number of correctly identified pixels in class z}}{\text{n
 
 ???
 
-Overall accuracy, or OA, is just the proportion of correctly classified sites. An OA of 1 is the best possible, because it means all sites were correctly classified.
+- Overall accuracy, or OA, is just the proportion of correctly classified sites. 
+- An OA of 1 is the best possible, because it means all sites were correctly classified.
 
-There is also OA-urban and OA-natural, which are the same concept but with only subsets of the data. OA-urban only includes the urban classes, 1-10, and OA-natural only includes the natural classes, 11-17.
+- There is also OA-urban and OA-natural, which are the same concept but with only subsets of the data. 
+- OA-urban only includes the urban classes, 1-10, and OA-natural only includes the natural classes, 11-17.
 
-Next, F1 is the harmonic mean of UA and PA, which I'll explain in a second. The important thing to know about F1 is that a value close to 1 is good. It indicates a model that has both low false positives and low false negatives.
+- Next, F1 is the harmonic mean of UA and PA, which I'll explain in a second. 
+- The important thing to know about F1 is that a value close to 1 is good. 
+- It indicates a model that has both low false positives and low false negatives.
 
-UA is a measure of user's accuracy, which is also called precision or positive predictive value. 
-PA is the measure of producer's accuracy, also known as recall or sensitivity.
+- UA is a measure of user's accuracy, which is also called precision or positive predictive value. 
+- PA is the measure of producer's accuracy, also known as recall or sensitivity.
 
-Now let's get into results
+- Now let's get into results
 
 ---
-make title fit conclusion (accuracy improves with ntree up to 125) 
-<br>
-<br>
-<br>
-<br>
-<img src="images/png_ntree_5_to_500_line_plot.png" alt="OA Metrics when varying ntree from 5 to 500 in intervals of 5. Based on out-of-bag dataset.">
+
+<img src="images/OA_line_plot.png">
 
 ???
-Here in the plot we're looking at the performance of random forests with varying numbers of trees when predicting on the out-of-bag dataset.
+- Here in the plot we're looking at the performance of random forests with varying numbers of trees when predicting on the out-of-bag dataset.
 
-the y-axis is overall accuracy, with the lowest values being around 0.75 and the highest values approaching 1 
-- The x axis is the parameter number of trees, which I varied from 0 to 500 in intervals of 5. The default value is 500 and I was interested to see if a lower number would be possible, due to the high impact number of trees has on the computational resources required.
+- the y-axis is overall accuracy, with the lowest values being around 0.75 and the highest values approaching 1 
+- The x axis is the parameter number of trees, which I varied from 0 to 500 in intervals of 5. 
+- The default value is 500 and I was interested to see if a lower number would be possible, due to the high impact number of trees has on the computational resources required.
 
-The colors in this plot denote the different OA metrics, with yellow being overall, teal being urban, and purple being natural
+- The colors in this plot denote the different OA metrics, with yellow being overall, teal being urban, and purple being natural
 
-The takeaway here is that we can see a visual phenomenon of leveling off around 125 trees. This means the accuracy is improving with increased trees, but only to a point.
+- The takeaway here is that we can see a visual phenomenon of leveling off around 125 trees. 
+- This means the accuracy is improving with increased trees, but only to a point.
 
-I'd also like to point out that the natural classes score much higher for accuracy metrics, leveling off around 1 where the urban classes only reach an accuracy of approximately 0.875
- having a much higher overall accuracy.
+- I'd also like to point out that the natural classes score much higher for accuracy metrics, leveling off around 1 where the urban classes only reach an accuracy of approximately 0.875.
 
-Moving on to the next plot, 
+- Moving on to the next plot, 
 
 ---
-add takeaway for title instead
-<img src="images/png_ntree_5_to_500_facet_plot.png" height="625">
+
+<img src="images/f1_facet.png">
 
 ???
 
@@ -347,63 +363,73 @@ add takeaway for title instead
 - The colors indicate Natural vs. Urban classes, with purple again being natural and teal again being urban
 - The classes are individually shown, with the specific class listed to the right of it's plot, in the gray boxes here [[show with mouse]]
 
-Now with the exception of class 17, which only appears to have more variation than the others due to it's consistently high scores, they all have very similar shapes. We see this leveling off of F1 score, though here I'd say it happens closer to 100 trees.
+- Now with the exception of class 17, which only appears to have more variation than the others due to it's consistently high scores, they all have very similar shapes. 
+- We see this leveling off of F1 score, though here I'd say it happens closer to 100 trees.
 
-Just so that we have some context moving forward I'd like to point out some of the F1 scores here. The absolute lowest are for classes 6 and 10, which start out around 0.5 but level off around 0.7. The highest F1 scores primarily happen for the natural classes and range from 0.75 to 0.9985.
+- Just so that we have some context moving forward I'd like to point out some of the F1 scores here. 
+- The absolute lowest are for classes 6 and 10, which start out around 0.5 but level off around 0.7. 
+- The highest F1 scores primarily happen for the natural classes and range from 0.75 to 0.9985.
 
-The takeaway from this plot, combined with the prior one, is that there's no accuracy benefit to creating random forests with these data that have more than 125 trees. Moving forward with that information I created a random forest with 125 trees to use with the test dataset.
+- The takeaway from this plot, combined with the prior one, is that there's no accuracy benefit to creating random forests with these data that have more than 125 trees. 
+
+- Moving forward with that information I created a random forest with 125 trees to use with the test dataset.
+
 ---
-add takeaway
-<br>
-<br>
 
-<img src="images/png_test_set_validation_metrics_barplot_separated.png">
-
-???
-Here's a visualization of how that random forest performed on the test dataset. It's broken into two plots, with the left plot showing OA metrics and the right plot showing F1 scores. 
-The y-axes are the specific metrics, and the x-axes are the values for those metrics.
-Natural classes are dark blue, urban classes are yellow, and the overall OA is in grey.
-The F1 scores are split by urban vs natural, and then ordered based on highest to lowest F1 scores.
-
-Now if you recall the OA metrics for the Out-of-bag data had leveled of between 0.875 and 1. Here we see OA only reaching around 0.75, even for the natural classes. This is not as good but not terrible.
-
-The F1 scores split up by class tell a different story. Recall that they leveled off anywhere between 0.7 and 1 for the Out-of-bag dataset. Here, classes 2, 5, and 14 don't even reach a score of 0.25. 
-Only class 11, which is dense trees, and class 17, which is water, go higher than 0.75
-
-The takeaway here is that OA and F-1 metrics dropped dramatically upon applying the random forest to the test data, with F1 scores for certain classes being incredibly low.
-
-Moving forward I'd like to talk about the predictors a bit more.
----
-fix band order
-<br>
-<br>
-<img src="images/png_importance_barplot_ntree125.png">
+<img src="images/valid_mets.png">
 
 ???
 
-Here is a plot of Importance measures for each predictor variable. On the y axis is the Band type, of which there are 9. The colors indicate which scene each band is from, of which there are 4, so all 36 predictor variables are shown here.
+- Here's a visualization of how that random forest performed on the test dataset. 
+- It's broken into two plots, with the left plot showing OA metrics and the right plot showing F1 scores. 
+- The y-axes are the specific metrics, and the x-axes are the values for those metrics.
+- Natural classes are dark blue, urban classes are yellow, and the overall OA is in grey.
+- The F1 scores are split by urban vs natural, and then ordered based on highest to lowest F1 scores.
 
-On the x axis is mean decrease in JEANNIE impurity. This value can be used for variable selection as it's an indication of how good a particular variable is at splitting the data. 
+- Now if you recall the OA metrics for the Out-of-bag data had leveled of between 0.875 and 1. 
+- Here we see OA only reaching around 0.75, even for the natural classes. This is not as good but not terrible.
 
-What I'd like you to notice here is that there isn't a clear pattern as to which variables might be most useful. Scene 4 does have some bands that dominate, with both thermal infrared and one short wave infrared band being the highest.
+- The F1 scores split up by class tell a different story. 
+- Recall that they leveled off anywhere between 0.7 and 1 for the Out-of-bag dataset. 
+- Here, classes 2, 5, and 14 don't even reach a score of 0.25. 
+- Only class 11, which is dense trees, and class 17, which is water, go higher than 0.75
 
-Despite low accuracy metrics and unclear information on the best predictors, the goal of a model like this is to predict LCZ class for the entire city, which was my next and final goal.
+- The takeaway here is that OA and F-1 metrics dropped dramatically upon applying the random forest to the test data, with F1 scores for certain classes being incredibly low.
+
+- Now I'd like to talk about the predictors a bit more.
+---
+
+<img src="images/imp_ntree_125.png">
+
+???
+
+- Here is a plot of Importance measures for each predictor variable. 
+- On the y axis is the Band type, of which there are 9. 
+- The colors indicate which scene each band is from, of which there are 4, so all 36 predictor variables are shown here.
+
+- On the x axis is mean decrease in JEANNIE impurity. 
+- This value can be used for variable selection as it's an indication of how good a particular variable is at splitting the data. 
+
+- What I'd like you to notice here is that there isn't a clear pattern as to which variables might be most useful. 
+- Scene 4 does have some bands that dominate, with thermal infrared and short wave infrared bands being the highest.
+
+- Despite low accuracy metrics and unclear information on the best predictors, the goal of a model like this is to predict LCZ class for the entire city, and that was the final step in this project.
 
 ---
 
 ## Creating the Full Prediction
 
 <table>
-<tr><td><img src="images/png_satellite_baselayer.png" height=350></td> <td><img src="images/png_bands.png" height=350></td></tr>
-<th>Google Maps Satellite Imagery</th><th>Landsat 8 Scene</th>
+<tr><td><img src="images/png_starting_polygons.png" height=350></td> <td><img src="images/png_s1_b4.png" height=350></td></tr>
+<th>LCZ Polygons</th><th>Scene 1, Band 4</th>
 </table>
 
 ???
-Just as a reminder,
-on the left is a google maps baselayer of the area of interest, Hong Kong.
-On the right is the same baselayer overlayed by one predictor variable, scene x band y
+- Just as a reminder,
+- on the left is our ground truth response variable, LCZ polygons, with a google maps baselayer of the area of interest, Hong Kong.
+- On the right is the same baselayer, but now overlayed by one predictor variable, scene 1 band 4
 
-Then the full prediction was done by creating a random forest with all 36 predictor variables and 125 trees. I used that random forest to predict LCZ class for each pixel in the area of interest.
+- Then the full prediction was done by creating a random forest with all 36 predictor variables and 125 trees. I used that random forest to predict LCZ class for each pixel in the area of interest.
 
 ---
 
@@ -413,7 +439,8 @@ Then the full prediction was done by creating a random forest with all 36 predic
 </center>
 ???
 
-Here is a graphic of that final prediction, with an LCZ class legend on the right. You can see that there's a lot of water and greenery, which fits with the image of Hong Kong that we just saw.
+- Here is a graphic of that final prediction, with an LCZ class legend on the right. 
+- You can see that there's a lot of water and greenery, which fits with the image of Hong Kong that we just saw.
 
 ---
 
@@ -440,16 +467,28 @@ Future Work:
 
 ???
 
-Finally, conclusions for this project.
-Accuracy is much lower for test data than out-of-bag data. This is expected in general due to high spatial autocorrelation present in data such as these, but the difference was still quite large.
-I also saw that OA values do not match up with F1 scores by class for predicting on the test data. This is particularly concerning because these models need to work well for all of the classes in order to be useful. For example, Hong Kong could be classed entirely as class 17, water, and earn a somewhat high OA score. That is not a useful model when the goal is to identify small places within these cities for climate risk adaptation.
+- Finally, conclusions for this project.
 
-The results should be taken with a grain of salt though, since our reference polygons don't account for a large proportion of the area of interest. Despite the high time investment in classifying ground truth polygons, it may be necessary to classify more to create a useful model.
-Time constraints are also a limitation here, this project has a lot of space for more exploration
+- Accuracy is much lower for test data than out-of-bag data. 
+- This is expected in general due to high spatial autocorrelation present in data such as these, but the difference was still quite large.
 
-Which brings me to my final point, future work.
-Clear next steps for this project would be varying multiple tuning parameters and evaluating any interactions. Using the default values may not be adequate in this use case. 
-It would also be good to do testing to determine just how much ground truth is truly necessary, since it's a limiting factor in these efforts.
+- I also saw that OA values do not match up with F1 scores by class for predicting on the test data. 
+- This is particularly concerning because these models need to work well for all of the classes in order to be useful. 
+- For example, Hong Kong could be classed entirely as class 17, water, and earn a somewhat high OA score. That is not a useful model when the goal is to identify small places within these cities for climate risk adaptation.
+
+[[NEXT]]
+
+- The results should be taken with a grain of salt though, since our reference polygons don't account for a large proportion of the area of interest. 
+- Despite the high time investment in classifying ground truth polygons, it may be necessary to classify more to create a useful model.
+- Time constraints are also a limitation here, this project has a lot of space for more exploration
+
+[[NEXT]]
+
+- Which brings me to my final point, future work.
+
+- Clear next steps for this project would be varying multiple tuning parameters and evaluating any interactions. 
+- Using the default values may not be adequate in this use case. 
+- It would also be good to do testing to determine just how much ground truth is truly necessary, since it's a limiting factor in these efforts.
 
 ---
 
@@ -491,4 +530,4 @@ All code and higher resolution images for this project can be found on GitHub at
 
 ???
 
-Now I'll take any questions if you have them
+Now I'll take any questions if you have them.

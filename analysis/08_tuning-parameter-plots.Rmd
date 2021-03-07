@@ -28,12 +28,12 @@ param_dat <- param_dat[, 2:18]
 Name output plots
 
 ```{r}
-current_line_plot_name <- "png_ntree_5_to_500_line_plot.png"
-#current_heatmap_name <- "ntree_5_to_500_heatmap.pdf"
-f1_facet_plot_name <- "png_ntree_5_to_500_facet_plot.png"
+current_line_plot_name <- "OA_line_plot.png"
+plots_save_location <- "doc/presentation/images"
+f1_facet_plot_name <- "f1_facet.png"
 ```
 
-```{r fig.height=3, fig.width=5}
+```{r fig.height=9, fig.width=12}
 param_dat %>%
   dplyr::select(ntree, oa, oa_urb, oa_nat) %>%
   melt(
@@ -43,19 +43,23 @@ param_dat %>%
     variable.name = "Metric"
   ) %>%
   ggplot(aes(x = ntree, y = Accuracy, color = Metric)) +
-  geom_point(size = 0.75) +
+  geom_point() +
   geom_smooth(se = F) +
-  ggtitle("Overall Accuracy Metrics by Numbers of Trees") +
-  xlab("\nNumber of Trees") +
-  ylab("Accuracy\n") +
+  labs(title = "OA Metrics increase as number of trees increase, leveling off \naround 125 trees. Natural classes have higher OA values.\n", #"Overall Accuracy Metrics by Numbers of Trees",
+  x ="\nNumber of Trees",
+  y = "Accuracy\n") +
   scale_color_manual(
     breaks = c("oa", "oa_urb", "oa_nat"),
     labels = c("Overall", "Urban", "Natural"),
     values = c("#FDE725FF", "#1F968BFF", "#440154FF")
   ) +
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        legend.title = element_text(size=20),
+        legend.text = element_text(size=16),
+        axis.title = element_text(size=16),
+        title = element_text(size = 20))
 
-ggsave(here("results/plots", current_line_plot_name))
+ggsave(here(plots_save_location, current_line_plot_name))
 ```
 
 ```{r}
@@ -84,25 +88,26 @@ dat <- param_dat %>%
 ```
 
 
-```{r fig.height=5, fig.width=7}
+```{r fig.height=9, fig.width=12}
 make_plot <- function(the_dat, which_type){
   the_dat %>%
   ggplot(aes(x = ntree, y = F1, color = Type)) +
-  geom_smooth(se = F, size=0.5) +
-  geom_point(size = 0.25)+
+  geom_smooth(se = F, size=0.75) +
+  geom_point(size = 0.75)+
 labs(title ="",
      x ="") +
   facet_grid(Class ~ ., scales = "free") +
   scale_color_manual(values = c("Urban" = "#1F968BFF", "Natural" = "#440154FF")) +
   theme(
-    axis.text = element_text(size = 8),
+    axis.text = element_text(size = 12),
     strip.text.y = element_text(angle = 0),
     legend.position = "none"
   )
 }
 urb_dat <- dat %>%
   filter(Type == "Urban")
-urb <- make_plot(urb_dat) + theme(legend.position="none") + labs(y = "\nF-1 Score\n")
+urb <- make_plot(urb_dat) + theme(legend.position="none",
+                                  axis.title.y = element_text(size=16, face="bold")) + labs(y = "F-1 Score\n")
 nat_dat <- dat %>%
   filter(Type == "Natural")
 nat <- make_plot(nat_dat) + theme(legend.position = "none")+ labs(y = "")
@@ -112,25 +117,30 @@ all <- make_plot(dat)
 # extract the legend from one of the plots
 legend <- get_legend(# create some space to the left of the legend
   all + theme(
-    legend.position = "left",
-    legend.box.margin = ggplot2::margin(0, 12, 0, 0)
-  ))
+    legend.position = "right",
+    legend.box.margin = ggplot2::margin(0, 0, 0, 12),
+    legend.title = element_text(size=20),
+    legend.text = element_text(size=16))
+  )
 
 
 facet_pair <-
-  plot_grid(legend, urb, nat,
-    nrow = 1, rel_widths = c(0.3,1,0.9)
+  plot_grid(urb, nat, legend,
+    nrow = 1, rel_widths = c(1,0.9, 0.3)
   )
 annotate_figure(facet_pair,
                 top = text_grob(
-                  "\nF-1 Score by Class for 5 to 500 Trees",
-                  face = "bold",
-                  size = 14
+                  "F-1 Score by Class increases as number of trees increases, leveling off around 100 trees.\n",
+                  #"\nF-1 Score by Class for 5 to 500 Trees",
+                  #face = "bold",
+                  size = 20
                 ),
-                bottom = text_grob("Number of Trees"))#,
+                bottom = text_grob("Number of Trees", 
+                                   face="bold",
+                                   size = 16))#,
                 #left = text_grob("F-1 Score", rot=90))
 
-ggsave(here("results/plots", f1_facet_plot_name))
+ggsave(here(plots_save_location, f1_facet_plot_name))
 ```
 
 Try putting them together

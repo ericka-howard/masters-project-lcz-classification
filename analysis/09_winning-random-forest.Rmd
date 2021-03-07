@@ -17,6 +17,7 @@ library(broom)
 library(ggpubr)
 library(viridis)
 library(cowplot)
+library(magrittr)
 ```
 
 ```{r}
@@ -65,13 +66,15 @@ f1 <- get_f1_score(predicted, lcz, lcz_predicted)
 
 # Make Plots
 
-```{r fig.height=5}
+```{r fig.height=9, fig.width=12}
 imp_plot <- varImpPlot(rf)
 class(imp_plot)
 
 get_date <- function(scene_num){
   date <- scene_dat$Date[which(scene_dat$Scene==scene_num)]
 }
+
+band_info$Band %<>% fct_inorder()
 
 rf$importance %>%
   as.data.frame() %>%
@@ -82,13 +85,13 @@ rf$importance %>%
     sep = -1,
     remove = F
   ) %>%
-  mutate(Band = parse_number(Band),
-         Band = factor(Band),
+  mutate(Band = factor(parse_number(Band)),
          Scene = as.double(Scene)) %>%
   left_join(scene_dat, by="Scene") %>%
   left_join(band_info, by="Band") %>%
   mutate(Scenes = paste("Scene", Scene, ":\n", Date),
-         Band = paste("Band", Band, ":\n", Description)) %>%
+         Band = paste("Band", Band, ":\n", Description),
+         Band = fct_inorder(Band)) %>%
   ggplot() +
   geom_bar(aes(x = MeanDecreaseGini, y = Band, fill = Scenes),
            stat = 'identity',
@@ -98,16 +101,20 @@ rf$importance %>%
   scale_fill_viridis(discrete = T) +
   theme(legend.position = "right",
         legend.title = element_blank(),
-        strip.text=element_blank()) +
-  labs(title = "Importance Measures for Each Predictor Variable",
-       x = "Mean Decrease in Gini Impurity",
+        strip.text=element_blank(),
+        legend.text = element_text(size=16),
+        axis.title= element_text(size = 16),
+        title = element_text(size = 20),
+        axis.text.y = element_text(size = 16)) +
+  labs(title = "Importance Measures don't give a clear answer about \nwhich predictor variables are most useful.\n",
+       x = "\nMean Decrease in Gini Impurity",
        y="")
 
-ggsave(here("results/plots", "png_importance_barplot_ntree125.png"))
+ggsave(here("doc/presentation/images", "imp_ntree_125.png"))
 ```
 
 
-```{r fig.height=4}
+```{r fig.height=9, fig.width=12}
 urban <-
   c("F1-10",
     "F1-8",
@@ -134,7 +141,7 @@ prep_and_plot <- function(dat, metric_name) {
     ) %>%
     ggplot() +
     geom_bar(aes(x = value, y = Metric, fill = Type),
-             color = "white",
+             color = "black",
              stat = 'identity') +
     scale_fill_viridis(discrete = T, option = "cividis") +
     theme_pubr()+
@@ -146,8 +153,9 @@ prep_and_plot <- function(dat, metric_name) {
     # ) +
     coord_cartesian(xlim = c(0, 1)) +
     theme(plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), "cm"),
-          axis.text = element_text(size = 9),
-          axis.title = element_blank())
+          axis.text = element_text(size = 16),
+          axis.title = element_blank(),
+          panel.grid.major.x = element_line(color="black", linetype="dotted"))
   
 }
 
@@ -157,33 +165,37 @@ f1_plot <- prep_and_plot(f1, "") + facet_grid(Type ~ ., scales = "free")
 # extract the legend from one of the plots
 legend <- get_legend(
   oa_plot + theme(
-    legend.position = "top",
-    legend.box.margin = ggplot2::margin(0, 0, 0, 0)
+    legend.position = "right",
+    legend.box.margin = ggplot2::margin(0, 0, 0, 0),
+    legend.text = element_text(size=16),
+    legend.title = element_text(size = 20)
   ))
 oa_just_plot <- oa_plot + theme(legend.position = "none")
 f1_just_plot <-
   f1_plot + theme(legend.position = "none", strip.text = element_blank())
 
-left_side <- plot_grid(legend, oa_just_plot, rel_heights = c(0.1, 1), nrow=2)
+left_side <- plot_grid(legend, oa_just_plot, rel_heights = c(0.4, 1), nrow=2)
 left_side
 
 facet_pair <-
   plot_grid(
-    left_side,
+    #left_side,
     f1_just_plot,
+    left_side,
     ncol = 2,
-    rel_widths = c(0.75, 1)
+    #rel_widths = c(0.75, 1)
+    rel_widths = c(1, 0.75)
     
   )
 annotate_figure(facet_pair,
                 top = text_grob(
-                  "\nValidation Metrics for Test Dataset\n",
-                  face = "bold",
-                  size = 14
+                  "Validation Metrics are much lower for test data than for out-of-bag data. \nHigh OA values may mask low F1 scores.\n",
+                  #face = "bold",
+                  size = 20
                 ))
 ggsave(here(
-  "results/plots",
-  "png_test_set_validation_metrics_barplot_separated.png"
+  "doc/presentation/images",
+  "valid_mets.png"
 ))
 ```
 

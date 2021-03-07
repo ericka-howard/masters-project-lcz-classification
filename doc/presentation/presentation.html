@@ -445,21 +445,6 @@ Overall Results:
 * Low accuracy for prediction on the test data, in comparison to the out-of-bag data
 * High OA values can mask low F1 scores within classes
 
---
-
-&lt;br&gt;
-Limitations:
-* Reference polygons on account for ~3% of the Area of Interest
-* Time constraints
-
---
-
-&lt;br&gt;
-
-Future Work:
-* Multiple tuning parameters &amp; the interactions between them
-* Quantifying "how much" ground truth data is enough
-
 ???
 
 - Finally, conclusions for this project.
@@ -471,13 +456,29 @@ Future Work:
 - This is particularly concerning because these models need to work well for all of the classes in order to be useful. 
 - For example, Hong Kong could be classed entirely as class 17, water, and earn a somewhat high OA score. That is not a useful model when the goal is to identify small places within these cities for climate risk adaptation.
 
-[[NEXT]]
+
+--
+
+&lt;br&gt;
+Limitations:
+* Reference polygons on account for ~3% of the Area of Interest
+* Time constraints
+
+???
 
 - The results should be taken with a grain of salt though, since our reference polygons don't account for a large proportion of the area of interest. 
 - Despite the high time investment in classifying ground truth polygons, it may be necessary to classify more to create a useful model.
 - Time constraints are also a limitation here, this project has a lot of space for more exploration
 
-[[NEXT]]
+--
+
+&lt;br&gt;
+
+Future Work:
+* Multiple tuning parameters &amp; the interactions between them
+* Quantifying "how much" ground truth data is enough
+
+???
 
 - Which brings me to my final point, future work.
 

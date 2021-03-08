@@ -12,7 +12,7 @@
     <textarea id="source">
 
 
-class: inverse, center, middle
+class: center, middle inverse
 
 # Local Climate Zone Classification Using Random Forests
 
@@ -46,11 +46,10 @@ class: inverse, center, middle
 
 ---
 
-&lt;br&gt;
-&lt;br&gt;
-&lt;center&gt;
+class: center, middle
+
 &lt;img src="images/UHI_index.png"&gt;
-&lt;/center&gt;
+
 ???
 
 - The Urban Heat Island effect is where urbanized areas are warmer than neighboring rural areas.
@@ -58,34 +57,33 @@ class: inverse, center, middle
 - That's what this graphic depicts. It's a generalized profile but matches a pattern seen in cities across the globe. 
 
 - On the y axis is temperature in degrees celsius, and on the x axis are different types of built spaces. 
-  - Notice that the downtown area has the warmest temperature, and that the park is lower than both residential areas next to it on the plot. 
+  - Notice that the downtown area has the warmest temperature, and that the park is lower than the residential areas next to it on the plot. 
 
-- These heat islands are a major concern as the population worldwide increases and urbanizes,
-because they cause:
+- These heat islands are a major concern as the population worldwide increases and urbanizes, because they cause:
     - increased energy consumption
     - elevated emissions of air pollutants and greenhouse gasses
     - compromised human health and comfort
     - and impaired water quality.
 
-- But what can be done about them?
+- So, what can be done about them?
 - Well, we know that they are caused because urban built structures hold more heat than the structures and vegetation in surrounding areas.
 
 - With this in mind, knowledge about microclimates within cities can be incredibly useful in mitigating this issue,
+
 - because it can help with finding prospective sites for climate risk adaptation. 
 
-- Unfortuately this information can be difficult to obtain.
+- Unfortunately this information can be difficult to obtain.
 
 - One way to find these microclimates is by classification of satellite imagery.
 
 ---
+class: center
 
-&lt;center&gt;
 &lt;img src="images/lcz.png" width="600"&gt;
 &lt;br&gt;
 &lt;font size = 2&gt;
 Originally created by Stewart and Oke (2012), reproduced by Bechtel et al. (2017), licensed under CC-BY 4.0
 &lt;/font&gt;
-&lt;/center&gt;
 
 ???
 
@@ -107,6 +105,9 @@ Originally created by Stewart and Oke (2012), reproduced by Bechtel et al. (2017
 - and the natural classes are 11-17.
 
 ---
+
+class: inverse
+
 
 # Objective
 
@@ -136,6 +137,8 @@ My Focus:
 - By paring down the scope of this project I was able to focus more on the algorithm itself.
 
 - Specifically, I chose to vary the number of trees in the forest, a parameter of the model. 
+
+- Before we get too much into the specifics of the model, let me tell you about the data
 ---
 
 # The LCZ reference data
@@ -146,19 +149,15 @@ My Focus:
 
 
 ???
-Now, let me tell you about the data. You're seeing two things depicted here. 
-
-- On the bottom is a Google maps satellite layer. 
+First, the LCZ reference data. You're seeing two things depicted here. 
+- The base is a Google maps satellite layer. 
 - I've just included this for context and it is not a part of the analysis in any way.
-
 - The other thing you can see is a bunch of polygons of various colors spread around the area.
 - Each of these polygons represents a space where an LCZ class has been classified by an individual with specialist knowledge.
 - This is the response variable for my analysis. 
-
 - I don't want to focus too much on individual classes or polygons here, but just to give a clearer picture I'd like to point out what some of the polygons mean,  
   - [[pick a blue polygon and put mouse on it]] 
   - here you can see a blue polygon covering an area that is water, LCZ class 17. 
-  
   - [[pick dark green polygons in middle and put mouse on them]] 
   - here you can see a green polygon covering a space with dense trees, which is class 11. 
 
@@ -191,19 +190,19 @@ Now, let me tell you about the data. You're seeing two things depicted here.
 
 - Overall a Landsat 8 image has 11 bands, and I used 9 of those bands for each image. 
 
-- As you can see here there are four different Landsat images, which are also known as "scenes.", 
-- listed with the date they were taken.
+- As you can see here there are four different Landsat images, which are also known as "scenes.", listed with the date they were taken.
 
 - This amounted to 36 input variables. 
 
-- In these data a pixel is an observation, so each pixel in these images has 36 variables associated with it.
+- In these data each of the 279,312 pixels is an observation, so each pixel in these images has 36 variables associated with it.
 
 - Okay, so that's the gist of the Landsat data.
 
 ---
-&lt;center&gt;
+class: center
+
 &lt;img src="images/polygons.png" height=625&gt;
-&lt;/center&gt;
+
 
 ???
 
@@ -298,13 +297,19 @@ For a random forest, a pixel is put through a collection of decision trees.
 
 The classifications from each tree are tallied up as votes, with majority takes all giving a final classification for a given pixel.
 
+- Why is this better than a decision tree?
+
+- Random forests require more computationtal resources than decision trees, so why is it worth it?
+
+- Primarily because decision trees are prone to overfitting, they're too good at predicting their own set of data and too poor at prediction of novel data.
+
+- Random forests are much better at prediction. They solve this problem with their component of randomness, true to their name.
+
 ---
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
+class: inverse, middle
+
 ## Why is it a [**Random**] Forest?
+
 * Randomizing variables tried at each node
 &lt;br&gt;
 
@@ -312,17 +317,13 @@ The classifications from each tree are tallied up as votes, with majority takes 
 
 ???
 
-- Why is a random forest better than a decision tree? 
-
-- Decision trees are prone to overfitting, they're too good at predicting their own set of data and too poor at prediction novel data.
-
-- Random forests solve this problem with their component of randomness.
+- Why is a random forest , random? 
 
 - This randomness is introduced in the two ways listed here. 
 
 - The first is randomizing variables at each node. 
 
-- Since each node cannot try all of the variables, trees are created differently.
+- Since each node cannot try all of the variables, trees are created more differently from each other.
 
 - The second is bootstrapping samples for each tree. 
 
@@ -347,17 +348,18 @@ The classifications from each tree are tallied up as votes, with majority takes 
 - You can see that some of the data, highlighted yellow, was sampled by bootstrapping
   - This is the in-bag data.
   
-- Bootstrap resampling leaves out about 1/3 of the data, and that is the data that goes to the right, called the out of bag sample
+- Bootstrap resampling leaves out about 1/3 of the observations, and that is the data that goes to the right, called the out of bag sample
 
 - The inbag data is used to create the tree, step 2 in the graphic,
 
-- and then , step 3, 
-where the out of bag data is put through the tree to test it by receiving a classification vote
+- and then ,
+the out of bag data is put through the tree to test it by receiving a classification vote,
+step 3
 
 - To calculate the overall out-of-bag error each observation is put through every tree for which it is out-of-bag, 
-- and the votes are tallied up. 
-- The majority vote classification is determined and this is checked against the true LCZ value for that pixel,
-- and marked as true or false. 
+- and the votes are tallied up, 
+- the majority vote classification is determined, and this is checked against the true LCZ value for that pixel,
+- and marked as correct or incorrect. 
 
 - This is done for every pixel and the proportion of incorrect classifications is called the out of bag error. 
 
@@ -387,13 +389,13 @@ where the out of bag data is put through the tree to test it by receiving a clas
 
 - mtry is the number of variables randomly sampled to be tried at each node
 
-- node size is the minimum number of pixels that need to be in each terminal node
+- node size is the minimum number of pixels that need to be in each terminal, or leaf node
 
 - max nodes is the maximum number of leaf nodes a tree is allowed to have. This is constrained by nodesize but here trees were grown as large as possible.
 
 - As I mentioned, these can be changed to create a better model, and typically "better" is determined by the Out-of-bag error. 
 
-- However in remote sensing there are other metrics that are also used.
+- However in LCZ classification there are other metrics that are also used.
 
 - In order for you to understand the plots following in my results section, I'd like to briefly introduce these metrics.
 ---
@@ -410,23 +412,29 @@ where the out of bag data is put through the tree to test it by receiving a clas
 - There is also OA-urban and OA-natural, which are the same concept but with only subsets of the data. 
 - OA-urban only includes the urban classes, 1-10, and OA-natural only includes the natural classes, 11-17.
 
+**Next, F1 score.** 
+
 --
 
 &lt;br&gt;
 `$$F_1\text{ Score} = 2*\frac{UA*PA}{UA+PA}$$`
 ???
-- Next, F1 score. 
+
+
 - This is the harmonic mean of UA and PA, which I'll explain in a second. 
 - The important thing to know about the F1 score is that a value close to 1 is good. 
 - It indicates a model that has both low false positives and low false negatives.
 
+**then, UA,**
 --
 
 &lt;br&gt;
 `$$UA(z)\ = \frac{\text{number of correctly identified pixels in class z}}{\text{total number of pixels identified as class z}}$$` 
 
 ???
-- UA is a measure of user's accuracy, which is also called precision or positive predictive value. 
+- is a measure of user's accuracy, which is also called precision or positive predictive value. 
+
+**and, PA,**
 --
 
 &lt;br&gt;
@@ -434,7 +442,7 @@ where the out of bag data is put through the tree to test it by receiving a clas
 
 ???
 
-- PA is the measure of producer's accuracy, also known as recall or sensitivity.
+- is the measure of producer's accuracy, also known as recall or sensitivity.
 
 - Now let's get into results
 
@@ -443,27 +451,28 @@ where the out of bag data is put through the tree to test it by receiving a clas
 &lt;img src="images/OA_line_plot.png"&gt;
 
 ???
-- Here in the plot we're looking at the performance of random forests with varying numbers of trees when predicting on the out-of-bag dataset.
+- Here in the plot,
+we're looking at the performance of random forests with varying numbers of trees,
+when predicting on the out-of-bag data.
 
 - the y-axis is overall accuracy, with the lowest values being around 0.75 and the highest values approaching 1 
 
 - The x axis is the parameter number of trees, which I varied from 0 to 500 in intervals of 5.
 
 - I chose this range because the default value is 500 trees, 
--nand I was interested to see if a lower number would be possible, 
-- due to the high impact number of trees has on the computational resources required.
+- and I was interested to see if a lower number would be possible, 
+- due to the high impact that number of trees has on the computational resources required to create a random forest
 
 - The colors in this plot denote the different OA metrics, 
   - with yellow being overall, 
   - teal being urban, 
   - and purple being natural
 
+- I'd like to point out that the natural classes score much higher for accuracy metrics, leveling off around 1,
+- whereas the urban classes only reach an accuracy of approximately 0.875
+
 - The takeaway here is that we can see a visual phenomenon of leveling off around 125 trees. 
 - This means the accuracy is improving with increased trees, but only to a point.
-
-- I'd also like to mention that the natural classes score much higher for accuracy metrics, 
-- leveling off around 1,
-- whereas the urban classes only reach an accuracy of approximately 0.875. ..
 
 - Moving on to the next plot, 
 
@@ -473,12 +482,12 @@ where the out of bag data is put through the tree to test it by receiving a clas
 
 ???
 
-- we see similar shapes. This plot is also based on the Out of bag data with varying numbers of trees.
+- we see similar shapes. This plot is also based on the out of bag data with varying numbers of trees.
 
-- This plot has number of trees on the x axis, again varying from 0 to 500 in intervals of 5
+- We have number of trees on the x axis, again varying from 0 to 500 in intervals of 5
 
 - On the y-axis however, is F-1 score. 
-- It's different for each plot because the goal here is to look at the shape.
+- The range of values on the y axes are different for each plot because the goal here is to look at the shape.
 
 - The colors indicate Natural vs. Urban classes, 
   - with purple again being natural, 
@@ -496,7 +505,7 @@ where the out of bag data is put through the tree to test it by receiving a clas
 - We see this leveling off of F1 score, just like the OA values did,
 - though here I'd say it happens closer to 100 trees.
 
-- Just so that we have some context moving forward I'd like to point out some of the F1 scores here. 
+- Just so that we have some context moving forward I'd like to point out some of the values of the F1 scores here. 
   - The absolute lowest are for classes 6 and 10, 
   - which start out around 0.5 
   - but level off around 0.7. 
@@ -572,11 +581,13 @@ where the out of bag data is put through the tree to test it by receiving a clas
 
 ---
 
+class: inverse
+
 ## Creating the Full Prediction
 
 &lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;img src="images/png_starting_polygons.png" height=350&gt;&lt;/td&gt; &lt;td&gt;&lt;img src="images/png_s1_b4.png" height=350&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;th&gt;LCZ Polygons&lt;/th&gt;&lt;th&gt;Scene 1, Band 4&lt;/th&gt;
+&lt;tr&gt;&lt;td&gt;&lt;img src="images/png_starting_polygons.png" height=350&gt;&lt;/td&gt; &lt;td&gt;&lt;img src="images/png_s1_b4.png" height=350&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;/table&gt;
 
 ???
@@ -592,10 +603,15 @@ where the out of bag data is put through the tree to test it by receiving a clas
 
 ---
 
-## The Full Prediction
-&lt;center&gt;
-&lt;img src="images/png_lcz_with_satellite.png" height=425&gt;&lt;img src="images/png_class_legend_vertical.png" width=205&gt;
-&lt;/center&gt;
+class: inverse
+
+## Creating the Full Prediction
+
+&lt;table&gt;
+&lt;tr&gt;&lt;td&gt;&lt;img src="images/png_lcz_with_satellite.png" height=425&gt;&lt;/td&gt;
+&lt;td&gt;&lt;img src="images/png_class_legend_vertical.png" width=205&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
 ???
 
 - Here is a graphic of that final prediction, with an LCZ class legend on the right. 
@@ -604,12 +620,12 @@ where the out of bag data is put through the tree to test it by receiving a clas
 - which fits intuitively with the google satellite images of Hong Kong that we've seen.
 - Also notice that classes do seem to be grouped near the same or similar classes.
 
-- Now, for  I doHong Kong I don't have a fully classified ground truth layer,
+- Now, for Hong Kong I don't have a fully classified ground truth layer,
 - so I did not delve into trying to evaluate the predictions. 
 
 - Were I confident in the accuracy of these predictions, 
-- the next step would be for an expert in climate risk adaptation to use this information about where different classes are located within the city 
--to identify places where efforts would be most useful.
+- the next step would be for an expert in climate risk adaptation to use this information about where different classes are located within the city, 
+- to identify places where efforts would be most useful.
 
 ---
 
@@ -673,17 +689,17 @@ Future Work:
 
 ---
 
-&lt;center&gt;
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
+class: center, middle
+
+background-image: url("images/hk1.JPG")
+
+background-size: contain
+
 # Acknowledgements
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+.
 
 ???
 And last, I'd like to acknowledge some of the people who have helped me get here.
@@ -694,7 +710,7 @@ My committee members, Dr. James Molyneux and Dr. Lisa Ganio.
 
 And of course, my fiance Rebecca
 
-Thank you all SO MUCH, this has been fun.
+Thank you all SO MUCH.
 
 ---
 &lt;br&gt;

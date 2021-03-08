@@ -4,28 +4,43 @@ author: "Ericka B. Smith"
 date: "3/9/2021"
 output:
   xaringan::moon_reader:
-    lib_dir: libs
-    nature:
-      highlightStyle: github
-      highlightLines: true
-      countIncrementalSlides: false
-header-includes: \usepackage{booktabs}
+    seal: false
 ---
 
+class: inverse, center, middle
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-library(here)
-library(dplyr)
-library(forcats)
-library(kableExtra)
-library(tidyr)
-library(readr)
-table_dat <- readRDS(here("results", "table_3_equivalent.rds"))
-scene_dat <- read_csv(here("data", "scene_info.csv"))
 #xaringan::inf_mr()
 #servr::daemon_stop(1)
 # p for presenter mode, c for clone
+ # lib_dir: libs
+ #    nature:
+ #      highlightStyle: github
+ #      highlightLines: true
+ #      countIncrementalSlides: false
 ```
+
+# Local Climate Zone Classification Using Random Forests
+
+## Ericka B. Smith
+
+### 03/09/2021
+
+???
+
+- Good Morning Everyone! 
+- My name is Ericka Smith and I'm a master's student here at OSU in the Statistics Department. 
+- This is my final oral exam, and this presentation portion should last about 25 minutes. 
+- I'll take any questions you may have at that point. 
+- Then my committee and I will ask you all to leave, and I'll begin the questions portion with them. 
+
+- So, let's get started! 
+- Today I'm going to talk to you about the use of machine learning algorithms for prioritization of climate risk adaptation efforts. 
+- This is a multidisciplinary topic, and I know we have a wide variety of backgrounds in the audience, so I'm going to introduce a few ideas to get us all on the same page. 
+
+- Let's talk about Urban Heat Islands..
+
+---
 
 <br>
 <br>
@@ -37,8 +52,11 @@ scene_dat <- read_csv(here("data", "scene_info.csv"))
 - The Urban Heat Island effect is where urbanized areas are warmer than neighboring rural areas
 
 - As the population worldwide increases and urbanizes this is a major concern,
-because these heat islands cause increased energy consumption, elevated emissions of air pollutants
-and greenhouse gasses, compromised human health and comfort, and impaired water quality.
+because these heat islands cause 
+    - increased energy consumption
+    - elevated emissions of air pollutants and greenhouse gasses
+    - compromised human health and comfort
+    - and impaired water quality.
 
 - That's what you can see here in this generalized profile. Notice that our y-axis is degrees celsius, so these changes can be quite large.
 
@@ -302,14 +320,29 @@ $$\text{maxnodes = maximum possible}$$
 
 <br>
 $$\text{Overall Accuracy}= \text{OA}= \frac{\text{number of correctly classified reference sites}}{\text{total number of reference sites}}$$
+???
+- Overall accuracy, or OA, is just the proportion of correctly classified sites. 
+- An OA of 1 is the best possible, because it means all sites were correctly classified.
+
+- There is also OA-urban and OA-natural, which are the same concept but with only subsets of the data. 
+- OA-urban only includes the urban classes, 1-10, and OA-natural only includes the natural classes, 11-17.
+
 --
 
 <br>
 $$F_1\text{ Score} = 2*\frac{UA*PA}{UA+PA}$$
+???
+- Next, F1 is the harmonic mean of UA and PA, which I'll explain in a second. 
+- The important thing to know about F1 is that a value close to 1 is good. 
+- It indicates a model that has both low false positives and low false negatives.
+
 --
 
 <br>
 $$UA(z)\ = \frac{\text{number of correctly identified pixels in class z}}{\text{total number of pixels identified as class z}}$$ 
+
+???
+- UA is a measure of user's accuracy, which is also called precision or positive predictive value. 
 --
 
 <br>
@@ -317,19 +350,7 @@ $$PA(z) = \frac{\text{number of correctly identified pixels in class z}}{\text{n
 
 ???
 
-- Overall accuracy, or OA, is just the proportion of correctly classified sites. 
-- An OA of 1 is the best possible, because it means all sites were correctly classified.
-
-- There is also OA-urban and OA-natural, which are the same concept but with only subsets of the data. 
-- OA-urban only includes the urban classes, 1-10, and OA-natural only includes the natural classes, 11-17.
-
-- Next, F1 is the harmonic mean of UA and PA, which I'll explain in a second. 
-- The important thing to know about F1 is that a value close to 1 is good. 
-- It indicates a model that has both low false positives and low false negatives.
-
-- UA is a measure of user's accuracy, which is also called precision or positive predictive value. 
 - PA is the measure of producer's accuracy, also known as recall or sensitivity.
-
 - Now let's get into results
 
 ---

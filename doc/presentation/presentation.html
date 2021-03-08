@@ -4,22 +4,39 @@
     <title>Local Climate Zone Classification Using Random Forests</title>
     <meta charset="utf-8" />
     <meta name="author" content="Ericka B. Smith" />
-    <script src="libs/header-attrs-2.7/header-attrs.js"></script>
-    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
-    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <script src="presentation_files/header-attrs-2.7/header-attrs.js"></script>
+    <link href="presentation_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="presentation_files/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
   </head>
   <body>
     <textarea id="source">
-class: center, middle, inverse, title-slide
+
+
+class: inverse, center, middle
+
+
 
 # Local Climate Zone Classification Using Random Forests
-### Ericka B. Smith
-### 3/9/2021
+
+## Ericka B. Smith
+
+### 03/09/2021
+
+???
+
+- Good Morning Everyone! 
+- My name is Ericka Smith and I'm a master's student here at OSU in the Statistics Department. 
+- This is my final oral exam, and this presentation portion should last about 25 minutes. 
+- I'll take any questions you may have at that point. 
+- Then my committee and I will ask you all to leave, and I'll begin the questions portion with them. 
+
+- So, let's get started! 
+- Today I'm going to talk to you about the use of machine learning algorithms for prioritization of climate risk adaptation efforts. 
+- This is a multidisciplinary topic, and I know we have a wide variety of backgrounds in the audience, so I'm going to introduce a few ideas to get us all on the same page. 
+
+- Let's talk about Urban Heat Islands..
 
 ---
-
-
-
 
 &lt;br&gt;
 &lt;br&gt;
@@ -31,8 +48,11 @@ class: center, middle, inverse, title-slide
 - The Urban Heat Island effect is where urbanized areas are warmer than neighboring rural areas
 
 - As the population worldwide increases and urbanizes this is a major concern,
-because these heat islands cause increased energy consumption, elevated emissions of air pollutants
-and greenhouse gasses, compromised human health and comfort, and impaired water quality.
+because these heat islands cause 
+    - increased energy consumption
+    - elevated emissions of air pollutants and greenhouse gasses
+    - compromised human health and comfort
+    - and impaired water quality.
 
 - That's what you can see here in this generalized profile. Notice that our y-axis is degrees celsius, so these changes can be quite large.
 
@@ -296,14 +316,29 @@ The classifications are tallied up as votes, with majority takes all giving a fi
 
 &lt;br&gt;
 `$$\text{Overall Accuracy}= \text{OA}= \frac{\text{number of correctly classified reference sites}}{\text{total number of reference sites}}$$`
+???
+- Overall accuracy, or OA, is just the proportion of correctly classified sites. 
+- An OA of 1 is the best possible, because it means all sites were correctly classified.
+
+- There is also OA-urban and OA-natural, which are the same concept but with only subsets of the data. 
+- OA-urban only includes the urban classes, 1-10, and OA-natural only includes the natural classes, 11-17.
+
 --
 
 &lt;br&gt;
 `$$F_1\text{ Score} = 2*\frac{UA*PA}{UA+PA}$$`
+???
+- Next, F1 is the harmonic mean of UA and PA, which I'll explain in a second. 
+- The important thing to know about F1 is that a value close to 1 is good. 
+- It indicates a model that has both low false positives and low false negatives.
+
 --
 
 &lt;br&gt;
 `$$UA(z)\ = \frac{\text{number of correctly identified pixels in class z}}{\text{total number of pixels identified as class z}}$$` 
+
+???
+- UA is a measure of user's accuracy, which is also called precision or positive predictive value. 
 --
 
 &lt;br&gt;
@@ -311,19 +346,7 @@ The classifications are tallied up as votes, with majority takes all giving a fi
 
 ???
 
-- Overall accuracy, or OA, is just the proportion of correctly classified sites. 
-- An OA of 1 is the best possible, because it means all sites were correctly classified.
-
-- There is also OA-urban and OA-natural, which are the same concept but with only subsets of the data. 
-- OA-urban only includes the urban classes, 1-10, and OA-natural only includes the natural classes, 11-17.
-
-- Next, F1 is the harmonic mean of UA and PA, which I'll explain in a second. 
-- The important thing to know about F1 is that a value close to 1 is good. 
-- It indicates a model that has both low false positives and low false negatives.
-
-- UA is a measure of user's accuracy, which is also called precision or positive predictive value. 
 - PA is the measure of producer's accuracy, also known as recall or sensitivity.
-
 - Now let's get into results
 
 ---
@@ -530,11 +553,7 @@ Now I'll take any questions if you have them.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
-<script>var slideshow = remark.create({
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false
-});
+<script>var slideshow = remark.create();
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
 });
@@ -599,24 +618,7 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
       links[i].target = '_blank';
     }
   }
-})();
-// adds .remark-code-has-line-highlighted class to <pre> parent elements
-// of code chunks containing highlighted lines with class .remark-code-line-highlighted
-(function(d) {
-  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
-  const preParents = [];
-  const findPreParent = function(line, p = 0) {
-    if (p > 1) return null; // traverse up no further than grandparent
-    const el = line.parentElement;
-    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
-  };
-
-  for (let line of hlines) {
-    let pre = findPreParent(line);
-    if (pre && !preParents.includes(pre)) preParents.push(pre);
-  }
-  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
-})(document);</script>
+})();</script>
 
 <script>
 slideshow._releaseMath = function(el) {

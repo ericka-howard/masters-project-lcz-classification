@@ -83,12 +83,12 @@
 
 ### Week 9 (Mar. 1-5)
 
-* [ ] Prepare Presentation
+* [x] Prepare Presentation
 * [x] Submit paper **March 2**
 
 ### Week 10 (Mar. 8-12)
 
-* [ ] Oral Exam
+* [x] Oral Exam
 
 ### Finals Week (Mar. 15-19)
 
